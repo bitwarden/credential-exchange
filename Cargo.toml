@@ -11,4 +11,4 @@ rust-version = "1.75"
 homepage = "https://bitwarden.com"
 repository = "https://github.com/bitwarden/credential-exchange"
 license-file = "LICENSE"
-keywords = ["bitwarden"]
+keywords = []
