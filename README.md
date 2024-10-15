@@ -1,7 +1,7 @@
 # Credential Exchange
 
 Credential Exchange is a collection of Rust libraries for working with the
-[Credential Exchange specification](https://fidoalliance.org/specifications-credential-exchange-specifications/).
+[Credential Exchange Specifications](https://fidoalliance.org/specifications-credential-exchange-specifications/).
 
 For more information about the credential exchange protocol, please read the
 [Bitwarden blog post](https://bitwarden.com/blog/security-vendors-join-forces-to-make-passkeys-more-portable-for-everyone/)
