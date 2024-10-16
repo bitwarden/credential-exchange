@@ -14,6 +14,6 @@ This library is still in early development and as the specification evolves so w
 
 ## Structure
 
-It's currently comprised of a single create:
+It's currently comprised of a single crate:
 
 - `credential-exchange-types`: Type definitions from the specification.
