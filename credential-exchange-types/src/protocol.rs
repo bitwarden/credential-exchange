@@ -9,7 +9,6 @@ use crate::b64url::B64Url;
 pub struct Request {
     pub version: Version,
     pub hpke: Vec<HpkeParameters>,
-    pub archive: Vec<ArchiveAlgorithm>,
     pub importer: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub credential_types: Option<Vec<CredentialType>>,
@@ -40,15 +39,6 @@ impl From<Version> for u8 {
             Version::Unknown(v) => v,
         }
     }
-}
-
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-pub enum ArchiveAlgorithm {
-    #[default]
-    Deflate,
-    #[serde(untagged)]
-    Unknown(String),
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -113,8 +103,6 @@ pub enum HpkeMode {
 pub struct Response {
     pub version: Version,
     pub hpke: HpkeParameters,
-    #[serde(default)]
-    pub archive: ArchiveAlgorithm,
     pub exporter: String,
     pub payload: B64Url,
 }
