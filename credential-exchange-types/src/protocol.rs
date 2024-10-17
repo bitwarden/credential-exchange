@@ -245,11 +245,11 @@ pub struct ErrorResponse {
 pub enum ErrorCode {
     /// Indicates that a user confirmation action was refused, thus cancelling the exchange.
     UserCanceled,
-    /// The exporting provider does not support any of the requested hpke parameters.
+    /// The exporting provider does not support any of the requested [HpkeParameters].
     IncompatibleHpkeParameters,
-    /// The importing provider did not provide a key when it was required by the associated hpke parameters.
+    /// The importing provider did not provide a key when it was required by the associated [HpkeParameters].
     MissingImporterKey,
-    /// The importing provider provided an invalid key for the associated hpke parameters.
+    /// The importing provider provided an invalid key for the associated [HpkeParameters].
     IncorrectImporterKeyEncoding,
     /// The exporting provider does not support the requested credential exchange protocol version.
     UnsupportedVersion,
