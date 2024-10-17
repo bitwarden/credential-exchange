@@ -1,4 +1,4 @@
-use b64url::Base32;
+use b64url::B32;
 use serde::{Deserialize, Serialize};
 
 use crate::{b64url::B64Url, passkey::Fido2Extensions};
@@ -156,7 +156,7 @@ pub enum Credential {
     Note { content: String },
     #[serde(rename_all = "camelCase")]
     Totp {
-        secret: Base32,
+        secret: B32,
         period: u8,
         digits: u8,
         username: String,

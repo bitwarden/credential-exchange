@@ -78,33 +78,33 @@ impl TryFrom<&str> for B64Url {
 /// Newtype to encode and decode a vector of bytes to and from Base32.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(try_from = "&str", into = "String")]
-pub struct Base32(Vec<u8>);
+pub struct B32(Vec<u8>);
 
-impl From<Vec<u8>> for Base32 {
+impl From<Vec<u8>> for B32 {
     fn from(src: Vec<u8>) -> Self {
         Self(src)
     }
 }
-impl From<&[u8]> for Base32 {
+impl From<&[u8]> for B32 {
     fn from(src: &[u8]) -> Self {
         Self(src.to_vec())
     }
 }
 
-impl From<Base32> for Vec<u8> {
-    fn from(src: Base32) -> Self {
+impl From<B32> for Vec<u8> {
+    fn from(src: B32) -> Self {
         src.0
     }
 }
 
-impl AsRef<[u8]> for Base32 {
+impl AsRef<[u8]> for B32 {
     fn as_ref(&self) -> &[u8] {
         &self.0
     }
 }
 
-impl From<Base32> for String {
-    fn from(src: Base32) -> Self {
+impl From<B32> for String {
+    fn from(src: B32) -> Self {
         BASE32_NOPAD.encode(&src.0)
     }
 }
@@ -119,7 +119,7 @@ impl std::fmt::Display for NotBase32Encoded {
     }
 }
 
-impl TryFrom<&str> for Base32 {
+impl TryFrom<&str> for B32 {
     type Error = NotBase32Encoded;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
