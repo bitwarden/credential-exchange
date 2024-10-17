@@ -100,7 +100,7 @@ pub enum HpkeMode {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Response {
+pub struct ExportResponse {
     pub version: Version,
     pub hpke: HpkeParameters,
     pub exporter: String,
