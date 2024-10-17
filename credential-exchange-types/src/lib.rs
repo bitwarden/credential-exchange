@@ -1,10 +1,11 @@
-mod passkey;
-
-use passkey::Fido2Extensions;
+use b64url::Base32;
 use serde::{Deserialize, Serialize};
 
-/// Base64 URL encoded data
-type B64Url = String;
+use crate::{b64url::B64Url, passkey::Fido2Extensions};
+
+mod b64url;
+mod passkey;
+
 type Uri = String;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -155,7 +156,7 @@ pub enum Credential {
     Note { content: String },
     #[serde(rename_all = "camelCase")]
     Totp {
-        secret: String,
+        secret: Base32,
         period: u8,
         digits: u8,
         username: String,
