@@ -6,7 +6,7 @@ use crate::b64url::B64Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Request {
+pub struct ExportRequest {
     pub version: Version,
     pub hpke: Vec<HpkeParameters>,
     pub importer: String,
@@ -235,6 +235,26 @@ impl From<u16> for HpkeAead {
     }
 }
 
+pub struct ErrorResponse {
+    pub version: Version,
+    pub error: ErrorCode,
+}
+
 /// An error returned by [`export`].
 #[derive(Debug)]
-pub enum Error {}
+pub enum ErrorCode {
+    /// Indicates that a user confirmation action was refused, thus cancelling the exchange.
+    UserCanceled,
+    /// The exporting provider does not support any of the requested hpke parameters.
+    IncompatibleHpkeParameters,
+    /// The importing provider did not provide a key when it was required by the associated hpke parameters.
+    MissingImporterKey,
+    /// The importing provider provided an invalid key for the associated hpke parameters.
+    IncorrectImporterKeyEncoding,
+    /// The exporting provider does not support the requested credential exchange protocol version.
+    UnsupportedVersion,
+    /// An error occurred while parsing the JSON [ExportRequest].
+    InvalidJson,
+    /// The exporting provider refused the export due to either policy or inability to validate the exporting provider.
+    ForbiddenAction,
+}
