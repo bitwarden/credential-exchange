@@ -12,3 +12,4 @@ keywords.workspace = true
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 data-encoding = "2"
+jose-jwk = "0.1"
