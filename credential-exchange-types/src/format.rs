@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -90,6 +92,8 @@ pub enum ItemType {
     Login,
     Document,
     Identity,
+    #[serde(untagged)]
+    Unknown(String),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -116,6 +120,8 @@ enum CredentialType {
     Address,
     CreditCard,
     SocialSecurityNumber,
+    #[serde(untagged)]
+    Unknown(String),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -165,6 +171,12 @@ pub enum Credential {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         issuer: Option<String>,
     },
+    #[serde(untagged)]
+    Unknown {
+        ty: String,
+        #[serde(flatten)]
+        content: serde_json::Map<String, serde_json::Value>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -173,6 +185,8 @@ pub enum OTPHashAlgorithm {
     Sha1,
     Sha256,
     Sha512,
+    #[serde(untagged)]
+    Unknown(String),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -194,4 +208,6 @@ pub enum FieldType {
     Number,
     Boolean,
     Date,
+    #[serde(untagged)]
+    Unknown(String),
 }
