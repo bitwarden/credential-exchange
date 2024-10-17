@@ -127,14 +127,7 @@ enum CredentialType {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
-    #[serde(rename_all = "camelCase")]
-    BasicAuth {
-        urls: Vec<Uri>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        username: Option<EditableField>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        password: Option<EditableField>,
-    },
+    BasicAuth(BasicAuthCredential),
     #[serde(rename_all = "camelCase")]
     Passkey {
         credential_id: B64Url,
@@ -160,7 +153,9 @@ pub enum Credential {
         valid_from: Option<String>,
     },
     #[serde(rename_all = "camelCase")]
-    Note { content: String },
+    Note {
+        content: String,
+    },
     #[serde(rename_all = "camelCase")]
     Totp {
         secret: B32,
@@ -177,6 +172,16 @@ pub enum Credential {
         #[serde(flatten)]
         content: serde_json::Map<String, serde_json::Value>,
     },
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BasicAuthCredential {
+    pub urls: Vec<Uri>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub username: Option<EditableField>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub password: Option<EditableField>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
