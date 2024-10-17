@@ -6,6 +6,8 @@ use crate::{b64url::B64Url, passkey::Fido2Extensions};
 mod b64url;
 mod passkey;
 
+pub mod protocol;
+
 type Uri = String;
 
 #[derive(Debug, Serialize, Deserialize)]
