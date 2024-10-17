@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::B64Url;
+use crate::b64url::B64Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
