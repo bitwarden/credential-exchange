@@ -128,17 +128,7 @@ enum CredentialType {
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
     BasicAuth(BasicAuthCredential),
-    #[serde(rename_all = "camelCase")]
-    Passkey {
-        credential_id: B64Url,
-        rp_id: String,
-        user_name: String,
-        user_display_name: String,
-        user_handle: B64Url,
-        key: B64Url,
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        fido2_extensions: Vec<Fido2Extensions>, // default []
-    },
+    Passkey(PasskeyCredential),
     #[serde(rename_all = "camelCase")]
     CreditCard {
         number: String,
@@ -182,6 +172,19 @@ pub struct BasicAuthCredential {
     pub username: Option<EditableField>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<EditableField>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PasskeyCredential {
+    pub credential_id: B64Url,
+    pub rp_id: String,
+    pub user_name: String,
+    pub user_display_name: String,
+    pub user_handle: B64Url,
+    pub key: B64Url,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fido2_extensions: Vec<Fido2Extensions>, // default []
 }
 
 #[derive(Debug, Serialize, Deserialize)]
