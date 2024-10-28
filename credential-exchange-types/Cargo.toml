@@ -10,5 +10,5 @@ license-file.workspace = true
 keywords.workspace = true
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
-data-encoding = "2"
+serde = { version = "=1.0.210", features = ["derive"] }
+data-encoding = "=2.6.0"
