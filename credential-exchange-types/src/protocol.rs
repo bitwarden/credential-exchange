@@ -247,7 +247,8 @@ pub enum ErrorCode {
     UserCanceled,
     /// The exporting provider does not support any of the requested [HpkeParameters].
     IncompatibleHpkeParameters,
-    /// The importing provider did not provide a key when it was required by the associated [HpkeParameters].
+    /// The importing provider did not provide a key when it was required by the associated
+    /// [HpkeParameters].
     MissingImporterKey,
     /// The importing provider provided an invalid key for the associated [HpkeParameters].
     IncorrectImporterKeyEncoding,
@@ -255,6 +256,7 @@ pub enum ErrorCode {
     UnsupportedVersion,
     /// An error occurred while parsing the JSON [ExportRequest].
     InvalidJson,
-    /// The exporting provider refused the export due to either policy or inability to validate the exporting provider.
+    /// The exporting provider refused the export due to either policy or inability to validate the
+    /// exporting provider.
     ForbiddenAction,
 }

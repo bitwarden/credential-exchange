@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+pub use self::passkey::{Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys};
 use crate::{
     b64url::{B64Url, B32},
     Uri,
 };
-
-pub use self::passkey::{Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys};
 
 mod passkey;
 
