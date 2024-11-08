@@ -10,7 +10,7 @@ mod passkey;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
-pub struct Header<E> {
+pub struct Header<E = ()> {
     /// The version of the format definition, The current version is 0.
     pub version: u8,
     /// The name of the exporting app as a [relying party identifier](https://www.w3.org/TR/webauthn-3/#relying-party-identifier).
@@ -23,7 +23,7 @@ pub struct Header<E> {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
-pub struct Account<E> {
+pub struct Account<E = ()> {
     /// A unique identifier for the [Account] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT to be displayed to the user.
     pub id: B64Url,
@@ -51,7 +51,7 @@ pub struct Account<E> {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
-pub struct Collection<E> {
+pub struct Collection<E = ()> {
     pub id: B64Url,
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -67,7 +67,7 @@ pub struct Collection<E> {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
-pub struct Item<E> {
+pub struct Item<E = ()> {
     pub id: B64Url,
     pub creation_at: u64,
     pub modified_at: u64,
@@ -102,7 +102,7 @@ pub struct LinkedItem {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "name", rename_all = "kebab-case")]
-pub enum Extension<E> {
+pub enum Extension<E = ()> {
     #[serde(untagged)]
     External(E),
     #[serde(untagged)]
