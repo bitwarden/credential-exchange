@@ -9,8 +9,8 @@ use crate::{
 mod passkey;
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Header {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct Header<E> {
     /// The version of the format definition, The current version is 0.
     pub version: u8,
     /// The name of the exporting app as a [relying party identifier](https://www.w3.org/TR/webauthn-3/#relying-party-identifier).
@@ -18,12 +18,12 @@ pub struct Header {
     /// The UNIX timestamp during at which the export document was completed.
     pub timestamp: u64,
     /// The list of [Account]s being exported.
-    pub accounts: Vec<Account>,
+    pub accounts: Vec<Account<E>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Account {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct Account<E> {
     /// A unique identifier for the [Account] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT to be displayed to the user.
     pub id: B64Url,
@@ -40,18 +40,18 @@ pub struct Account {
     pub icon: Option<String>,
     /// All the collections this account owns. If the user has collections that were shared with
     /// them by another account, it MUST NOT be present in this list.
-    pub collections: Vec<Collection>,
+    pub collections: Vec<Collection<E>>,
     /// All items that this account owns. If the user has access to items that were shared with
     /// them by another account, it MUST NOT be present in this list.
-    pub items: Vec<Item>,
+    pub items: Vec<Item<E>>,
     /// This OPTIONAL field contains all the extensions to the [Account]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<Vec<Extension>>, // default []
+    pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Collection {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct Collection<E> {
     pub id: B64Url,
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -60,14 +60,14 @@ pub struct Collection {
     pub icon: Option<String>,
     pub items: Vec<LinkedItem>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub sub_collections: Option<Vec<Collection>>, // default []
+    pub sub_collections: Option<Vec<Collection<E>>>, // default []
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<Vec<Extension>>, // default []
+    pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Item {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct Item<E> {
     pub id: B64Url,
     pub creation_at: u64,
     pub modified_at: u64,
@@ -80,7 +80,7 @@ pub struct Item {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>, // default []
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<Vec<Extension>>, // default []
+    pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -101,8 +101,12 @@ pub struct LinkedItem {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Extension {
-    pub name: String,
+#[serde(tag = "name", rename_all = "kebab-case")]
+pub enum Extension<E> {
+    #[serde(untagged)]
+    External(E),
+    #[serde(untagged)]
+    Unknown(serde_json::Value),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
