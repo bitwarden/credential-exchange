@@ -83,7 +83,7 @@ pub struct Item<E = ()> {
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum ItemType {
     Login,
@@ -109,7 +109,7 @@ pub enum Extension<E = ()> {
     Unknown(serde_json::Value),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 enum CredentialType {
     BasicAuth,
@@ -188,7 +188,7 @@ pub struct PasskeyCredential {
     pub fido2_extensions: Vec<Fido2Extensions>, // default []
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum OTPHashAlgorithm {
     Sha1,
@@ -208,7 +208,7 @@ pub struct EditableField {
     pub label: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum FieldType {
     String,
