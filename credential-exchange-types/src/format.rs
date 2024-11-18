@@ -185,7 +185,7 @@ pub struct PasskeyCredential {
     pub user_handle: B64Url,
     pub key: B64Url,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub fido2_extensions: Option<Vec<Fido2Extensions>>, // default []
+    pub fido2_extensions: Option<Fido2Extensions>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
