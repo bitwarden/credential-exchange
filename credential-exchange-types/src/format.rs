@@ -52,15 +52,25 @@ pub struct Account<E = ()> {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Collection<E = ()> {
+    /// A unique identifier for the [Collection] which is machine generated and an opaque byte
+    /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
+    /// The display name of the [Collection].
     pub title: String,
+    /// This OPTIONAL field is a subtitle or a description of the [Collection].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtitle: Option<String>,
+    /// This OPTIONAL field is a relative path from this file to the icon file acting as this
+    /// [Collection]’s avatar.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon: Option<String>,
+    /// Enumerates all the [LinkedItem] in this [Collection]. A [LinkedItem] contains the necessary
+    /// data to indicate which [Items][Item] are part of this [Collection].
     pub items: Vec<LinkedItem>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Enumerates any sub-collections if the provider supports recursive organization.
     pub sub_collections: Option<Vec<Collection<E>>>, // default []
+    /// This enumeration contains all the extensions to the [Collection]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
@@ -68,17 +78,34 @@ pub struct Collection<E = ()> {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Item<E = ()> {
+    /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
+    /// with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
+    /// The UNIX timestamp in seconds at which this item was originally created.
     pub creation_at: u64,
+    /// The UNIX timestamp in seconds of the last modification brought to this [Item].
     pub modified_at: u64,
+    /// This member contains a hint to the objects in the credentials array. It SHOULD be a member
+    /// of [ItemType].
     #[serde(rename = "type")]
     pub ty: ItemType,
+    /// This member’s value is the user-defined name or title of the item.
     pub title: String,
+    /// This OPTIONAL member is a subtitle or description for the [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtitle: Option<String>,
+    /// This OPTIONAL member denotes whether the user has marked the [Item] as a favorite to easily
+    /// present in the UI.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub favorite: Option<bool>,
+    /// This member contains a set of [Credentials][Item::credentials] that SHOULD be associated to
+    /// the type.
     pub credentials: Vec<Credential>,
+    /// This OPTIONAL member contains user-defined tags that they may use to organize the item.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>, // default []
+    /// This member contains all the extensions the exporter MAY have to define the [Item] type
+    /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
@@ -86,8 +113,21 @@ pub struct Item<E = ()> {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum ItemType {
+    /// An [Item] that SHOULD contain any of the following [Credential] types:
+    /// - [BasicAuth][BasicAuthCredential]
+    /// - [Passkey][PasskeyCredential]
+    /// - [TOTP][Credential::Totp]
+    /// - CryptographicKey
     Login,
+    /// An Item that SHOULD contain any of the following Credential types:
+    /// - [Note][Credential::Note]
+    /// - File
     Document,
+    /// An Item that SHOULD contain any of the following Credential types:
+    /// - [CreditCard][Credential::CreditCard]
+    /// - Address
+    /// - DriversLicense
+    /// - SocialSecurityNumber
     Identity,
     #[serde(untagged)]
     Unknown(String),
@@ -95,7 +135,12 @@ pub enum ItemType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LinkedItem {
+    /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
+    /// be sent as part of the current exchange.
     pub item: B64Url,
+    /// This OPTIONAL member indicates the [Account’s id][Account::id] the referenced [Item]
+    /// belongs to. If not present, the [Item] belongs to the current [Account] being
+    /// exchanged.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account: Option<B64Url>,
 }
@@ -201,9 +246,23 @@ pub enum OTPHashAlgorithm {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EditableField {
+    /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
+    /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
+    /// This member defines the meaning of the [value][EditableField::value] member and its type.
+    /// This meaning is two-fold:
+    ///
+    /// 1. The string representation of the value if its native type is not a string.
+    /// 2. The UI representation used to display the value.
+    ///
+    /// The value SHOULD be a member of [FieldType] and the
+    /// [importing provider](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#importing-provider)
+    /// SHOULD ignore any unknown values and default to [string][FieldType::String].
     pub field_type: FieldType,
+    /// This member contains the [fieldType][EditableField::field_type] defined by the user.
     pub value: String,
+    /// This member contains a user facing value describing the value stored. This value MAY be
+    /// user defined.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
 }
@@ -211,11 +270,21 @@ pub struct EditableField {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum FieldType {
+    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
     String,
+    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
+    /// user explicitly requests it.
     ConcealedString,
+    /// A UTF-8 encoded string value which follows the format specified in
+    /// [RFC5322][https://www.rfc-editor.org/rfc/rfc5322#section-3.4]. This field SHOULD be
+    /// unconcealed.
     Email,
+    /// A stringified numeric value which is unconcealed.
     Number,
+    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
     Boolean,
+    /// A string value representing a calendar date which follows the format specified in
+    /// [RFC3339][https://www.rfc-editor.org/rfc/rfc3339].
     Date,
     #[serde(untagged)]
     Unknown(String),
