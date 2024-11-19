@@ -276,7 +276,7 @@ pub enum FieldType {
     /// user explicitly requests it.
     ConcealedString,
     /// A UTF-8 encoded string value which follows the format specified in
-    /// [RFC5322][https://www.rfc-editor.org/rfc/rfc5322#section-3.4]. This field SHOULD be
+    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
     /// unconcealed.
     Email,
     /// A stringified numeric value which is unconcealed.
@@ -284,7 +284,7 @@ pub enum FieldType {
     /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
     Boolean,
     /// A string value representing a calendar date which follows the format specified in
-    /// [RFC3339][https://www.rfc-editor.org/rfc/rfc3339].
+    /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
     Date,
     #[serde(untagged)]
     Unknown(String),
