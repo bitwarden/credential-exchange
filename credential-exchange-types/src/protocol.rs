@@ -240,7 +240,6 @@ pub struct ErrorResponse {
     pub error: ErrorCode,
 }
 
-/// An error returned by [`export`].
 #[derive(Debug)]
 pub enum ErrorCode {
     /// Indicates that a user confirmation action was refused, thus cancelling the exchange.
