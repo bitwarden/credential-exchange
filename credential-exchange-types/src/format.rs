@@ -156,7 +156,7 @@ pub enum Extension<E = ()> {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
-enum CredentialType {
+pub enum CredentialType {
     BasicAuth,
     Passkey,
     Totp,
