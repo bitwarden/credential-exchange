@@ -154,22 +154,6 @@ pub enum Extension<E = ()> {
     Unknown(serde_json::Value),
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-enum CredentialType {
-    BasicAuth,
-    Passkey,
-    Totp,
-    CryptographicKey,
-    Note,
-    File,
-    Address,
-    CreditCard,
-    SocialSecurityNumber,
-    #[serde(untagged)]
-    Unknown(String),
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
