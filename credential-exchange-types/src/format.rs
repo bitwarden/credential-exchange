@@ -154,22 +154,6 @@ pub enum Extension<E = ()> {
     Unknown(serde_json::Value),
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
-#[serde(rename_all = "kebab-case")]
-pub enum CredentialType {
-    BasicAuth,
-    Passkey,
-    Totp,
-    CryptographicKey,
-    Note,
-    File,
-    Address,
-    CreditCard,
-    SocialSecurityNumber,
-    #[serde(untagged)]
-    Unknown(String),
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
@@ -208,19 +192,6 @@ pub enum Credential {
         #[serde(flatten)]
         content: serde_json::Map<String, serde_json::Value>,
     },
-}
-
-impl From<Credential> for CredentialType {
-    fn from(value: Credential) -> Self {
-        match value {
-            Credential::BasicAuth(_) => CredentialType::BasicAuth,
-            Credential::Passkey(_) => CredentialType::Passkey,
-            Credential::CreditCard { .. } => CredentialType::CreditCard,
-            Credential::Note { .. } => CredentialType::Note,
-            Credential::Totp { .. } => CredentialType::Totp,
-            Credential::Unknown { ty, .. } => CredentialType::Unknown(ty),
-        }
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
