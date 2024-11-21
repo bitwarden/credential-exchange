@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::b64url::B64Url;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2Extensions {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -17,14 +17,14 @@ pub struct Fido2Extensions {
     pub supplemental_keys: Option<Fido2SupplementalKeys>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2HmacSecret {
     pub alias: String,
     pub hmac_secret: B64Url,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2LargeBlob {
     pub size: u64,
@@ -32,7 +32,7 @@ pub struct Fido2LargeBlob {
     pub data: B64Url,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2SupplementalKeys {
     #[serde(default, skip_serializing_if = "Option::is_none")]

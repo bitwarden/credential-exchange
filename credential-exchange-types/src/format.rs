@@ -170,7 +170,7 @@ enum CredentialType {
     Unknown(String),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
     BasicAuth(BasicAuthCredential),
@@ -210,7 +210,7 @@ pub enum Credential {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BasicAuthCredential {
     pub urls: Vec<Uri>,
@@ -220,7 +220,7 @@ pub struct BasicAuthCredential {
     pub password: Option<EditableField>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PasskeyCredential {
     pub credential_id: B64Url,
@@ -233,7 +233,7 @@ pub struct PasskeyCredential {
     pub fido2_extensions: Option<Fido2Extensions>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum OTPHashAlgorithm {
     Sha1,
@@ -243,7 +243,7 @@ pub enum OTPHashAlgorithm {
     Unknown(String),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EditableField {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
@@ -267,7 +267,7 @@ pub struct EditableField {
     pub label: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum FieldType {
     /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
