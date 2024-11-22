@@ -8,7 +8,7 @@ use crate::{
 
 mod passkey;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Header<E = ()> {
     /// The version of the format definition, The current version is 0.
@@ -21,7 +21,7 @@ pub struct Header<E = ()> {
     pub accounts: Vec<Account<E>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Account<E = ()> {
     /// A unique identifier for the [Account] which is machine generated and an opaque byte
@@ -49,7 +49,7 @@ pub struct Account<E = ()> {
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Collection<E = ()> {
     /// A unique identifier for the [Collection] which is machine generated and an opaque byte
@@ -75,7 +75,7 @@ pub struct Collection<E = ()> {
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
@@ -110,7 +110,7 @@ pub struct Item<E = ()> {
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum ItemType {
     /// An [Item] that SHOULD contain any of the following [Credential] types:
@@ -133,7 +133,7 @@ pub enum ItemType {
     Unknown(String),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LinkedItem {
     /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
     /// be sent as part of the current exchange.
@@ -145,29 +145,13 @@ pub struct LinkedItem {
     pub account: Option<B64Url>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "name", rename_all = "kebab-case")]
 pub enum Extension<E = ()> {
     #[serde(untagged)]
     External(E),
     #[serde(untagged)]
     Unknown(serde_json::Value),
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-enum CredentialType {
-    BasicAuth,
-    Passkey,
-    Totp,
-    CryptographicKey,
-    Note,
-    File,
-    Address,
-    CreditCard,
-    SocialSecurityNumber,
-    #[serde(untagged)]
-    Unknown(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
