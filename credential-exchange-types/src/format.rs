@@ -156,6 +156,7 @@ pub enum Extension<E = ()> {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
+#[allow(clippy::large_enum_variant)]
 pub enum Credential {
     BasicAuth(BasicAuthCredential),
     Passkey(PasskeyCredential),
