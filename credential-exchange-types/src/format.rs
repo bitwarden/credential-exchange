@@ -159,33 +159,12 @@ pub enum Extension<E = ()> {
 pub enum Credential {
     BasicAuth(BasicAuthCredential),
     Passkey(PasskeyCredential),
-    #[serde(rename_all = "camelCase")]
-    CreditCard {
-        number: String,
-        full_name: String,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        card_type: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        verification_number: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        expiry_date: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        valid_from: Option<String>,
-    },
-    #[serde(rename_all = "camelCase")]
-    Note {
-        content: String,
-    },
-    #[serde(rename_all = "camelCase")]
-    Totp {
-        secret: B32,
-        period: u8,
-        digits: u8,
-        username: String,
-        algorithm: OTPHashAlgorithm,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        issuer: Option<String>,
-    },
+    CreditCard(CreditCardCredential),
+    Note(NoteCredential),
+    Totp(TotpCredential),
+    DriversLicense(DriversLicenseCredential),
+    Address(AddressCredential),
+    ItemReference(ItemReferenceCredential),
     #[serde(untagged)]
     Unknown {
         ty: String,
@@ -215,6 +194,115 @@ pub struct PasskeyCredential {
     pub key: B64Url,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fido2_extensions: Option<Fido2Extensions>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreditCardCredential {
+    pub number: String,
+    pub full_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub card_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub verification_number: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiry_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub valid_from: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NoteCredential {
+    pub content: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TotpCredential {
+    pub secret: B32,
+    pub period: u8,
+    pub digits: u8,
+    pub username: String,
+    pub algorithm: OTPHashAlgorithm,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub issuer: Option<String>,
+}
+
+/// A [DriversLicenseCredential] contains information about a person’s driver’s license. The fields
+/// reflect the relevant set of mandatory data fields defined by
+/// [ISO 18013-1](https://www.iso.org/standard/63798.html).
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DriversLicenseCredential {
+    /// The full name of the license holder.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub full_name: Option<EditableField>,
+    /// Day, month, and year on which the license holder was born.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub birth_date: Option<EditableField>,
+    /// The date on which the license was issued.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub issue_date: Option<EditableField>,
+    /// The date on which the license expires.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiry_date: Option<EditableField>,
+    /// The official body or government agency responsible for issuing the license.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub issuing_authority: Option<EditableField>,
+    /// The principal administrative subdivision of the license’s country of origin. Examples of
+    /// administrative subdivisions are states or provinces. This MUST conform to the ISO 3166-2
+    /// format.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub territory: Option<EditableField>,
+    /// The license’s country of origin. This MUST conform to the ISO 3166-1 alpha-2 format.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub country: Option<EditableField>,
+    /// The number assigned by the issuing authority.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub license_number: Option<EditableField>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub license_class: Option<EditableField>,
+}
+
+/// An [AddressCredential] provides information for autofilling address forms.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AddressCredential {
+    /// The address line for the address. This is intentionally flexible to accommodate different
+    /// address formats. Implementers MUST support multi-line addresses for this field, where each
+    /// line is separated by a `\n` line feed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub street_address: Option<EditableField>,
+    /// The ZIP or postal code for the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub postal_code: Option<EditableField>,
+    /// The city for the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub city: Option<EditableField>,
+    /// The province, state, or territory for the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub territory: Option<EditableField>,
+    /// The country for the address. This MUST conform to the
+    /// [ISO 3166-1 alpha-2](https://www.iso.org/iso-3166-country-codes.html) format.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub country: Option<EditableField>,
+    /// The phone number associated with the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tel: Option<EditableField>,
+}
+
+/// An [ItemReferenceCredential] is a pointer to another [Item], denoting that the two items MAY be
+/// logically linked together.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ItemReferenceCredential {
+    /// A [LinkedItem] which references another [Item].
+    ///
+    /// **Note**: The other [item][Item] SHOULD be in the exchange if it is owned by the same
+    /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
+    /// account and shared with the currenly exchanged account.
+    pub reference: LinkedItem,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
