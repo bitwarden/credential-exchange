@@ -47,13 +47,15 @@ pub enum CredentialType {
     BasicAuth,
     Passkey,
     Totp,
-    CryptographicKey,
     Note,
     File,
     Address,
     CreditCard,
-    SocialSecurityNumber,
     DriverLicense,
+    ItemReference,
+    IdentityDocument,
+    Passport,
+    PersonName,
     #[serde(untagged)]
     Unknown(String),
 }
