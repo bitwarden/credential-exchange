@@ -156,16 +156,15 @@ pub enum Extension<E = ()> {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
-#[allow(clippy::large_enum_variant)]
 pub enum Credential {
-    BasicAuth(BasicAuthCredential),
-    Passkey(PasskeyCredential),
-    CreditCard(CreditCardCredential),
-    Note(NoteCredential),
-    Totp(TotpCredential),
-    DriversLicense(DriversLicenseCredential),
-    Address(AddressCredential),
-    ItemReference(ItemReferenceCredential),
+    BasicAuth(Box<BasicAuthCredential>),
+    Passkey(Box<PasskeyCredential>),
+    CreditCard(Box<CreditCardCredential>),
+    Note(Box<NoteCredential>),
+    Totp(Box<TotpCredential>),
+    DriversLicense(Box<DriversLicenseCredential>),
+    Address(Box<AddressCredential>),
+    ItemReference(Box<ItemReferenceCredential>),
     #[serde(untagged)]
     Unknown {
         ty: String,
