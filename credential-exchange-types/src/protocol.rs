@@ -52,8 +52,10 @@ pub enum CredentialType {
     Address,
     CreditCard,
     DriverLicense,
-    SocialSecurityNumber,
     ItemReference,
+    IdentityDocument,
+    Passport,
+    PersonName,
     #[serde(untagged)]
     Unknown(String),
 }
