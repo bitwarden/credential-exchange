@@ -114,20 +114,22 @@ pub struct Item<E = ()> {
 #[serde(rename_all = "kebab-case")]
 pub enum ItemType {
     /// An [Item] that SHOULD contain any of the following [Credential] types:
-    /// - [BasicAuth][BasicAuthCredential]
-    /// - [Passkey][PasskeyCredential]
-    /// - [TOTP][Credential::Totp]
-    /// - CryptographicKey
+    /// - [BasicAuthCredential]
+    /// - [PasskeyCredential]
+    /// - [TotpCredential]
+    /// - [SshKeyCredential]
     Login,
     /// An Item that SHOULD contain any of the following Credential types:
-    /// - [Note][Credential::Note]
-    /// - File
+    /// - [NoteCredential]
+    /// - [FileCredential]
     Document,
     /// An Item that SHOULD contain any of the following Credential types:
-    /// - [CreditCard][Credential::CreditCard]
-    /// - Address
-    /// - DriversLicense
-    /// - SocialSecurityNumber
+    /// - [PersonNameCredential]
+    /// - [CreditCardCredential]
+    /// - [AddressCredential]
+    /// - [DriversLicenseCredential]
+    /// - [IdentityDocumentCredential]
+    /// - [PassportCredential]
     Identity,
     #[serde(untagged)]
     Unknown(String),
