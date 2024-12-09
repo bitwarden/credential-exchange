@@ -91,10 +91,18 @@ pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
     /// with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
-    /// The UNIX timestamp in seconds at which this item was originally created.
-    pub creation_at: u64,
-    /// The UNIX timestamp in seconds of the last modification brought to this [Item].
-    pub modified_at: u64,
+    /// The OPTIONAL member contains the UNIX timestamp in seconds at which this item was
+    /// originally created. If this member is not set, but the importing provider requires this
+    /// member in their proprietary data model, the importer SHOULD use the current timestamp
+    /// at the time the provider encounters this [Item].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub creation_at: Option<u64>,
+    /// This OPTIONAL member contains the UNIX timestamp in seconds of the last modification
+    /// brought to this [Item]. If this member is not set, but the importing provider requires
+    /// this member in their proprietary data model, the importer SHOULD use the current
+    /// timestamp at the time the provider encounters this [Item].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<u64>,
     /// This member contains a hint to the objects in the credentials array. It SHOULD be a member
     /// of [ItemType].
     #[serde(rename = "type")]
