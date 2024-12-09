@@ -9,6 +9,7 @@ use crate::B64Url;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NoteCredential {
+    /// This member is a user-defined value encoded as a UTF-8 string.
     pub content: String,
 }
 
