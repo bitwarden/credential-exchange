@@ -96,7 +96,7 @@ pub struct PasskeyCredential {
 
 /// Note: Enrollment in TOTP credentials historically has been quite non-standardized but typically
 /// authenticator and RP implementations have more or less aligned with the early Google
-/// Authenticator implementation spelled out at https://github.com/google/google-authenticator/wiki/Key-Uri-Format.
+/// Authenticator implementation spelled out at <https://github.com/google/google-authenticator/wiki/Key-Uri-Format>.
 /// This specification was designed with that in mind.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
