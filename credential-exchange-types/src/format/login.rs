@@ -35,14 +35,14 @@ pub struct BasicAuthCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PasskeyCredential {
-    /// This member contains a [WebAuthn](https://www.w3.org/TR/webauthn-3/#)
+    /// This member contains a [WebAuthn](https://www.w3.org/TR/webauthn-3)
     /// [Credential ID](https://www.w3.org/TR/webauthn-3/#credential-id) which uniquely identifies
     /// the passkey instance. The decoded raw value MUST be equal to the value given in
     /// [PublicKeyCredential](https://www.w3.org/TR/webauthn-3/#iface-pkcredential)'s
     /// [rawId](https://www.w3.org/TR/webauthn-3/#dom-publickeycredential-rawid) field during
     /// [registration](https://www.w3.org/TR/webauthn-3/#registration).
     pub credential_id: B64Url,
-    /// This member specifies the [WebAuthn](https://www.w3.org/TR/webauthn-3/#)
+    /// This member specifies the [WebAuthn](https://www.w3.org/TR/webauthn-3)
     /// [Relying Party Identifier](https://www.w3.org/TR/webauthn-3/#relying-party-identifier) to
     /// which the passkey instance is tied to. The value MUST be equal to the
     /// [RP ID](https://www.w3.org/TR/webauthn-3/#rp-id) that was defined by the authenticator
