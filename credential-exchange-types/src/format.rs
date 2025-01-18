@@ -7,12 +7,12 @@ pub use self::{
         IdentityDocumentCredential, PassportCredential, PersonNameCredential,
     },
     login::{
-        BasicAuthCredential, OTPHashAlgorithm, PasskeyCredential, SshKeyCredential, TotpCredential,
+        ApiKeyCredential, BasicAuthCredential, OTPHashAlgorithm, PasskeyCredential,
+        SshKeyCredential, TotpCredential,
     },
     passkey::{Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys},
 };
 use crate::b64url::B64Url;
-use crate::format::login::ApiKeyCredential;
 
 mod document;
 mod identity;
