@@ -12,6 +12,7 @@ pub use self::{
     passkey::{Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys},
 };
 use crate::b64url::B64Url;
+use crate::format::login::ApiKeyCredential;
 
 mod document;
 mod identity;
@@ -136,6 +137,7 @@ pub enum ItemType {
     /// - [PasskeyCredential]
     /// - [TotpCredential]
     /// - [SshKeyCredential]
+    /// - [ApiKeyCredential]
     Login,
     /// An Item that SHOULD contain any of the following Credential types:
     /// - [NoteCredential]
@@ -190,6 +192,7 @@ pub enum Credential {
     IdentityDocument(Box<IdentityDocumentCredential>),
     Passport(Box<PassportCredential>),
     PersonName(Box<PersonNameCredential>),
+    ApiKey(Box<ApiKeyCredential>),
     #[serde(untagged)]
     Unknown {
         ty: String,
