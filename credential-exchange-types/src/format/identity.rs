@@ -4,9 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::format::EditableField;
-
-use super::EditableFieldString;
+use super::{EditableField, EditableFieldString};
 
 /// A [PersonNameCredential] represents a person’s name as fields derived from Unicode Locale Data
 /// Markup Language Part 8: Person Names.
