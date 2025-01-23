@@ -4,13 +4,12 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::EditableFieldString;
 use crate::{
     b64url::B32,
     format::{EditableField, Fido2Extensions},
     B64Url, Uri,
 };
-
-use super::EditableFieldString;
 
 /// A [BasicAuthCredential] contains a username/password login credential.
 /// Can either represent a [Basic access authentication](https://www.rfc-editor.org/rfc/rfc7617)
