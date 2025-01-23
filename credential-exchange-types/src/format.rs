@@ -219,7 +219,8 @@ pub struct ItemReferenceCredential {
 pub struct EditableField {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
-    pub id: B64Url,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<B64Url>,
     /// This member defines the meaning of the [value][EditableField::value] member and its type.
     /// This meaning is two-fold:
     ///
@@ -229,13 +230,31 @@ pub struct EditableField {
     /// The value SHOULD be a member of [FieldType] and the
     /// [importing provider](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#importing-provider)
     /// SHOULD ignore any unknown values and default to [string][FieldType::String].
-    pub field_type: FieldType,
+    /// pub field_type: FieldType,
     /// This member contains the [fieldType][EditableField::field_type] defined by the user.
-    pub value: String,
+    #[serde(flatten)]
+    pub value: EditableFieldValue,
     /// This member contains a user facing value describing the value stored. This value MAY be
     /// user defined.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case", tag = "field_type", content = "value")]
+pub enum EditableFieldValue {
+    String(String),
+    ConcealedString(String),
+    Email(String),
+    Number(String),
+    #[serde(
+        serialize_with = "serialize_bool",
+        deserialize_with = "deserialize_bool"
+    )]
+    Boolean(bool),
+    Date(String),
+    #[serde(untagged)]
+    Unknown(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -259,4 +278,74 @@ pub enum FieldType {
     Date,
     #[serde(untagged)]
     Unknown(String),
+}
+
+fn serialize_bool<S>(value: &bool, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(if *value { "true" } else { "false" })
+}
+
+fn deserialize_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = String::deserialize(deserializer)?;
+    match value.as_str() {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        _ => Err(serde::de::Error::custom("expected 'true' or 'false'")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_serialize_editable_field_string() {
+        let field = EditableField {
+            id: None,
+            value: EditableFieldValue::String("value".to_string()),
+            label: Some("label".to_string()),
+        };
+        let json = json!({
+            "value": "value",
+            "field_type": "string",
+            "label": "label",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_editable_field_concealed_string() {
+        let field = EditableField {
+            id: None,
+            value: EditableFieldValue::ConcealedString("value".to_string()),
+            label: Some("label".to_string()),
+        };
+        let json = json!({
+            "field_type": "concealed-string",
+            "value": "value",
+            "label": "label",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_editable_field_boolean() {
+        let field = EditableField {
+            id: None,
+            value: EditableFieldValue::Boolean(true),
+            label: Some("label".to_string()),
+        };
+        let json = json!({
+            "field_type": "boolean",
+            "value": "true",
+            "label": "label",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
 }
