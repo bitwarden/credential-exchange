@@ -32,15 +32,24 @@ where
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("editable_field", 4)?;
+        let len = 2 + self.id.is_some() as usize + self.label.is_some() as usize;
+        let mut state = serializer.serialize_struct("editable_field", len)?;
+
         if let Some(ref id) = self.id {
             state.serialize_field("id", id)?;
+        } else {
+            state.skip_field("id")?;
         }
-        state.serialize_field("value", &self.value)?;
+
         state.serialize_field("field_type", &self.value.field_type())?;
+        state.serialize_field("value", &self.value)?;
+
         if let Some(ref label) = self.label {
             state.serialize_field("label", label)?;
+        } else {
+            state.skip_field("label")?;
         }
+
         state.end()
     }
 }
@@ -123,8 +132,8 @@ fn deserialize_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let value = String::deserialize(deserializer)?;
-    match value.as_str() {
+    let value = <&str>::deserialize(deserializer)?;
+    match value.trim().to_lowercase().as_str() {
         "true" => Ok(true),
         "false" => Ok(false),
         _ => Err(serde::de::Error::custom("expected 'true' or 'false'")),
