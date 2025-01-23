@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 use crate::B64Url;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EditableField<T: EditableFieldType + Serialize + DeserializeOwned> {
+pub struct EditableField<T: EditableFieldType> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: Option<B64Url>,
@@ -26,7 +26,7 @@ pub struct EditableField<T: EditableFieldType + Serialize + DeserializeOwned> {
 
 impl<T> Serialize for EditableField<T>
 where
-    T: EditableFieldType + Serialize + DeserializeOwned,
+    T: EditableFieldType + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -47,7 +47,7 @@ where
 
 impl<'de, T> Deserialize<'de> for EditableField<T>
 where
-    T: EditableFieldType + Serialize + DeserializeOwned,
+    T: EditableFieldType + DeserializeOwned,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -77,7 +77,7 @@ where
     }
 }
 
-pub trait EditableFieldType<T: Serialize + DeserializeOwned = Self> {
+pub trait EditableFieldType {
     fn field_type(&self) -> &str;
 }
 
