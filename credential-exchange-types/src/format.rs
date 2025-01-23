@@ -243,39 +243,36 @@ pub struct EditableField {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case", tag = "field_type", content = "value")]
 pub enum EditableFieldValue {
+    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
     String(String),
+    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
+    /// user explicitly requests it.
     ConcealedString(String),
+    /// A UTF-8 encoded string value which follows the format specified in
+    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
+    /// unconcealed.
     Email(String),
+    /// A stringified numeric value which is unconcealed.
     Number(String),
+    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
     #[serde(
         serialize_with = "serialize_bool",
         deserialize_with = "deserialize_bool"
     )]
     Boolean(bool),
-    Date(String),
-    #[serde(untagged)]
-    Unknown(String),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-pub enum FieldType {
-    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
-    String,
-    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
-    /// user explicitly requests it.
-    ConcealedString,
-    /// A UTF-8 encoded string value which follows the format specified in
-    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
-    /// unconcealed.
-    Email,
-    /// A stringified numeric value which is unconcealed.
-    Number,
-    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
-    Boolean,
     /// A string value representing a calendar date which follows the format specified in
     /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
-    Date,
+    Date(String),
+    /// A string value representing a calendar date which follows the date-fullyear "-" date-month
+    /// pattern as established in [[!RFC3339#appendix-A]]. This is equivalent to the YYYY-MM format
+    /// specified in [ISO-8601].
+    YearMonth(String),
+    /// A string value representing a value that SHOULD be a member of WIFINetworkSecurityType.
+    WifiNetworkSecurityType(String),
+    /// A string value which MUST follow the [ISO3166-1] alpha-2 format.
+    CountryCode(String),
+    /// A string which MUST follow the [ISO3166-2] format.
+    SubdivisionCode(String),
     #[serde(untagged)]
     Unknown(String),
 }
@@ -301,8 +298,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use serde_json::json;
+
+    use super::*;
 
     #[test]
     fn test_serialize_editable_field_string() {
