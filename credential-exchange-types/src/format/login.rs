@@ -171,3 +171,40 @@ pub struct SshKeyCredential {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     key_generation_source: Option<EditableField>,
 }
+
+/// A [ApiKeyCredential] contains information to interact with an Application's Programming
+/// Interface (API).
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ApiKeyCredential {
+    /// This REQUIRED member denotes the key to communicate with the API. Its internal fieldType
+    /// SHOULD be of type ConcealedString.
+    key: EditableField,
+
+    /// This OPTIONAL member denotes the username associated with the key and its internal fieldType
+    /// SHOULD be of type string
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    username: Option<EditableField>,
+
+    /// This OPTIONAL member denotes the type of the API key, such as bearer token or
+    /// JSON Web Token. It is flexible to allow any type and not restrict it to a set list of types.
+    /// Its internal fieldType SHOULD be of type string.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    key_type: Option<EditableField>,
+
+    /// This OPTIONAL member denotes the url the API key is used with and SHOULD conform to the
+    /// [URL Standard](https://url.spec.whatwg.org/). Its internal fieldType SHOULD be of type
+    /// string.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url: Option<EditableField>,
+
+    /// This OPTIONAL member denotes the date the API key is valid from and its internal fieldType
+    /// SHOULD be of type date.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    valid_from: Option<EditableField>,
+
+    /// This OPTIONAL member denotes the date on which the API key expires
+    /// and its internal fieldType SHOULD be of type date.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    expiry_date: Option<EditableField>,
+}
