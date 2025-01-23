@@ -181,14 +181,14 @@ pub struct ApiKeyCredential {
     /// SHOULD be of type ConcealedString.
     key: EditableField,
 
-    /// This OPTIONAL member denotes the username associated with the key and its internal fieldType
-    /// SHOULD be of type string
+    /// This OPTIONAL member denotes the username associated with the key and its internal
+    /// fieldType SHOULD be of type string
     #[serde(default, skip_serializing_if = "Option::is_none")]
     username: Option<EditableField>,
 
     /// This OPTIONAL member denotes the type of the API key, such as bearer token or
-    /// JSON Web Token. It is flexible to allow any type and not restrict it to a set list of types.
-    /// Its internal fieldType SHOULD be of type string.
+    /// JSON Web Token. It is flexible to allow any type and not restrict it to a set list of
+    /// types. Its internal fieldType SHOULD be of type string.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     key_type: Option<EditableField>,
 
