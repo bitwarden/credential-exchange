@@ -2,7 +2,7 @@ use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 
 use crate::B64Url;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableField<T: EditableFieldType + Serialize + DeserializeOwned> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -61,7 +61,14 @@ where
             label: Option<String>,
         }
 
-        let helper = EditableFieldHelper::deserialize(deserializer)?;
+        let helper: EditableFieldHelper<T> = EditableFieldHelper::deserialize(deserializer)?;
+
+        if helper.field_type != helper.value.field_type() {
+            return Err(serde::de::Error::custom(
+                "field_type does not match value type",
+            ));
+        }
+
         Ok(Self {
             id: helper.id,
             value: helper.value,
@@ -74,7 +81,7 @@ pub trait EditableFieldType<T: Serialize + DeserializeOwned = Self> {
     fn field_type(&self) -> &str;
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EditableFieldString(String);
 impl EditableFieldType for EditableFieldString {
     fn field_type(&self) -> &str {
@@ -82,7 +89,7 @@ impl EditableFieldType for EditableFieldString {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EditableFieldConcealedString(String);
 impl EditableFieldType for EditableFieldConcealedString {
     fn field_type(&self) -> &str {
@@ -146,7 +153,26 @@ mod tests {
     }
 
     #[test]
-    fn test_serialize_editable_field_concealed_string() {
+    fn test_deserialize_field_string() {
+        let json = json!({
+            "value": "value",
+            "field_type": "string",
+            "label": "label",
+        });
+        let field: EditableField<EditableFieldString> = serde_json::from_value(json).unwrap();
+
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldString("value".to_string()),
+                label: Some("label".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn test_serialize_field_concealed_string() {
         let field = EditableField {
             id: None,
             value: EditableFieldConcealedString("value".to_string()),
@@ -161,7 +187,40 @@ mod tests {
     }
 
     #[test]
-    fn test_serialize_editable_field_boolean() {
+    fn test_deserialize_field_wrong_type() {
+        let json = json!({
+            "value": "value",
+            "field_type": "string",
+            "label": "label",
+        });
+        let field: Result<EditableField<EditableFieldConcealedString>, _> =
+            serde_json::from_value(json);
+
+        assert!(field.is_err());
+    }
+
+    #[test]
+    fn test_deserialize_field_concealed_string() {
+        let json = json!({
+            "value": "value",
+            "field_type": "concealed-string",
+            "label": "label",
+        });
+        let field: EditableField<EditableFieldConcealedString> =
+            serde_json::from_value(json).unwrap();
+
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldConcealedString("value".to_string()),
+                label: Some("label".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn test_serialize_field_boolean() {
         let field = EditableField {
             id: None,
             value: EditableFieldBoolean(true),
