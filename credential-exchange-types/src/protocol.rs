@@ -56,6 +56,8 @@ pub enum CredentialType {
     IdentityDocument,
     Passport,
     PersonName,
+    SshKey,
+    ApiKey,
     #[serde(untagged)]
     Unknown(String),
 }
