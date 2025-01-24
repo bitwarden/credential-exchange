@@ -4,7 +4,10 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{EditableField, EditableFieldString};
+use super::{
+    EditableField, EditableFieldConcealedString, EditableFieldCountryCode, EditableFieldString,
+    EditableFieldSubdivisionCode, EditableFieldYearMonth,
+};
 
 /// A [PersonNameCredential] represents a person’s name as fields derived from Unicode Locale Data
 /// Markup Language Part 8: Person Names.
@@ -51,16 +54,20 @@ pub struct PersonNameCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreditCardCredential {
-    pub number: String,
-    pub full_name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub card_type: Option<String>,
+    pub number: Option<EditableField<EditableFieldConcealedString>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub verification_number: Option<String>,
+    pub full_name: Option<EditableField<EditableFieldString>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expiry_date: Option<String>,
+    pub card_type: Option<EditableField<EditableFieldString>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub valid_from: Option<String>,
+    pub verification_number: Option<EditableField<EditableFieldConcealedString>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pin: Option<EditableField<EditableFieldConcealedString>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiry_date: Option<EditableField<EditableFieldYearMonth>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub valid_from: Option<EditableField<EditableFieldYearMonth>>,
 }
 
 /// An [AddressCredential] provides information for autofilling address forms.
@@ -80,11 +87,11 @@ pub struct AddressCredential {
     pub city: Option<EditableField<EditableFieldString>>,
     /// The province, state, or territory for the address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub territory: Option<EditableField<EditableFieldString>>,
+    pub territory: Option<EditableField<EditableFieldSubdivisionCode>>,
     /// The country for the address. This MUST conform to the
     /// [ISO 3166-1 alpha-2](https://www.iso.org/iso-3166-country-codes.html) format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub country: Option<EditableField<EditableFieldString>>,
+    pub country: Option<EditableField<EditableFieldCountryCode>>,
     /// The phone number associated with the address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tel: Option<EditableField<EditableFieldString>>,
@@ -115,10 +122,10 @@ pub struct DriversLicenseCredential {
     /// administrative subdivisions are states or provinces. This MUST conform to the ISO 3166-2
     /// format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub territory: Option<EditableField<EditableFieldString>>,
+    pub territory: Option<EditableField<EditableFieldSubdivisionCode>>,
     /// The license’s country of origin. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub country: Option<EditableField<EditableFieldString>>,
+    pub country: Option<EditableField<EditableFieldCountryCode>>,
     /// The number assigned by the issuing authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub license_number: Option<EditableField<EditableFieldString>>,

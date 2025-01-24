@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::EditableFieldString;
+use super::{EditableFieldConcealedString, EditableFieldDate, EditableFieldString};
 use crate::{
     b64url::B32,
     format::{EditableField, Fido2Extensions},
@@ -24,7 +24,7 @@ pub struct BasicAuthCredential {
     pub username: Option<EditableField<EditableFieldString>>,
     /// The password associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub password: Option<EditableField<EditableFieldString>>,
+    pub password: Option<EditableField<EditableFieldConcealedString>>,
 }
 
 /// Passkey
@@ -161,11 +161,11 @@ pub struct SshKeyCredential {
     /// This OPTIONAL member indicates when the key was created. When present, its internal
     /// fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    creation_date: Option<EditableField<EditableFieldString>>,
+    creation_date: Option<EditableField<EditableFieldDate>>,
     /// This OPTIONAL member indicates when the key will expire, if applicable. When present, its
     /// internal fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiration_date: Option<EditableField<EditableFieldString>>,
+    expiration_date: Option<EditableField<EditableFieldDate>>,
     /// This OPTIONAL member indicates where the key was originally generated. E.g.,
     /// `https://github.com/settings/ssh/new` for GitHub. When present, its internal fieldType
     /// SHOULD be of type string.
@@ -180,7 +180,7 @@ pub struct SshKeyCredential {
 pub struct ApiKeyCredential {
     /// This REQUIRED member denotes the key to communicate with the API. Its internal fieldType
     /// SHOULD be of type ConcealedString.
-    key: EditableField<EditableFieldString>,
+    key: EditableField<EditableFieldConcealedString>,
 
     /// This OPTIONAL member denotes the username associated with the key and its internal
     /// fieldType SHOULD be of type string
@@ -202,10 +202,10 @@ pub struct ApiKeyCredential {
     /// This OPTIONAL member denotes the date the API key is valid from and its internal fieldType
     /// SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    valid_from: Option<EditableField<EditableFieldString>>,
+    valid_from: Option<EditableField<EditableFieldDate>>,
 
     /// This OPTIONAL member denotes the date on which the API key expires
     /// and its internal fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiry_date: Option<EditableField<EditableFieldString>>,
+    expiry_date: Option<EditableField<EditableFieldDate>>,
 }

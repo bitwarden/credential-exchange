@@ -4,13 +4,14 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::{EditableField, EditableFieldString};
 use crate::B64Url;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NoteCredential {
     /// This member is a user-defined value encoded as a UTF-8 string.
-    pub content: String,
+    pub content: EditableField<EditableFieldString>,
 }
 
 /// A [FileCredential] acts as a placeholder to an arbitrary binary file holding its associated

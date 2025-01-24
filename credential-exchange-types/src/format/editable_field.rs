@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 use crate::B64Url;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EditableField<T: EditableFieldType> {
+pub struct EditableField<T> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: Option<B64Url>,
@@ -22,6 +22,28 @@ pub struct EditableField<T: EditableFieldType> {
     /// This member contains a user facing value describing the value stored. This value MAY be
     /// user defined.
     pub label: Option<String>,
+}
+
+/// Internal enum to represent the different field types.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+enum FieldType {
+    String,
+    ConcealedString,
+    Boolean,
+    Date,
+    YearMonth,
+    SubdivisionCode,
+    CountryCode,
+
+    #[serde(other)]
+    Unknown,
+}
+
+/// A trait to associate the field structs with their `field_type` tag.
+trait EditableFieldType {
+    /// The `field_type` value associated with the type
+    fn field_type(&self) -> FieldType;
 }
 
 impl<T> Serialize for EditableField<T>
@@ -66,7 +88,7 @@ where
         struct EditableFieldHelper<T> {
             id: Option<B64Url>,
             value: T,
-            field_type: String,
+            field_type: FieldType,
             label: Option<String>,
         }
 
@@ -86,23 +108,19 @@ where
     }
 }
 
-pub trait EditableFieldType {
-    fn field_type(&self) -> &str;
-}
-
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EditableFieldString(String);
 impl EditableFieldType for EditableFieldString {
-    fn field_type(&self) -> &str {
-        "string"
+    fn field_type(&self) -> FieldType {
+        FieldType::String
     }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EditableFieldConcealedString(String);
 impl EditableFieldType for EditableFieldConcealedString {
-    fn field_type(&self) -> &str {
-        "concealed-string"
+    fn field_type(&self) -> FieldType {
+        FieldType::ConcealedString
     }
 }
 
@@ -116,8 +134,40 @@ pub struct EditableFieldBoolean(
     bool,
 );
 impl EditableFieldType for EditableFieldBoolean {
-    fn field_type(&self) -> &str {
-        "boolean"
+    fn field_type(&self) -> FieldType {
+        FieldType::Boolean
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EditableFieldDate(String);
+impl EditableFieldType for EditableFieldDate {
+    fn field_type(&self) -> FieldType {
+        FieldType::Date
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EditableFieldYearMonth(String);
+impl EditableFieldType for EditableFieldYearMonth {
+    fn field_type(&self) -> FieldType {
+        FieldType::YearMonth
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EditableFieldSubdivisionCode(String);
+impl EditableFieldType for EditableFieldSubdivisionCode {
+    fn field_type(&self) -> FieldType {
+        FieldType::SubdivisionCode
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EditableFieldCountryCode(String);
+impl EditableFieldType for EditableFieldCountryCode {
+    fn field_type(&self) -> FieldType {
+        FieldType::CountryCode
     }
 }
 
@@ -200,6 +250,18 @@ mod tests {
         let json = json!({
             "value": "value",
             "field_type": "string",
+            "label": "label",
+        });
+        let field: Result<EditableField<EditableFieldConcealedString>, _> =
+            serde_json::from_value(json);
+
+        assert!(field.is_err());
+    }
+
+    #[test]
+    fn test_deserialize_field_missing_type() {
+        let json = json!({
+            "value": "value",
             "label": "label",
         });
         let field: Result<EditableField<EditableFieldConcealedString>, _> =
