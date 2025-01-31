@@ -23,14 +23,26 @@ mod passkey;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Header<E = ()> {
-    /// The version of the format definition, The current version is 0.
-    pub version: u8,
+    /// The version of the format definition contained within this exchange payload. The version
+    /// MUST correspond to a published level of the CXF standard.
+    pub version: Version,
     /// The name of the exporting app as a [relying party identifier](https://www.w3.org/TR/webauthn-3/#relying-party-identifier).
     pub exporter: String,
     /// The UNIX timestamp during at which the export document was completed.
     pub timestamp: u64,
     /// The list of [Account]s being exported.
     pub accounts: Vec<Account<E>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Version {
+    /// The major version of the payload's format. Changes to this version indicates an
+    /// incompatible breaking change with previous versions.
+    pub major: u8,
+    /// The minor version of the payload's format. Changes to this version indicates new
+    /// functionality which is purely additive and that is compatible with previous versions under
+    /// the same [Version::major].
+    pub minor: u8,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
