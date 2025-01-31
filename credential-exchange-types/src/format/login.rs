@@ -208,3 +208,17 @@ pub struct ApiKeyCredential {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     expiry_date: Option<EditableField>,
 }
+
+/// A [GeneratedPasswordCredential] type represents a credential consisting of a machine-generated
+/// password.
+///
+/// Note: A `GeneratedPassword` credential is used when a password is generated independently of
+/// creating a new [BasicAuthCredential]. Some providers may offer a dedicated password generator
+/// feature. In such cases, the provider may create [GeneratedPasswordCredential] instances as
+/// deemed appropriate for the use of this feature.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneratedPasswordCredential {
+    /// The machine-generated password.
+    password: String,
+}

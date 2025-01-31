@@ -1,3 +1,4 @@
+use login::GeneratedPasswordCredential;
 use serde::{Deserialize, Serialize};
 
 pub use self::{
@@ -193,6 +194,7 @@ pub enum Credential {
     Passport(Box<PassportCredential>),
     PersonName(Box<PersonNameCredential>),
     ApiKey(Box<ApiKeyCredential>),
+    GeneratedPassword(Box<GeneratedPasswordCredential>),
     #[serde(untagged)]
     Unknown {
         ty: String,
