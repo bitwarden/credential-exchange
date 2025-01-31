@@ -212,7 +212,7 @@ pub struct ApiKeyCredential {
 /// A [GeneratedPasswordCredential] type represents a credential consisting of a machine-generated
 /// password.
 ///
-/// Note: A `GeneratedPassword` credential is used when a password is generated independently of
+/// Note: A [GeneratedPasswordCredential] is used when a password is generated independently of
 /// creating a new [BasicAuthCredential]. Some providers may offer a dedicated password generator
 /// feature. In such cases, the provider may create [GeneratedPasswordCredential] instances as
 /// deemed appropriate for the use of this feature.

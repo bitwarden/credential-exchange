@@ -196,21 +196,21 @@ pub enum Extension<E = ()> {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Credential {
-    BasicAuth(Box<BasicAuthCredential>),
-    Passkey(Box<PasskeyCredential>),
-    CreditCard(Box<CreditCardCredential>),
-    Note(Box<NoteCredential>),
-    Totp(Box<TotpCredential>),
-    DriversLicense(Box<DriversLicenseCredential>),
     Address(Box<AddressCredential>),
-    ItemReference(Box<ItemReferenceCredential>),
+    ApiKey(Box<ApiKeyCredential>),
+    BasicAuth(Box<BasicAuthCredential>),
+    CreditCard(Box<CreditCardCredential>),
+    DriversLicense(Box<DriversLicenseCredential>),
     File(Box<FileCredential>),
-    SshKey(Box<SshKeyCredential>),
+    GeneratedPassword(Box<GeneratedPasswordCredential>),
     IdentityDocument(Box<IdentityDocumentCredential>),
+    ItemReference(Box<ItemReferenceCredential>),
+    Note(Box<NoteCredential>),
+    Passkey(Box<PasskeyCredential>),
     Passport(Box<PassportCredential>),
     PersonName(Box<PersonNameCredential>),
-    ApiKey(Box<ApiKeyCredential>),
-    GeneratedPassword(Box<GeneratedPasswordCredential>),
+    SshKey(Box<SshKeyCredential>),
+    Totp(Box<TotpCredential>),
     #[serde(untagged)]
     Unknown {
         ty: String,
@@ -304,6 +304,7 @@ pub struct AndroidAppIdCredential {
     /// The fingerprint of the public certificate used to sign the android application. This member
     /// is OPTIONAL but is highly recommended to be stored for validation during an autofill
     /// operation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub certificate: Option<AndroidAppCertificateFingerprint>,
     /// The [human-palatable](https://www.w3.org/TR/webauthn-3/#human-palatability) name for the
     /// application, this can be fetched from the android system when associating the app to an
