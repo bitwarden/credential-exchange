@@ -8,10 +8,11 @@ pub use self::{
         IdentityDocumentCredential, PassportCredential, PersonNameCredential,
     },
     login::{
-        ApiKeyCredential, BasicAuthCredential, OTPHashAlgorithm, PasskeyCredential,
-        SshKeyCredential, TotpCredential,
+        ApiKeyCredential, BasicAuthCredential, OTPHashAlgorithm, SshKeyCredential, TotpCredential,
     },
-    passkey::{Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys},
+    passkey::{
+        Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys, PasskeyCredential,
+    },
 };
 use crate::{b64url::B64Url, Uri};
 
