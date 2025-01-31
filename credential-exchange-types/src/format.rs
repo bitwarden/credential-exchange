@@ -233,7 +233,7 @@ pub struct ItemReferenceCredential {
 pub struct EditableField {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
-    pub id: B64Url,
+    pub id: Option<B64Url>,
     /// This member defines the meaning of the [value][EditableField::value] member and its type.
     /// This meaning is two-fold:
     ///
