@@ -120,8 +120,12 @@ pub struct TotpCredential {
     /// 6, although the [relying party](https://www.w3.org/TR/webauthn-3/#relying-party) MAY
     /// customize this to a different value.
     pub digits: u8,
-    /// The username of the account this [TotpCredential] is used for.
-    pub username: String,
+    /// This OPTIONAL member contains the username of the account this [TotpCredential] is used
+    /// for.
+    ///
+    /// Note: While this member is optional, it is strongly recommended to be included if
+    /// available.
+    pub username: Option<String>,
     /// The algorithm used to generate the OTP hashes. This value SHOULD be a member of
     /// [OTPHashAlgorithm] but importers MUST ignore [TotpCredential] entries with unknown
     /// algorithm values.

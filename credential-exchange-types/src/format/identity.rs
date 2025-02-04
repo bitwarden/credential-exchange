@@ -36,16 +36,18 @@ pub struct AddressCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreditCardCredential {
-    pub number: String,
-    pub full_name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub card_type: Option<String>,
+    pub number: Option<EditableField>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub verification_number: Option<String>,
+    pub full_name: Option<EditableField>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expiry_date: Option<String>,
+    pub card_type: Option<EditableField>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub valid_from: Option<String>,
+    pub verification_number: Option<EditableField>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiry_date: Option<EditableField>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub valid_from: Option<EditableField>,
 }
 
 /// A [DriversLicenseCredential] contains information about a person’s driver’s license. The fields
