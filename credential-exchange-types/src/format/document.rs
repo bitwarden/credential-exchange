@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::B64Url;
+use crate::{format::EditableField, B64Url};
 
 /// A [FileCredential] acts as a placeholder to an arbitrary binary file holding its associated
 /// metadata. When an importing provider encounters a file credential, they MAY request the file
