@@ -4,14 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::B64Url;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NoteCredential {
-    /// This member is a user-defined value encoded as a UTF-8 string.
-    pub content: String,
-}
+use crate::{format::EditableField, B64Url};
 
 /// A [FileCredential] acts as a placeholder to an arbitrary binary file holding its associated
 /// metadata. When an importing provider encounters a file credential, they MAY request the file
@@ -29,4 +22,11 @@ pub struct FileCredential {
     /// The SHA256 hash of the decrypted file. This hash MUST be used by the importing provider
     /// when the file is decrypted to ensure that it has not been corrupted.
     pub integration_hash: B64Url,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NoteCredential {
+    /// This member is a user-defined value encoded as a UTF-8 string.
+    pub content: EditableField,
 }
