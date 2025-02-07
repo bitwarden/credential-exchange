@@ -118,10 +118,6 @@ pub struct Item<E = ()> {
     /// timestamp at the time the provider encounters this [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<u64>,
-    /// This member contains a hint to the objects in the credentials array. It SHOULD be a member
-    /// of [ItemType].
-    #[serde(rename = "type")]
-    pub ty: ItemType,
     /// This member’s value is the user-defined name or title of the item.
     pub title: String,
     /// This OPTIONAL member is a subtitle or description for the [Item].
@@ -145,32 +141,6 @@ pub struct Item<E = ()> {
     /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-pub enum ItemType {
-    /// An [Item] that SHOULD contain any of the following [Credential] types:
-    /// - [BasicAuthCredential]
-    /// - [PasskeyCredential]
-    /// - [TotpCredential]
-    /// - [SshKeyCredential]
-    /// - [ApiKeyCredential]
-    Login,
-    /// An Item that SHOULD contain any of the following Credential types:
-    /// - [NoteCredential]
-    /// - [FileCredential]
-    Document,
-    /// An Item that SHOULD contain any of the following Credential types:
-    /// - [PersonNameCredential]
-    /// - [CreditCardCredential]
-    /// - [AddressCredential]
-    /// - [DriversLicenseCredential]
-    /// - [IdentityDocumentCredential]
-    /// - [PassportCredential]
-    Identity,
-    #[serde(untagged)]
-    Unknown(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

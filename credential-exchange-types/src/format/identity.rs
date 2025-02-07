@@ -1,6 +1,4 @@
 //! # Identity Credentials
-//!
-//! Contains Credentials for the [ItemType::Identity][super::ItemType::Identity] type.
 
 use serde::{Deserialize, Serialize};
 

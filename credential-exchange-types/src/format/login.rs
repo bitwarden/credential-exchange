@@ -1,6 +1,4 @@
 //! # Login Credentials
-//!
-//! Contains Credentials for the [ItemType::Login][super::ItemType::Login] type.
 
 use serde::{Deserialize, Serialize};
 

@@ -1,6 +1,4 @@
 //! # Document Credentials
-//!
-//! Contains Credentials for the [ItemType::Document][super::ItemType::Document] type.
 
 use serde::{Deserialize, Serialize};
 
