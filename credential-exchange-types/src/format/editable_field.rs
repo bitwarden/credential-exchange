@@ -259,6 +259,30 @@ mod tests {
     }
 
     #[test]
+    fn test_deserialize_field_bad_value_string() {
+        let json = json!({
+            "value": 5,
+            "field_type": "string",
+            "label": "label",
+        });
+        let field: Result<EditableField<EditableFieldString>, _> = serde_json::from_value(json);
+
+        assert!(field.is_err());
+    }
+
+    #[test]
+    fn test_deserialize_field_bad_value_bool() {
+        let json = json!({
+            "value": "bad",
+            "field_type": "bool",
+            "label": "label",
+        });
+        let field: Result<EditableField<EditableFieldBoolean>, _> = serde_json::from_value(json);
+
+        assert!(field.is_err());
+    }
+
+    #[test]
     fn test_deserialize_field_missing_type() {
         let json = json!({
             "value": "value",
