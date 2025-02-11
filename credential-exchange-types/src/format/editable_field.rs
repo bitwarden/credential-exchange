@@ -36,8 +36,8 @@ enum FieldType {
     SubdivisionCode,
     CountryCode,
 
-    #[serde(other)]
-    Unknown,
+    #[serde(untagged)]
+    Unknown(String),
 }
 
 /// A trait to associate the field structs with their `field_type` tag.
@@ -63,7 +63,7 @@ where
             state.skip_field("id")?;
         }
 
-        state.serialize_field("field_type", &self.value.field_type())?;
+        state.serialize_field("fieldType", &self.value.field_type())?;
         state.serialize_field("value", &self.value)?;
 
         if let Some(ref label) = self.label {
@@ -85,6 +85,7 @@ where
         D: serde::Deserializer<'de>,
     {
         #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase")]
         struct EditableFieldHelper<T> {
             id: Option<B64Url>,
             value: T,
@@ -205,7 +206,7 @@ mod tests {
         };
         let json = json!({
             "value": "value",
-            "field_type": "string",
+            "fieldType": "string",
             "label": "label",
         });
         assert_eq!(serde_json::to_value(&field).unwrap(), json);
@@ -215,7 +216,7 @@ mod tests {
     fn test_deserialize_field_string() {
         let json = json!({
             "value": "value",
-            "field_type": "string",
+            "fieldType": "string",
             "label": "label",
         });
         let field: EditableField<EditableFieldString> = serde_json::from_value(json).unwrap();
@@ -238,7 +239,7 @@ mod tests {
             label: Some("label".to_string()),
         };
         let json = json!({
-            "field_type": "concealed-string",
+            "fieldType": "concealed-string",
             "value": "value",
             "label": "label",
         });
@@ -249,7 +250,7 @@ mod tests {
     fn test_deserialize_field_wrong_type() {
         let json = json!({
             "value": "value",
-            "field_type": "string",
+            "fieldType": "string",
             "label": "label",
         });
         let field: Result<EditableField<EditableFieldConcealedString>, _> =
@@ -262,7 +263,7 @@ mod tests {
     fn test_deserialize_field_bad_value_string() {
         let json = json!({
             "value": 5,
-            "field_type": "string",
+            "fieldType": "string",
             "label": "label",
         });
         let field: Result<EditableField<EditableFieldString>, _> = serde_json::from_value(json);
@@ -274,7 +275,7 @@ mod tests {
     fn test_deserialize_field_bad_value_bool() {
         let json = json!({
             "value": "bad",
-            "field_type": "bool",
+            "fieldType": "bool",
             "label": "label",
         });
         let field: Result<EditableField<EditableFieldBoolean>, _> = serde_json::from_value(json);
@@ -298,7 +299,7 @@ mod tests {
     fn test_deserialize_field_concealed_string() {
         let json = json!({
             "value": "value",
-            "field_type": "concealed-string",
+            "fieldType": "concealed-string",
             "label": "label",
         });
         let field: EditableField<EditableFieldConcealedString> =
@@ -322,7 +323,7 @@ mod tests {
             label: Some("label".to_string()),
         };
         let json = json!({
-            "field_type": "boolean",
+            "fieldType": "boolean",
             "value": "true",
             "label": "label",
         });
