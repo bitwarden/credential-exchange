@@ -7,17 +7,7 @@ pub struct EditableField<T> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: Option<B64Url>,
-    /// This member defines the meaning of the [value][EditableField::value] member and its type.
-    /// This meaning is two-fold:
-    ///
-    /// 1. The string representation of the value if its native type is not a string.
-    /// 2. The UI representation used to display the value.
-    ///
-    /// The value SHOULD be a member of [FieldType] and the
-    /// [importing provider](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#importing-provider)
-    /// SHOULD ignore any unknown values and default to [string][FieldType::String].
-    /// pub field_type: FieldType,
-    /// This member contains the [fieldType][EditableField::field_type] defined by the user.
+    /// This member contains the fieldType defined by the user.
     pub value: T,
     /// This member contains a user facing value describing the value stored. This value MAY be
     /// user defined.
@@ -110,6 +100,7 @@ where
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldString(String);
 impl EditableFieldType for EditableFieldString {
     fn field_type(&self) -> FieldType {
@@ -118,6 +109,7 @@ impl EditableFieldType for EditableFieldString {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldConcealedString(String);
 impl EditableFieldType for EditableFieldConcealedString {
     fn field_type(&self) -> FieldType {
@@ -126,7 +118,6 @@ impl EditableFieldType for EditableFieldConcealedString {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-
 pub struct EditableFieldBoolean(
     #[serde(
         serialize_with = "serialize_bool",
@@ -141,6 +132,7 @@ impl EditableFieldType for EditableFieldBoolean {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldDate(String);
 impl EditableFieldType for EditableFieldDate {
     fn field_type(&self) -> FieldType {
@@ -149,6 +141,7 @@ impl EditableFieldType for EditableFieldDate {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldYearMonth(String);
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
@@ -157,6 +150,7 @@ impl EditableFieldType for EditableFieldYearMonth {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldSubdivisionCode(String);
 impl EditableFieldType for EditableFieldSubdivisionCode {
     fn field_type(&self) -> FieldType {
@@ -165,6 +159,7 @@ impl EditableFieldType for EditableFieldSubdivisionCode {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
 pub struct EditableFieldCountryCode(String);
 impl EditableFieldType for EditableFieldCountryCode {
     fn field_type(&self) -> FieldType {
