@@ -14,18 +14,35 @@ pub struct EditableField<T> {
     pub label: Option<String>,
 }
 
-/// Internal enum to represent the different field types.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
-enum FieldType {
+pub enum FieldType {
+    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
     String,
+    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
+    /// user explicitly requests it.
     ConcealedString,
+    /// A UTF-8 encoded string value which follows the format specified in
+    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
+    /// unconcealed.
+    Email,
+    /// A stringified numeric value which is unconcealed.
+    Number,
+    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
     Boolean,
+    /// A string value representing a calendar date which follows the format specified in
+    /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
     Date,
+    /// A string value representing a calendar date which follows the date-fullyear "-" date-month
+    /// pattern as established in [RFC3339] Appendix A. This is equivalent to the YYYY-MM format
+    /// specified in [ISO-8601].
     YearMonth,
+    /// A string value representing a value that SHOULD be a member of WIFINetworkSecurityType.
+    WifiNetworkSecurityType,
+    /// A string value which MUST follow the ISO3166-1 alpha-2 format.
     SubdivisionCode,
+    /// A string which MUST follow the ISO3166-2 format.
     CountryCode,
-
     #[serde(untagged)]
     Unknown(String),
 }
@@ -164,6 +181,24 @@ pub struct EditableFieldCountryCode(String);
 impl EditableFieldType for EditableFieldCountryCode {
     fn field_type(&self) -> FieldType {
         FieldType::CountryCode
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum EditableFieldWifiNetworkSecurityType {
+    Unsecured,
+    WpaPersonal,
+    Wpa2Personal,
+    Wpa3Personal,
+    Wep,
+
+    #[serde(untagged)]
+    Other(String),
+}
+impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
+    fn field_type(&self) -> FieldType {
+        FieldType::WifiNetworkSecurityType
     }
 }
 

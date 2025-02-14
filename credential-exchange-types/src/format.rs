@@ -1,20 +1,6 @@
-use login::GeneratedPasswordCredential;
 use serde::{Deserialize, Serialize};
 
-pub use self::{
-    document::{FileCredential, NoteCredential},
-    editable_field::*,
-    identity::{
-        AddressCredential, CreditCardCredential, DriversLicenseCredential,
-        IdentityDocumentCredential, PassportCredential, PersonNameCredential,
-    },
-    login::{
-        ApiKeyCredential, BasicAuthCredential, OTPHashAlgorithm, SshKeyCredential, TotpCredential,
-    },
-    passkey::{
-        Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys, PasskeyCredential,
-    },
-};
+pub use self::{document::*, editable_field::*, identity::*, login::*, passkey::*};
 use crate::{b64url::B64Url, Uri};
 
 mod document;
@@ -203,29 +189,6 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-pub enum FieldType {
-    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
-    String,
-    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
-    /// user explicitly requests it.
-    ConcealedString,
-    /// A UTF-8 encoded string value which follows the format specified in
-    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
-    /// unconcealed.
-    Email,
-    /// A stringified numeric value which is unconcealed.
-    Number,
-    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
-    Boolean,
-    /// A string value representing a calendar date which follows the format specified in
-    /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
-    Date,
-    #[serde(untagged)]
-    Unknown(String),
 }
 
 /// This is an object that describes an appropriate context in which the [Item]'s

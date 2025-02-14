@@ -3,8 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    EditableField, EditableFieldConcealedString, EditableFieldCountryCode, EditableFieldString,
-    EditableFieldSubdivisionCode, EditableFieldYearMonth,
+    EditableField, EditableFieldConcealedString, EditableFieldCountryCode, EditableFieldDate,
+    EditableFieldString, EditableFieldSubdivisionCode, EditableFieldYearMonth,
 };
 
 /// An [AddressCredential] provides information for autofilling address forms.
@@ -64,13 +64,13 @@ pub struct DriversLicenseCredential {
     pub full_name: Option<EditableField<EditableFieldString>>,
     /// Day, month, and year on which the license holder was born.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub birth_date: Option<EditableField<EditableFieldString>>,
+    pub birth_date: Option<EditableField<EditableFieldDate>>,
     /// The date on which the license was issued.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub issue_date: Option<EditableField<EditableFieldString>>,
+    pub issue_date: Option<EditableField<EditableFieldDate>>,
     /// The date on which the license expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expiry_date: Option<EditableField<EditableFieldString>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate>>,
     /// The official body or government agency responsible for issuing the license.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString>>,
@@ -105,7 +105,7 @@ pub struct DriversLicenseCredential {
 pub struct IdentityDocumentCredential {
     /// The document’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub issuing_country: Option<EditableField<EditableFieldString>>,
+    pub issuing_country: Option<EditableField<EditableFieldCountryCode>>,
     /// The document’s identifying number. This identifying number is tied to the issuance of the
     /// document and is expected to change upon its reissuance, even when the person’s information
     /// might remain the same.
@@ -125,7 +125,7 @@ pub struct IdentityDocumentCredential {
     pub full_name: Option<EditableField<EditableFieldString>>,
     /// The person’s date of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub birth_date: Option<EditableField<EditableFieldString>>,
+    pub birth_date: Option<EditableField<EditableFieldDate>>,
     /// The person’s place of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub birth_place: Option<EditableField<EditableFieldString>>,
@@ -134,10 +134,10 @@ pub struct IdentityDocumentCredential {
     pub sex: Option<EditableField<EditableFieldString>>,
     /// The date on which the document was issued.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub issue_date: Option<EditableField<EditableFieldString>>,
+    pub issue_date: Option<EditableField<EditableFieldDate>>,
     /// The date on which the document expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expiry_date: Option<EditableField<EditableFieldString>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate>>,
     /// The official body or government agency responsible for issuing the document.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString>>,
@@ -150,7 +150,7 @@ pub struct IdentityDocumentCredential {
 pub struct PassportCredential {
     /// The passport’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    issuing_country: Option<EditableField<EditableFieldString>>,
+    issuing_country: Option<EditableField<EditableFieldCountryCode>>,
     /// The passport’s document type. This MUST be a valid document code as defined in ICAO Doc
     /// 9303 Part 4.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -169,7 +169,7 @@ pub struct PassportCredential {
     full_name: Option<EditableField<EditableFieldString>>,
     /// The person’s date of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    birth_date: Option<EditableField<EditableFieldString>>,
+    birth_date: Option<EditableField<EditableFieldDate>>,
     /// The person’s place of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     birth_place: Option<EditableField<EditableFieldString>>,
@@ -178,10 +178,10 @@ pub struct PassportCredential {
     sex: Option<EditableField<EditableFieldString>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The date on which the passport was issued.
-    issue_date: Option<EditableField<EditableFieldString>>,
+    issue_date: Option<EditableField<EditableFieldDate>>,
     /// The date on which the passport expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiry_date: Option<EditableField<EditableFieldString>>,
+    expiry_date: Option<EditableField<EditableFieldDate>>,
     /// The official body or government agency responsible for issuing the passport.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     issuing_authority: Option<EditableField<EditableFieldString>>,
