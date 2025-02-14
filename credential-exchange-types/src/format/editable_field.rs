@@ -206,7 +206,7 @@ fn serialize_bool<S>(value: &bool, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    serializer.serialize_str(if *value { "true" } else { "false" })
+    serializer.serialize_str(&value.to_string())
 }
 
 fn deserialize_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
@@ -214,11 +214,11 @@ where
     D: serde::Deserializer<'de>,
 {
     let value = <&str>::deserialize(deserializer)?;
-    match value.trim().to_lowercase().as_str() {
-        "true" => Ok(true),
-        "false" => Ok(false),
-        _ => Err(serde::de::Error::custom("expected 'true' or 'false'")),
-    }
+    value
+        .trim()
+        .to_lowercase()
+        .parse()
+        .map_err(serde::de::Error::custom)
 }
 
 #[cfg(test)]
