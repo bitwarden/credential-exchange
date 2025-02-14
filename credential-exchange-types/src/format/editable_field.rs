@@ -34,8 +34,8 @@ pub enum FieldType {
     /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
     Date,
     /// A string value representing a calendar date which follows the date-fullyear "-" date-month
-    /// pattern as established in [RFC3339] Appendix A. This is equivalent to the YYYY-MM format
-    /// specified in [ISO-8601].
+    /// pattern as established in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339) Appendix A.
+    /// This is equivalent to the YYYY-MM format specified in ISO8601.
     YearMonth,
     /// A string value representing a value that SHOULD be a member of WIFINetworkSecurityType.
     WifiNetworkSecurityType,
