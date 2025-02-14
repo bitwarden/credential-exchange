@@ -96,7 +96,7 @@ jobs:
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           initial-status: "in_progress"
-          environment: "Bitwarden SDK"
+          environment: "crates.io"
           description: "Deployment from branch ${{ github.ref_name }}"
           task: release
 
