@@ -118,7 +118,7 @@ where
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldString(String);
+pub struct EditableFieldString(pub String);
 impl EditableFieldType for EditableFieldString {
     fn field_type(&self) -> FieldType {
         FieldType::String
@@ -127,7 +127,7 @@ impl EditableFieldType for EditableFieldString {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldConcealedString(String);
+pub struct EditableFieldConcealedString(pub String);
 impl EditableFieldType for EditableFieldConcealedString {
     fn field_type(&self) -> FieldType {
         FieldType::ConcealedString
@@ -140,7 +140,7 @@ pub struct EditableFieldBoolean(
         serialize_with = "serialize_bool",
         deserialize_with = "deserialize_bool"
     )]
-    bool,
+    pub bool,
 );
 impl EditableFieldType for EditableFieldBoolean {
     fn field_type(&self) -> FieldType {
@@ -150,7 +150,7 @@ impl EditableFieldType for EditableFieldBoolean {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldDate(String);
+pub struct EditableFieldDate(pub String);
 impl EditableFieldType for EditableFieldDate {
     fn field_type(&self) -> FieldType {
         FieldType::Date
@@ -159,7 +159,7 @@ impl EditableFieldType for EditableFieldDate {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldYearMonth(String);
+pub struct EditableFieldYearMonth(pub String);
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
         FieldType::YearMonth
@@ -168,7 +168,7 @@ impl EditableFieldType for EditableFieldYearMonth {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldSubdivisionCode(String);
+pub struct EditableFieldSubdivisionCode(pub String);
 impl EditableFieldType for EditableFieldSubdivisionCode {
     fn field_type(&self) -> FieldType {
         FieldType::SubdivisionCode
@@ -177,7 +177,7 @@ impl EditableFieldType for EditableFieldSubdivisionCode {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldCountryCode(String);
+pub struct EditableFieldCountryCode(pub String);
 impl EditableFieldType for EditableFieldCountryCode {
     fn field_type(&self) -> FieldType {
         FieldType::CountryCode
