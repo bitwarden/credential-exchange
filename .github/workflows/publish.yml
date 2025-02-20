@@ -7,11 +7,10 @@ on:
       release_type:
         description: "Release Options"
         required: true
-        default: "Initial Release"
+        default: "Publish"
         type: choice
         options:
-          - Initial Release
-          - Redeploy
+          - Publish
           - Dry Run
       version:
         description: "Version to publish (default: latest rust crates release)"
@@ -35,7 +34,7 @@ jobs:
         run: |
           if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
             echo "==================================="
-            echo "[!] Can only release from the 'main' branch"
+            echo "[!] Can only publish from the 'main' branch"
             echo "==================================="
             exit 1
           fi
