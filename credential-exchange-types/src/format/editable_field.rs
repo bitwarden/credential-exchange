@@ -135,13 +135,7 @@ impl EditableFieldType for EditableFieldConcealedString {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct EditableFieldBoolean(
-    #[serde(
-        serialize_with = "serialize_bool",
-        deserialize_with = "deserialize_bool"
-    )]
-    pub bool,
-);
+pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
 impl EditableFieldType for EditableFieldBoolean {
     fn field_type(&self) -> FieldType {
         FieldType::Boolean
@@ -202,23 +196,28 @@ impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
     }
 }
 
-fn serialize_bool<S>(value: &bool, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    serializer.serialize_str(&value.to_string())
-}
+mod serde_bool {
+    use serde::Deserialize;
 
-fn deserialize_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let value = <&str>::deserialize(deserializer)?;
-    value
-        .trim()
-        .to_lowercase()
-        .parse()
-        .map_err(serde::de::Error::custom)
+    pub fn serialize<S>(value: &bool, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&value.to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <&str>::deserialize(deserializer)?;
+
+        value
+            .trim()
+            .to_lowercase()
+            .parse()
+            .map_err(serde::de::Error::custom)
+    }
 }
 
 #[cfg(test)]
