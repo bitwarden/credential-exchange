@@ -2,7 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{b64url::B32, format::EditableField, B64Url, Uri};
+use crate::{
+    b64url::B32,
+    format::{EditableField, EditableFieldConcealedString, EditableFieldDate, EditableFieldString},
+    B64Url, Uri,
+};
 
 /// A [ApiKeyCredential] contains information to interact with an Application's Programming
 /// Interface (API).
@@ -11,34 +15,34 @@ use crate::{b64url::B32, format::EditableField, B64Url, Uri};
 pub struct ApiKeyCredential {
     /// This REQUIRED member denotes the key to communicate with the API. Its internal fieldType
     /// SHOULD be of type ConcealedString.
-    key: EditableField,
+    key: EditableField<EditableFieldConcealedString>,
 
     /// This OPTIONAL member denotes the username associated with the key and its internal
     /// fieldType SHOULD be of type string
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    username: Option<EditableField>,
+    username: Option<EditableField<EditableFieldString>>,
 
     /// This OPTIONAL member denotes the type of the API key, such as bearer token or
     /// JSON Web Token. It is flexible to allow any type and not restrict it to a set list of
     /// types. Its internal fieldType SHOULD be of type string.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_type: Option<EditableField>,
+    key_type: Option<EditableField<EditableFieldString>>,
 
     /// This OPTIONAL member denotes the url the API key is used with and SHOULD conform to the
     /// [URL Standard](https://url.spec.whatwg.org/). Its internal fieldType SHOULD be of type
     /// string.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    url: Option<EditableField>,
+    url: Option<EditableField<EditableFieldString>>,
 
     /// This OPTIONAL member denotes the date the API key is valid from and its internal fieldType
     /// SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    valid_from: Option<EditableField>,
+    valid_from: Option<EditableField<EditableFieldDate>>,
 
     /// This OPTIONAL member denotes the date on which the API key expires
     /// and its internal fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiry_date: Option<EditableField>,
+    expiry_date: Option<EditableField<EditableFieldDate>>,
 }
 
 /// A [BasicAuthCredential] contains a username/password login credential.
@@ -51,10 +55,10 @@ pub struct BasicAuthCredential {
     pub urls: Vec<Uri>,
     /// The username associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub username: Option<EditableField>,
+    pub username: Option<EditableField<EditableFieldString>>,
     /// The password associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub password: Option<EditableField>,
+    pub password: Option<EditableField<EditableFieldConcealedString>>,
 }
 
 /// A [GeneratedPasswordCredential] type represents a credential consisting of a machine-generated
@@ -88,16 +92,16 @@ pub struct SshKeyCredential {
     /// This OPTIONAL member indicates when the key was created. When present, its internal
     /// fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    creation_date: Option<EditableField>,
+    creation_date: Option<EditableField<EditableFieldDate>>,
     /// This OPTIONAL member indicates when the key will expire, if applicable. When present, its
     /// internal fieldType SHOULD be of type date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiration_date: Option<EditableField>,
+    expiration_date: Option<EditableField<EditableFieldDate>>,
     /// This OPTIONAL member indicates where the key was originally generated. E.g.,
     /// `https://github.com/settings/ssh/new` for GitHub. When present, its internal fieldType
     /// SHOULD be of type string.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_generation_source: Option<EditableField>,
+    key_generation_source: Option<EditableField<EditableFieldString>>,
 }
 
 /// Note: Enrollment in TOTP credentials historically has been quite non-standardized but typically

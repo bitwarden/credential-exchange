@@ -1,22 +1,10 @@
-use login::GeneratedPasswordCredential;
 use serde::{Deserialize, Serialize};
 
-pub use self::{
-    document::{FileCredential, NoteCredential},
-    identity::{
-        AddressCredential, CreditCardCredential, DriversLicenseCredential,
-        IdentityDocumentCredential, PassportCredential, PersonNameCredential,
-    },
-    login::{
-        ApiKeyCredential, BasicAuthCredential, OTPHashAlgorithm, SshKeyCredential, TotpCredential,
-    },
-    passkey::{
-        Fido2Extensions, Fido2HmacSecret, Fido2LargeBlob, Fido2SupplementalKeys, PasskeyCredential,
-    },
-};
+pub use self::{document::*, editable_field::*, identity::*, login::*, passkey::*};
 use crate::{b64url::B64Url, Uri};
 
 mod document;
+mod editable_field;
 mod identity;
 mod login;
 mod passkey;
@@ -201,53 +189,6 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct EditableField {
-    /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
-    /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
-    pub id: Option<B64Url>,
-    /// This member defines the meaning of the [value][EditableField::value] member and its type.
-    /// This meaning is two-fold:
-    ///
-    /// 1. The string representation of the value if its native type is not a string.
-    /// 2. The UI representation used to display the value.
-    ///
-    /// The value SHOULD be a member of [FieldType] and the
-    /// [importing provider](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#importing-provider)
-    /// SHOULD ignore any unknown values and default to [string][FieldType::String].
-    pub field_type: FieldType,
-    /// This member contains the [fieldType][EditableField::field_type] defined by the user.
-    pub value: String,
-    /// This member contains a user facing value describing the value stored. This value MAY be
-    /// user defined.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub label: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
-pub enum FieldType {
-    /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
-    String,
-    /// A UTF-8 encoded string value which should be considered secret and not displayed unless the
-    /// user explicitly requests it.
-    ConcealedString,
-    /// A UTF-8 encoded string value which follows the format specified in
-    /// [RFC5322](https://www.rfc-editor.org/rfc/rfc5322#section-3.4). This field SHOULD be
-    /// unconcealed.
-    Email,
-    /// A stringified numeric value which is unconcealed.
-    Number,
-    /// A boolean value which is unconcealed. It MUST be of the values "true" or "false".
-    Boolean,
-    /// A string value representing a calendar date which follows the format specified in
-    /// [RFC3339](https://www.rfc-editor.org/rfc/rfc3339).
-    Date,
-    #[serde(untagged)]
-    Unknown(String),
 }
 
 /// This is an object that describes an appropriate context in which the [Item]'s

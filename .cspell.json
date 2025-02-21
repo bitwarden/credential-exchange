@@ -1,7 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
-  "words": ["Bitwarden"],
+  "words": [
+    "Bitwarden",
+    "Totp"
+  ],
   "flagWords": [],
   "ignorePaths": [
     ".vscode",

@@ -2,7 +2,10 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{format::EditableField, B64Url};
+use crate::{
+    format::{EditableField, EditableFieldString},
+    B64Url,
+};
 
 /// A [FileCredential] acts as a placeholder to an arbitrary binary file holding its associated
 /// metadata. When an importing provider encounters a file credential, they MAY request the file
@@ -26,5 +29,5 @@ pub struct FileCredential {
 #[serde(rename_all = "camelCase")]
 pub struct NoteCredential {
     /// This member is a user-defined value encoded as a UTF-8 string.
-    pub content: EditableField,
+    pub content: EditableField<EditableFieldString>,
 }
