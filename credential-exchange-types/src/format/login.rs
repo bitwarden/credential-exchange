@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::{EditableFieldBoolean, EditableFieldWifiNetworkSecurityType};
 use crate::{
     b64url::B32,
     format::{EditableField, EditableFieldConcealedString, EditableFieldDate, EditableFieldString},
@@ -13,41 +14,33 @@ use crate::{
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ApiKeyCredential {
-    /// This REQUIRED member denotes the key to communicate with the API. Its internal fieldType
-    /// SHOULD be of type ConcealedString.
-    key: EditableField<EditableFieldConcealedString>,
-
-    /// This OPTIONAL member denotes the username associated with the key and its internal
-    /// fieldType SHOULD be of type string
+    /// This member denotes the key to communicate with the API.
+    pub key: EditableField<EditableFieldConcealedString>,
+    /// This member denotes the username associated with the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    username: Option<EditableField<EditableFieldString>>,
-
-    /// This OPTIONAL member denotes the type of the API key, such as bearer token or
-    /// JSON Web Token. It is flexible to allow any type and not restrict it to a set list of
-    /// types. Its internal fieldType SHOULD be of type string.
+    pub username: Option<EditableField<EditableFieldString>>,
+    /// This member denotes the type of the API key, such as bearer token or JSON Web Token. It is
+    /// flexible to allow any type and not restrict it to a set list of types.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_type: Option<EditableField<EditableFieldString>>,
-
-    /// This OPTIONAL member denotes the url the API key is used with and SHOULD conform to the
-    /// [URL Standard](https://url.spec.whatwg.org/). Its internal fieldType SHOULD be of type
-    /// string.
+    pub key_type: Option<EditableField<EditableFieldString>>,
+    /// This member denotes the url the API key is used with and SHOULD conform to the
+    /// [URL Standard](https://url.spec.whatwg.org/).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    url: Option<EditableField<EditableFieldString>>,
-
-    /// This OPTIONAL member denotes the date the API key is valid from and its internal fieldType
-    /// SHOULD be of type date.
+    pub url: Option<EditableField<EditableFieldString>>,
+    /// This member denotes the date the API key is valid from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    valid_from: Option<EditableField<EditableFieldDate>>,
-
-    /// This OPTIONAL member denotes the date on which the API key expires
-    /// and its internal fieldType SHOULD be of type date.
+    pub valid_from: Option<EditableField<EditableFieldDate>>,
+    /// This member denotes the date on which the API key expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiry_date: Option<EditableField<EditableFieldDate>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate>>,
 }
 
 /// A [BasicAuthCredential] contains a username/password login credential.
 /// Can either represent a [Basic access authentication](https://www.rfc-editor.org/rfc/rfc7617)
 /// or a form on a web page.
+///
+/// A [BasicAuthCredential] SHOULD have an accompanying [super::CredentialScope] in the credentials
+/// array. This indicates in which websites or applications these fields SHOULD be presented.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BasicAuthCredential {
@@ -86,20 +79,17 @@ pub struct SshKeyCredential {
     /// The private part of the SSH key pair. This MUST be a PKCS#8 ASN.1 DER formatted byte string
     /// which is then Base64url encoded.
     private_key: B64Url,
-    /// This OPTIONAL member contains a user-defined string to identify or describe the key.
+    /// This member contains a user-defined string to identify or describe the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     key_comment: Option<String>,
-    /// This OPTIONAL member indicates when the key was created. When present, its internal
-    /// fieldType SHOULD be of type date.
+    /// This member indicates when the key was created.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     creation_date: Option<EditableField<EditableFieldDate>>,
-    /// This OPTIONAL member indicates when the key will expire, if applicable. When present, its
-    /// internal fieldType SHOULD be of type date.
+    /// This member indicates when the key will expire, if applicable.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     expiration_date: Option<EditableField<EditableFieldDate>>,
-    /// This OPTIONAL member indicates where the key was originally generated. E.g.,
-    /// `https://github.com/settings/ssh/new` for GitHub. When present, its internal fieldType
-    /// SHOULD be of type string.
+    /// This member indicates where the key was originally generated. E.g.,
+    /// `https://github.com/settings/ssh/new` for GitHub.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     key_generation_source: Option<EditableField<EditableFieldString>>,
 }
@@ -122,18 +112,18 @@ pub struct TotpCredential {
     /// 6, although the [relying party](https://www.w3.org/TR/webauthn-3/#relying-party) MAY
     /// customize this to a different value.
     pub digits: u8,
-    /// This OPTIONAL member contains the username of the account this [TotpCredential] is used
-    /// for.
+    /// This member contains the username of the account this [TotpCredential] is used for.
     ///
     /// Note: While this member is optional, it is strongly recommended to be included if
     /// available.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
     /// The algorithm used to generate the OTP hashes. This value SHOULD be a member of
     /// [OTPHashAlgorithm] but importers MUST ignore [TotpCredential] entries with unknown
     /// algorithm values.
     pub algorithm: OTPHashAlgorithm,
-    /// This OPTIONAL member contains the relying party that issued the credential and should be
-    /// user consumable.
+    /// This member contains the relying party that issued the credential and should be user
+    /// consumable.
     ///
     /// Note: While this member is optional, it is strongly recommended to be included if
     /// available.
@@ -155,4 +145,18 @@ pub enum OTPHashAlgorithm {
     Sha512,
     #[serde(untagged)]
     Unknown(String),
+}
+
+/// Wi-Fi Passphrase
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WifiCredential {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ssid: Option<EditableField<EditableFieldString>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub network_security_type: Option<EditableField<EditableFieldWifiNetworkSecurityType>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub passphrase: Option<EditableField<EditableFieldConcealedString>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hidden: Option<EditableField<EditableFieldBoolean>>,
 }
