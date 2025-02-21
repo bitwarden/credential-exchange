@@ -1,9 +1,9 @@
 use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 
-use crate::B64Url;
+use crate::{format::Extension, B64Url};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EditableField<T> {
+pub struct EditableField<T, E = ()> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: Option<B64Url>,
@@ -12,6 +12,10 @@ pub struct EditableField<T> {
     /// This member contains a user facing value describing the value stored. This value MAY be
     /// user defined.
     pub label: Option<String>,
+    /// This member permits the exporting provider to add additional information associated to this
+    /// [EditableField]. This MAY be used to provide an exchange where a minimal amount of
+    /// information is lost.
+    pub extensions: Option<Vec<Extension<E>>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -53,9 +57,10 @@ trait EditableFieldType {
     fn field_type(&self) -> FieldType;
 }
 
-impl<T> Serialize for EditableField<T>
+impl<T, E> Serialize for EditableField<T, E>
 where
     T: EditableFieldType + Serialize,
+    E: Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -83,9 +88,10 @@ where
     }
 }
 
-impl<'de, T> Deserialize<'de> for EditableField<T>
+impl<'de, T, E> Deserialize<'de> for EditableField<T, E>
 where
     T: EditableFieldType + DeserializeOwned,
+    E: Deserialize<'de>,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -112,6 +118,7 @@ where
             id: helper.id,
             value: helper.value,
             label: helper.label,
+            extensions: None,
         })
     }
 }
@@ -228,10 +235,11 @@ mod tests {
 
     #[test]
     fn test_serialize_editable_field_string() {
-        let field = EditableField {
+        let field: EditableField<EditableFieldString> = EditableField {
             id: None,
             value: EditableFieldString("value".to_string()),
             label: Some("label".to_string()),
+            extensions: None,
         };
         let json = json!({
             "value": "value",
@@ -256,16 +264,18 @@ mod tests {
                 id: None,
                 value: EditableFieldString("value".to_string()),
                 label: Some("label".to_string()),
+                extensions: None,
             }
         );
     }
 
     #[test]
     fn test_serialize_field_concealed_string() {
-        let field = EditableField {
+        let field: EditableField<EditableFieldConcealedString> = EditableField {
             id: None,
             value: EditableFieldConcealedString("value".to_string()),
             label: Some("label".to_string()),
+            extensions: None,
         };
         let json = json!({
             "fieldType": "concealed-string",
@@ -340,16 +350,18 @@ mod tests {
                 id: None,
                 value: EditableFieldConcealedString("value".to_string()),
                 label: Some("label".to_string()),
+                extensions: None,
             }
         );
     }
 
     #[test]
     fn test_serialize_field_boolean() {
-        let field = EditableField {
+        let field: EditableField<EditableFieldBoolean> = EditableField {
             id: None,
             value: EditableFieldBoolean(true),
             label: Some("label".to_string()),
+            extensions: None,
         };
         let json = json!({
             "fieldType": "boolean",

@@ -19,7 +19,7 @@ pub struct CustomFieldsCredential<E = ()> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// The collection of miscellaneous fields under this section.
-    pub fields: Vec<EditableField<EditableFieldString>>,
+    pub fields: Vec<EditableField<EditableFieldString, E>>,
     /// This member permits the exporting provider to add additional information associated to this
     /// CustomFields. This MAY be used to provide an exchange where a minimal amount of information
     /// is lost.
@@ -46,8 +46,8 @@ pub struct FileCredential {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NoteCredential {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct NoteCredential<E = ()> {
     /// This member is a user-defined value encoded as a UTF-8 string.
-    pub content: EditableField<EditableFieldString>,
+    pub content: EditableField<EditableFieldString, E>,
 }

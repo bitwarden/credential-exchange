@@ -150,7 +150,7 @@ pub struct LinkedItem {
     pub account: Option<B64Url>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "name", rename_all = "kebab-case")]
 pub enum Extension<E = ()> {
     #[serde(untagged)]
@@ -166,23 +166,23 @@ pub enum Extension<E = ()> {
     bound(deserialize = "E: Deserialize<'de>")
 )]
 pub enum Credential<E = ()> {
-    Address(Box<AddressCredential>),
-    ApiKey(Box<ApiKeyCredential>),
-    BasicAuth(Box<BasicAuthCredential>),
-    CreditCard(Box<CreditCardCredential>),
+    Address(Box<AddressCredential<E>>),
+    ApiKey(Box<ApiKeyCredential<E>>),
+    BasicAuth(Box<BasicAuthCredential<E>>),
+    CreditCard(Box<CreditCardCredential<E>>),
     CustomFields(Box<CustomFieldsCredential<E>>),
-    DriversLicense(Box<DriversLicenseCredential>),
+    DriversLicense(Box<DriversLicenseCredential<E>>),
     File(Box<FileCredential>),
     GeneratedPassword(Box<GeneratedPasswordCredential>),
-    IdentityDocument(Box<IdentityDocumentCredential>),
+    IdentityDocument(Box<IdentityDocumentCredential<E>>),
     ItemReference(Box<ItemReferenceCredential>),
-    Note(Box<NoteCredential>),
+    Note(Box<NoteCredential<E>>),
     Passkey(Box<PasskeyCredential>),
-    Passport(Box<PassportCredential>),
-    PersonName(Box<PersonNameCredential>),
-    SshKey(Box<SshKeyCredential>),
+    Passport(Box<PassportCredential<E>>),
+    PersonName(Box<PersonNameCredential<E>>),
+    SshKey(Box<SshKeyCredential<E>>),
     Totp(Box<TotpCredential>),
-    Wifi(Box<WifiCredential>),
+    Wifi(Box<WifiCredential<E>>),
     #[serde(untagged)]
     Unknown {
         ty: String,
