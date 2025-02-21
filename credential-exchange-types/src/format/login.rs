@@ -12,27 +12,27 @@ use crate::{
 /// A [ApiKeyCredential] contains information to interact with an Application's Programming
 /// Interface (API).
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ApiKeyCredential {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the key to communicate with the API.
-    pub key: EditableField<EditableFieldConcealedString>,
+    pub key: EditableField<EditableFieldConcealedString, E>,
     /// This member denotes the username associated with the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub username: Option<EditableField<EditableFieldString>>,
+    pub username: Option<EditableField<EditableFieldString, E>>,
     /// This member denotes the type of the API key, such as bearer token or JSON Web Token. It is
     /// flexible to allow any type and not restrict it to a set list of types.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub key_type: Option<EditableField<EditableFieldString>>,
+    pub key_type: Option<EditableField<EditableFieldString, E>>,
     /// This member denotes the url the API key is used with and SHOULD conform to the
     /// [URL Standard](https://url.spec.whatwg.org/).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub url: Option<EditableField<EditableFieldString>>,
+    pub url: Option<EditableField<EditableFieldString, E>>,
     /// This member denotes the date the API key is valid from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub valid_from: Option<EditableField<EditableFieldDate>>,
+    pub valid_from: Option<EditableField<EditableFieldDate, E>>,
     /// This member denotes the date on which the API key expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expiry_date: Option<EditableField<EditableFieldDate>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate, E>>,
 }
 
 /// A [BasicAuthCredential] contains a username/password login credential.
@@ -42,16 +42,16 @@ pub struct ApiKeyCredential {
 /// A [BasicAuthCredential] SHOULD have an accompanying [super::CredentialScope] in the credentials
 /// array. This indicates in which websites or applications these fields SHOULD be presented.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct BasicAuthCredential {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct BasicAuthCredential<E = ()> {
     /// The URLs that this credential is associated with.
     pub urls: Vec<Uri>,
     /// The username associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub username: Option<EditableField<EditableFieldString>>,
+    pub username: Option<EditableField<EditableFieldString, E>>,
     /// The password associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub password: Option<EditableField<EditableFieldConcealedString>>,
+    pub password: Option<EditableField<EditableFieldConcealedString, E>>,
 }
 
 /// A [GeneratedPasswordCredential] type represents a credential consisting of a machine-generated
@@ -70,8 +70,8 @@ pub struct GeneratedPasswordCredential {
 
 /// An [SshKeyCredential] represents an SSH (Secure Shell) key pair.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SshKeyCredential {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct SshKeyCredential<E = ()> {
     /// The type of SSH key algorithm used. Common values include "ssh-rsa", "ssh-ed25519", or
     /// "ecdsa-sha2-nistp256". This MUST be a string value representing a valid SSH public key
     /// algorithm as defined in IANA SSH Protocol Parameters.
@@ -84,14 +84,14 @@ pub struct SshKeyCredential {
     key_comment: Option<String>,
     /// This member indicates when the key was created.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    creation_date: Option<EditableField<EditableFieldDate>>,
+    creation_date: Option<EditableField<EditableFieldDate, E>>,
     /// This member indicates when the key will expire, if applicable.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiration_date: Option<EditableField<EditableFieldDate>>,
+    expiration_date: Option<EditableField<EditableFieldDate, E>>,
     /// This member indicates where the key was originally generated. E.g.,
     /// `https://github.com/settings/ssh/new` for GitHub.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_generation_source: Option<EditableField<EditableFieldString>>,
+    key_generation_source: Option<EditableField<EditableFieldString, E>>,
 }
 
 /// Note: Enrollment in TOTP credentials historically has been quite non-standardized but typically
@@ -149,14 +149,14 @@ pub enum OTPHashAlgorithm {
 
 /// Wi-Fi Passphrase
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct WifiCredential {
+#[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+pub struct WifiCredential<E = ()> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ssid: Option<EditableField<EditableFieldString>>,
+    pub ssid: Option<EditableField<EditableFieldString, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub network_security_type: Option<EditableField<EditableFieldWifiNetworkSecurityType>>,
+    pub network_security_type: Option<EditableField<EditableFieldWifiNetworkSecurityType, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub passphrase: Option<EditableField<EditableFieldConcealedString>>,
+    pub passphrase: Option<EditableField<EditableFieldConcealedString, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hidden: Option<EditableField<EditableFieldBoolean>>,
+    pub hidden: Option<EditableField<EditableFieldBoolean, E>>,
 }
