@@ -67,8 +67,16 @@ pub struct Collection<E = ()> {
     /// A unique identifier for the [Collection] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
+    /// This member contains the UNIX timestamp in seconds at which this [Collection] was
+    /// originally created. If this member is not set, but the importing provider requires this
+    /// member in their proprietary data model, the importer SHOULD use the current timestamp at
+    /// the time the provider encounters this 8Collection].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub creation_at: Option<u64>,
+    /// This member contains the UNIX timestamp in seconds of the last modification brought to this
+    /// [Collection]. If this member is not set, but the importing provider requires this member in
+    /// their proprietary data model, the importer SHOULD use the current timestamp at the time the
+    /// provider encounters this [Collection].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<u64>,
     /// The display name of the [Collection].
