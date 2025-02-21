@@ -16,7 +16,9 @@ pub struct Header<E = ()> {
     /// MUST correspond to a published level of the CXF standard.
     pub version: Version,
     /// The name of the exporting app as a [relying party identifier](https://www.w3.org/TR/webauthn-3/#relying-party-identifier).
-    pub exporter: String,
+    pub exporter_rp_id: String,
+    /// The display name of the exporting app to be presented to the user.
+    pub exporter_display_name: String,
     /// The UNIX timestamp during at which the export document was completed.
     pub timestamp: u64,
     /// The list of [Account]s being exported.
@@ -42,22 +44,19 @@ pub struct Account<E = ()> {
     pub id: B64Url,
     /// A pseudonym defined by the user to name their account. If none is set, this should be an
     /// empty string.
-    pub user_name: String,
+    pub username: String,
     /// The email used to register the account in the previous provider.
     pub email: String,
-    /// This OPTIONAL field holds the user’s full name.
+    /// This field holds the user’s full name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_name: Option<String>,
-    /// This OPTIONAL field defines if the user has set an icon as the account’s avatar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub icon: Option<String>,
     /// All the collections this account owns. If the user has collections that were shared with
     /// them by another account, it MUST NOT be present in this list.
     pub collections: Vec<Collection<E>>,
     /// All items that this account owns. If the user has access to items that were shared with
     /// them by another account, it MUST NOT be present in this list.
     pub items: Vec<Item<E>>,
-    /// This OPTIONAL field contains all the extensions to the [Account]’s attributes.
+    /// This field contains all the extensions to the [Account]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
 }
@@ -68,24 +67,24 @@ pub struct Collection<E = ()> {
     /// A unique identifier for the [Collection] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub creation_at: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<u64>,
     /// The display name of the [Collection].
     pub title: String,
-    /// This OPTIONAL field is a subtitle or a description of the [Collection].
+    /// This field is a subtitle or a description of the [Collection].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtitle: Option<String>,
-    /// This OPTIONAL field is a relative path from this file to the icon file acting as this
-    /// [Collection]’s avatar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub icon: Option<String>,
     /// Enumerates all the [LinkedItem] in this [Collection]. A [LinkedItem] contains the necessary
     /// data to indicate which [Items][Item] are part of this [Collection].
     pub items: Vec<LinkedItem>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Enumerates any sub-collections if the provider supports recursive organization.
-    pub sub_collections: Option<Vec<Collection<E>>>, // default []
+    pub sub_collections: Option<Vec<Collection<E>>>,
     /// This enumeration contains all the extensions to the [Collection]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<Vec<Extension<E>>>, // default []
+    pub extensions: Option<Vec<Extension<E>>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -94,41 +93,42 @@ pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
     /// with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
     pub id: B64Url,
-    /// The OPTIONAL member contains the UNIX timestamp in seconds at which this item was
-    /// originally created. If this member is not set, but the importing provider requires this
+    /// The member contains the UNIX timestamp in seconds at which this item was originally
+    /// created. If this member is not set, but the importing provider requires this
     /// member in their proprietary data model, the importer SHOULD use the current timestamp
     /// at the time the provider encounters this [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub creation_at: Option<u64>,
-    /// This OPTIONAL member contains the UNIX timestamp in seconds of the last modification
-    /// brought to this [Item]. If this member is not set, but the importing provider requires
-    /// this member in their proprietary data model, the importer SHOULD use the current
-    /// timestamp at the time the provider encounters this [Item].
+    /// This member contains the UNIX timestamp in seconds of the last modification brought to this
+    /// [Item]. If this member is not set, but the importing provider requires this member in
+    /// their proprietary data model, the importer SHOULD use the current timestamp at the time
+    /// the provider encounters this [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<u64>,
     /// This member’s value is the user-defined name or title of the item.
     pub title: String,
-    /// This OPTIONAL member is a subtitle or description for the [Item].
+    /// This member is a subtitle or description for the [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtitle: Option<String>,
-    /// This OPTIONAL member denotes whether the user has marked the [Item] as a favorite to easily
-    /// present in the UI.
+    /// This member denotes whether the user has marked the [Item] as a favorite to easily present
+    /// in the UI.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub favorite: Option<bool>,
-    /// This OPTIONAL member defines the scope where the [Item::credentials] SHOULD be presented.
-    /// The credentials SHOULD only be presented within this scope unless otherwise specified by a
+    /// This member defines the scope where the [Item::credentials] SHOULD be presented. The
+    /// credentials SHOULD only be presented within this scope unless otherwise specified by a
     /// specific [Credential] type.
-    pub scope: CredentialScope,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope: Option<CredentialScope>,
     /// This member contains a set of [Credentials][Item::credentials] that SHOULD be associated to
     /// the type.
-    pub credentials: Vec<Credential>,
-    /// This OPTIONAL member contains user-defined tags that they may use to organize the item.
+    pub credentials: Vec<Credential<E>>,
+    /// This member contains user-defined tags that they may use to organize the item.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>, // default []
+    pub tags: Option<Vec<String>>,
     /// This member contains all the extensions the exporter MAY have to define the [Item] type
     /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<Vec<Extension<E>>>, // default []
+    pub extensions: Option<Vec<Extension<E>>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -136,9 +136,8 @@ pub struct LinkedItem {
     /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
     /// be sent as part of the current exchange.
     pub item: B64Url,
-    /// This OPTIONAL member indicates the [Account’s id][Account::id] the referenced [Item]
-    /// belongs to. If not present, the [Item] belongs to the current [Account] being
-    /// exchanged.
+    /// This member indicates the [Account’s id][Account::id] the referenced [Item] belongs to. If
+    /// not present, the [Item] belongs to the current [Account] being exchanged.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account: Option<B64Url>,
 }
@@ -153,12 +152,17 @@ pub enum Extension<E = ()> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "kebab-case")]
-pub enum Credential {
+#[serde(
+    tag = "type",
+    rename_all = "kebab-case",
+    bound(deserialize = "E: Deserialize<'de>")
+)]
+pub enum Credential<E = ()> {
     Address(Box<AddressCredential>),
     ApiKey(Box<ApiKeyCredential>),
     BasicAuth(Box<BasicAuthCredential>),
     CreditCard(Box<CreditCardCredential>),
+    CustomFields(Box<CustomFieldsCredential<E>>),
     DriversLicense(Box<DriversLicenseCredential>),
     File(Box<FileCredential>),
     GeneratedPassword(Box<GeneratedPasswordCredential>),
@@ -170,6 +174,7 @@ pub enum Credential {
     PersonName(Box<PersonNameCredential>),
     SshKey(Box<SshKeyCredential>),
     Totp(Box<TotpCredential>),
+    Wifi(Box<WifiCredential>),
     #[serde(untagged)]
     Unknown {
         ty: String,
@@ -221,7 +226,8 @@ pub struct AndroidAppIdCredential {
     /// The [human-palatable](https://www.w3.org/TR/webauthn-3/#human-palatability) name for the
     /// application, this can be fetched from the android system when associating the app to an
     /// item. It is highly recommended for providers to store this name.
-    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

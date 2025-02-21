@@ -37,18 +37,25 @@ pub struct AddressCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreditCardCredential {
+    /// The credit card number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number: Option<EditableField<EditableFieldConcealedString>>,
+    /// The full name printed on the card.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_name: Option<EditableField<EditableFieldString>>,
+    /// The vendor of the card.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub card_type: Option<EditableField<EditableFieldString>>,
+    /// The verification number/value/code (CVV, CVC).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub verification_number: Option<EditableField<EditableFieldConcealedString>>,
+    /// The personal identification number (PIN).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pin: Option<EditableField<EditableFieldConcealedString>>,
+    /// The expiration date of the card.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub expiry_date: Option<EditableField<EditableFieldYearMonth>>,
+    /// The date from which the card is valid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub valid_from: Option<EditableField<EditableFieldYearMonth>>,
 }
@@ -85,6 +92,7 @@ pub struct DriversLicenseCredential {
     /// The number assigned by the issuing authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub license_number: Option<EditableField<EditableFieldString>>,
+    ///  The vehicle types the license holder is authorized to operate.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub license_class: Option<EditableField<EditableFieldString>>,
 }
@@ -196,35 +204,32 @@ pub struct PassportCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PersonNameCredential {
-    /// This OPTIONAL field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or
-    /// "Dr".
+    /// This field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or "Dr".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     title: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field the person’s given name.
+    /// This field the person’s given name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     given: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains a nickname or preferred name.
+    /// This field contains a nickname or preferred name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     given_informal: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains additional names or middle names.
+    /// This field contains additional names or middle names.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     given2: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains the prefix of the surname. For example, "van der" in "van der
-    /// Poel" or "bint" in "bint Fadi".
+    /// This field contains the prefix of the surname. For example, "van der" in "van der Poel" or
+    /// "bint" in "bint Fadi".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     surname_prefix: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains the person’s family name.
+    /// This field contains the person’s family name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     surname: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains the person’s secondary surname, which is used in some
-    /// cultures.
+    /// This field contains the person’s secondary surname, which is used in some cultures.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     surname2: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains a credential or accreditation qualifier. For example, "PhD" or
-    /// "MBA".
+    /// This field contains a credential or accreditation qualifier. For example, "PhD" or "MBA".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     credentials: Option<EditableField<EditableFieldString>>,
-    /// This OPTIONAL field contains a generation qualifier. For example, "Jr." or "III".
+    /// This field contains a generation qualifier. For example, "Jr." or "III".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     generation: Option<EditableField<EditableFieldString>>,
 }

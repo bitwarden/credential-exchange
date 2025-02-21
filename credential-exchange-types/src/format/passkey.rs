@@ -36,7 +36,7 @@ pub struct PasskeyCredential {
     /// allows the user to edit their username. In such a case, the value of
     /// this field MUST be the user edited value. See [§ 3.3.3.1 Editability of passkey fields](https://fidoalliance.org/specs/cx/cxf-v1.0-wd-20241003.html#sctn-editability-of-passkey-fields)
     /// for more details.
-    pub user_name: String,
+    pub username: String,
     /// This member contains a [human-palatable](https://www.w3.org/TR/webauthn-3/#human-palatability)
     /// identifier for the [user account](https://www.w3.org/TR/webauthn-3/#user-account), intended
     /// only for display. The value SHOULD be equal to the value in
@@ -64,8 +64,8 @@ pub struct PasskeyCredential {
     /// The value MUST give the same [public key](https://www.w3.org/TR/webauthn-3/#credential-public-key)
     /// value that was provided by the original authenticator during [registration](https://www.w3.org/TR/webauthn-3/#registration).
     pub key: B64Url,
-    /// This OPTIONAL member denotes the WebAuthn or CTAP2 extensions that are associated to this
-    /// passkey instance.
+    /// This member denotes the WebAuthn or CTAP2 extensions that are associated to this passkey
+    /// instance.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fido2_extensions: Option<Fido2Extensions>,
 }
@@ -73,38 +73,47 @@ pub struct PasskeyCredential {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2Extensions {
+    /// This member holds the information necessary for either the
+    /// [WebAuthn prf extension](https://www.w3.org/TR/webauthn-3/#prf-extension) or the
+    /// [FIDO hmac-secret extension](https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-errata-20220621.html#sctn-hmac-secret-extension).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hmac_secret: Option<Fido2HmacSecret>,
+    pub hmac_credentials: Option<Fido2HmacCredentials>,
+    /// This member holds the information necessary for the
+    /// [FIDO credential blob extension](https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-errata-20220621.html#sctn-credBlob-extension).
+    /// The value is a base64url-encoded byte string of the stored binary blob.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cred_blob: Option<B64Url>,
+    /// This member holds the information necessary for the
+    /// [WebAuthN large blob storage extension](https://www.w3.org/TR/webauthn-3/#sctn-large-blob-extension).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub large_blob: Option<Fido2LargeBlob>,
+    /// This member denotes whether this credential is used for
+    /// [secure-payment-confirmation](https://www.w3.org/TR/secure-payment-confirmation/).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub payments: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub supplemental_keys: Option<Fido2SupplementalKeys>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Fido2HmacSecret {
-    pub alias: String,
-    pub hmac_secret: B64Url,
+pub struct Fido2HmacCredentials {
+    algorithm: Fido2HmacCredentialAlgorithm,
+    #[serde(rename = "credWithUV")]
+    cred_with_uv: B64Url,
+    #[serde(rename = "credWithoutUV")]
+    cred_without_uv: B64Url,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Fido2HmacCredentialAlgorithm {
+    HmacSha256,
+    #[serde(untagged)]
+    Other(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2LargeBlob {
-    pub size: u64,
-    pub alg: String,
+    pub uncompressed_size: u64,
     pub data: B64Url,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Fido2SupplementalKeys {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub device: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub provider: Option<bool>,
 }
