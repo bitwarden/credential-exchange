@@ -132,12 +132,46 @@ impl EditableFieldType for EditableFieldString {
     }
 }
 
+impl From<String> for EditableField<EditableFieldString> {
+    fn from(s: String) -> Self {
+        EditableField {
+            id: None,
+            value: EditableFieldString(s),
+            label: None,
+            extensions: None,
+        }
+    }
+}
+
+impl From<EditableField<EditableFieldString>> for String {
+    fn from(s: EditableField<EditableFieldString>) -> Self {
+        s.value.0
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
 pub struct EditableFieldConcealedString(pub String);
 impl EditableFieldType for EditableFieldConcealedString {
     fn field_type(&self) -> FieldType {
         FieldType::ConcealedString
+    }
+}
+
+impl From<String> for EditableField<EditableFieldConcealedString> {
+    fn from(s: String) -> Self {
+        EditableField {
+            id: None,
+            value: EditableFieldConcealedString(s),
+            label: None,
+            extensions: None,
+        }
+    }
+}
+
+impl From<EditableField<EditableFieldConcealedString>> for String {
+    fn from(s: EditableField<EditableFieldConcealedString>) -> Self {
+        s.value.0
     }
 }
 
@@ -164,6 +198,17 @@ pub struct EditableFieldYearMonth(pub String);
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
         FieldType::YearMonth
+    }
+}
+
+impl From<String> for EditableField<EditableFieldYearMonth> {
+    fn from(s: String) -> Self {
+        EditableField {
+            id: None,
+            value: EditableFieldYearMonth(s),
+            label: None,
+            extensions: None,
+        }
     }
 }
 
