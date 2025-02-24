@@ -1,3 +1,5 @@
+use std::{error::Error, fmt, str::FromStr};
+
 use chrono::NaiveDate;
 use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 
@@ -160,11 +162,60 @@ impl EditableFieldType for EditableFieldDate {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Month {
+    January = 1,
+    February = 2,
+    March = 3,
+    April = 4,
+    May = 5,
+    June = 6,
+    July = 7,
+    August = 8,
+    September = 9,
+    October = 10,
+    November = 11,
+    December = 12,
+}
+
+#[derive(Debug)]
+pub struct UnknownMonth;
+
+impl fmt::Display for UnknownMonth {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "SuperError is here!")
+    }
+}
+
+impl Error for UnknownMonth {}
+
+impl FromStr for Month {
+    type Err = UnknownMonth;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "01" => Ok(Month::January),
+            "02" => Ok(Month::February),
+            "03" => Ok(Month::March),
+            "04" => Ok(Month::April),
+            "05" => Ok(Month::May),
+            "06" => Ok(Month::June),
+            "07" => Ok(Month::July),
+            "08" => Ok(Month::August),
+            "09" => Ok(Month::September),
+            "10" => Ok(Month::October),
+            "11" => Ok(Month::November),
+            "12" => Ok(Month::December),
+            _ => Err(UnknownMonth),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableFieldYearMonth {
     /// The year in the format `YYYY`
     pub year: u16,
     /// The month in the format `MM`
-    pub month: u8,
+    pub month: Month,
 }
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
@@ -177,7 +228,7 @@ impl Serialize for EditableFieldYearMonth {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&format!("{:04}-{:02}", self.year, self.month))
+        serializer.serialize_str(&format!("{:04}-{:02}", self.year, self.month.clone() as u8))
     }
 }
 
@@ -198,8 +249,8 @@ impl<'de> Deserialize<'de> for EditableFieldYearMonth {
             month: parts
                 .next()
                 .unwrap_or("")
-                .parse::<u8>()
-                .map_err(|_| serde::de::Error::custom("Missing Month"))?,
+                .parse()
+                .map_err(|_| serde::de::Error::custom("Invalid month"))?,
         })
     }
 }
@@ -429,7 +480,7 @@ mod tests {
             id: None,
             value: EditableFieldYearMonth {
                 year: 2025,
-                month: 2,
+                month: Month::February,
             },
             label: None,
             extensions: None,
@@ -455,7 +506,7 @@ mod tests {
                 id: None,
                 value: EditableFieldYearMonth {
                     year: 2025,
-                    month: 2,
+                    month: Month::February,
                 },
                 label: None,
                 extensions: None,
