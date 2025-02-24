@@ -1,3 +1,4 @@
+use chrono::DateTime;
 use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 
 use crate::{format::Extension, B64Url};
@@ -151,19 +152,47 @@ impl EditableFieldType for EditableFieldBoolean {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldDate(pub String);
+pub struct EditableFieldDate(pub DateTime<chrono::Utc>);
 impl EditableFieldType for EditableFieldDate {
     fn field_type(&self) -> FieldType {
         FieldType::Date
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldYearMonth(pub String);
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EditableFieldYearMonth {
+    /// The year in the format `YYYY`
+    pub year: String,
+    /// The month in the format `MM`
+    pub month: String,
+}
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
         FieldType::YearMonth
+    }
+}
+
+impl Serialize for EditableFieldYearMonth {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&format!("{}-{}", self.year, self.month))
+    }
+}
+
+impl<'de> Deserialize<'de> for EditableFieldYearMonth {
+    fn deserialize<D>(deserializer: D) -> Result<EditableFieldYearMonth, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let mut parts = s.splitn(2, '-');
+
+        Ok(EditableFieldYearMonth {
+            year: parts.next().unwrap_or("").to_string(),
+            month: parts.next().unwrap_or("").to_string(),
+        })
     }
 }
 
@@ -369,5 +398,81 @@ mod tests {
             "label": "label",
         });
         assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_field_date() {
+        let field: EditableField<EditableFieldDate> = EditableField {
+            id: None,
+            value: EditableFieldDate("2025-02-24T12:34:32Z".parse().unwrap()),
+            label: None,
+            extensions: None,
+        };
+        let json = json!({
+            "fieldType": "date",
+            "value": "2025-02-24T12:34:32Z",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_editable_field_year_month() {
+        let field: EditableField<EditableFieldYearMonth> = EditableField {
+            id: None,
+            value: EditableFieldYearMonth {
+                year: "2025".to_string(),
+                month: "02".to_string(),
+            },
+            label: None,
+            extensions: None,
+        };
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025-02",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_deserialize_editable_field_year_month() {
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025-02",
+        });
+        let field: EditableField<EditableFieldYearMonth> = serde_json::from_value(json).unwrap();
+
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldYearMonth {
+                    year: "2025".to_string(),
+                    month: "02".to_string(),
+                },
+                label: None,
+                extensions: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_deserialize_editable_field_year_month_invalid_format() {
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025/02",
+        });
+        let field: EditableField<EditableFieldYearMonth> = serde_json::from_value(json).unwrap();
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldYearMonth {
+                    year: "2025/02".to_string(),
+                    month: "".to_string(),
+                },
+                label: None,
+                extensions: None,
+            }
+        );
     }
 }
