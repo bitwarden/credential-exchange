@@ -162,9 +162,9 @@ impl EditableFieldType for EditableFieldDate {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableFieldYearMonth {
     /// The year in the format `YYYY`
-    pub year: String,
+    pub year: u16,
     /// The month in the format `MM`
-    pub month: String,
+    pub month: u8,
 }
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
@@ -177,7 +177,7 @@ impl Serialize for EditableFieldYearMonth {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&format!("{}-{}", self.year, self.month))
+        serializer.serialize_str(&format!("{:04}-{:02}", self.year, self.month))
     }
 }
 
@@ -190,8 +190,16 @@ impl<'de> Deserialize<'de> for EditableFieldYearMonth {
         let mut parts = s.splitn(2, '-');
 
         Ok(EditableFieldYearMonth {
-            year: parts.next().unwrap_or("").to_string(),
-            month: parts.next().unwrap_or("").to_string(),
+            year: parts
+                .next()
+                .unwrap_or("")
+                .parse::<u16>()
+                .map_err(|_| serde::de::Error::custom("Missing year"))?,
+            month: parts
+                .next()
+                .unwrap_or("")
+                .parse::<u8>()
+                .map_err(|_| serde::de::Error::custom("Missing Month"))?,
         })
     }
 }
@@ -420,8 +428,8 @@ mod tests {
         let field: EditableField<EditableFieldYearMonth> = EditableField {
             id: None,
             value: EditableFieldYearMonth {
-                year: "2025".to_string(),
-                month: "02".to_string(),
+                year: 2025,
+                month: 2,
             },
             label: None,
             extensions: None,
@@ -446,8 +454,8 @@ mod tests {
             EditableField {
                 id: None,
                 value: EditableFieldYearMonth {
-                    year: "2025".to_string(),
-                    month: "02".to_string(),
+                    year: 2025,
+                    month: 2,
                 },
                 label: None,
                 extensions: None,
@@ -461,18 +469,7 @@ mod tests {
             "fieldType": "year-month",
             "value": "2025/02",
         });
-        let field: EditableField<EditableFieldYearMonth> = serde_json::from_value(json).unwrap();
-        assert_eq!(
-            field,
-            EditableField {
-                id: None,
-                value: EditableFieldYearMonth {
-                    year: "2025/02".to_string(),
-                    month: "".to_string(),
-                },
-                label: None,
-                extensions: None,
-            }
-        );
+        let field: Result<EditableField<EditableFieldYearMonth>, _> = serde_json::from_value(json);
+        assert!(field.is_err());
     }
 }
