@@ -404,7 +404,7 @@ mod tests {
     fn test_serialize_field_date() {
         let field: EditableField<EditableFieldDate> = EditableField {
             id: None,
-            value: EditableFieldDate(NaiveDate::from_ymd_opt(2024, 2, 24).unwrap()),
+            value: EditableFieldDate(NaiveDate::from_ymd_opt(2025, 2, 24).unwrap()),
             label: None,
             extensions: None,
         };
