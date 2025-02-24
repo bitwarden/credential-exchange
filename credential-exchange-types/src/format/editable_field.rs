@@ -1,4 +1,4 @@
-use chrono::DateTime;
+use chrono::NaiveDate;
 use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
 
 use crate::{format::Extension, B64Url};
@@ -152,7 +152,7 @@ impl EditableFieldType for EditableFieldBoolean {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldDate(pub DateTime<chrono::Utc>);
+pub struct EditableFieldDate(pub NaiveDate);
 impl EditableFieldType for EditableFieldDate {
     fn field_type(&self) -> FieldType {
         FieldType::Date
@@ -404,13 +404,13 @@ mod tests {
     fn test_serialize_field_date() {
         let field: EditableField<EditableFieldDate> = EditableField {
             id: None,
-            value: EditableFieldDate("2025-02-24T12:34:32Z".parse().unwrap()),
+            value: EditableFieldDate(NaiveDate::from_ymd_opt(2024, 2, 24).unwrap()),
             label: None,
             extensions: None,
         };
         let json = json!({
             "fieldType": "date",
-            "value": "2025-02-24T12:34:32Z",
+            "value": "2025-02-24",
         });
         assert_eq!(serde_json::to_value(&field).unwrap(), json);
     }
