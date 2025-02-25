@@ -1,5 +1,11 @@
+use std::{borrow::Cow, fmt, str};
+
 use chrono::{Month, NaiveDate};
-use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
+use serde::{
+    de::{DeserializeOwned, Visitor},
+    ser::SerializeStruct,
+    Deserialize, Serialize,
+};
 
 use crate::{format::Extension, B64Url};
 
@@ -189,7 +195,7 @@ impl<'de> Deserialize<'de> for EditableFieldYearMonth {
     where
         D: serde::Deserializer<'de>,
     {
-        let s = String::deserialize(deserializer)?;
+        let s = deserializer.deserialize_str(CowVisitor)?;
         let mut parts = s.splitn(2, '-');
         Ok(EditableFieldYearMonth {
             year: parts
@@ -205,6 +211,37 @@ impl<'de> Deserialize<'de> for EditableFieldYearMonth {
                 .try_into()
                 .map_err(|_| serde::de::Error::custom("Invalid month"))?,
         })
+    }
+}
+
+/// Deserialize strings into `Cow` to avoid unnecessary allocations
+struct CowVisitor;
+impl<'de> Visitor<'de> for CowVisitor {
+    type Value = Cow<'de, str>;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string")
+    }
+
+    fn visit_borrowed_str<E>(self, value: &'de str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Borrowed(value))
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Owned(value.to_owned()))
+    }
+
+    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Owned(value))
     }
 }
 
