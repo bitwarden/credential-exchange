@@ -196,16 +196,15 @@ impl<'de> Deserialize<'de> for EditableFieldYearMonth {
         D: serde::Deserializer<'de>,
     {
         let s = deserializer.deserialize_str(CowVisitor)?;
-        let mut parts = s.splitn(2, '-');
+        let (year_str, month_str) = s
+            .split_once('-')
+            .ok_or_else(|| serde::de::Error::custom("Invalid format"))?;
+
         Ok(EditableFieldYearMonth {
-            year: parts
-                .next()
-                .unwrap_or("")
+            year: year_str
                 .parse::<u16>()
-                .map_err(|_| serde::de::Error::custom("Missing year"))?,
-            month: parts
-                .next()
-                .unwrap_or("")
+                .map_err(|_| serde::de::Error::custom("Invalid year"))?,
+            month: month_str
                 .parse::<u8>()
                 .map_err(|_| serde::de::Error::custom("Invalid month"))?
                 .try_into()
