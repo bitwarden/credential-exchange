@@ -130,12 +130,36 @@ where
     }
 }
 
+// Helper for converting inner types into EditableField
+impl<T> From<T> for EditableField<T> {
+    fn from(s: T) -> Self {
+        EditableField {
+            id: None,
+            value: s,
+            label: None,
+            extensions: None,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
 pub struct EditableFieldString(pub String);
 impl EditableFieldType for EditableFieldString {
     fn field_type(&self) -> FieldType {
         FieldType::String
+    }
+}
+
+impl From<String> for EditableField<EditableFieldString> {
+    fn from(s: String) -> Self {
+        EditableFieldString(s).into()
+    }
+}
+
+impl From<EditableField<EditableFieldString>> for String {
+    fn from(s: EditableField<EditableFieldString>) -> Self {
+        s.value.0
     }
 }
 
@@ -148,11 +172,35 @@ impl EditableFieldType for EditableFieldConcealedString {
     }
 }
 
+impl From<String> for EditableField<EditableFieldConcealedString> {
+    fn from(s: String) -> Self {
+        EditableFieldConcealedString(s).into()
+    }
+}
+
+impl From<EditableField<EditableFieldConcealedString>> for String {
+    fn from(s: EditableField<EditableFieldConcealedString>) -> Self {
+        s.value.0
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
 impl EditableFieldType for EditableFieldBoolean {
     fn field_type(&self) -> FieldType {
         FieldType::Boolean
+    }
+}
+
+impl From<bool> for EditableField<EditableFieldBoolean> {
+    fn from(b: bool) -> Self {
+        EditableFieldBoolean(b).into()
+    }
+}
+
+impl From<EditableField<EditableFieldBoolean>> for bool {
+    fn from(b: EditableField<EditableFieldBoolean>) -> Self {
+        b.value.0
     }
 }
 
@@ -164,6 +212,7 @@ impl EditableFieldType for EditableFieldDate {
         FieldType::Date
     }
 }
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableFieldYearMonth {
     /// The year in the format `YYYY`
@@ -253,12 +302,36 @@ impl EditableFieldType for EditableFieldSubdivisionCode {
     }
 }
 
+impl From<String> for EditableField<EditableFieldSubdivisionCode> {
+    fn from(s: String) -> Self {
+        EditableFieldSubdivisionCode(s).into()
+    }
+}
+
+impl From<EditableField<EditableFieldSubdivisionCode>> for String {
+    fn from(s: EditableField<EditableFieldSubdivisionCode>) -> Self {
+        s.value.0
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
 pub struct EditableFieldCountryCode(pub String);
 impl EditableFieldType for EditableFieldCountryCode {
     fn field_type(&self) -> FieldType {
         FieldType::CountryCode
+    }
+}
+
+impl From<String> for EditableField<EditableFieldCountryCode> {
+    fn from(s: String) -> Self {
+        EditableFieldCountryCode(s).into()
+    }
+}
+
+impl From<EditableField<EditableFieldCountryCode>> for String {
+    fn from(s: EditableField<EditableFieldCountryCode>) -> Self {
+        s.value.0
     }
 }
 
