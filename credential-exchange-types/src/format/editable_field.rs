@@ -304,12 +304,7 @@ impl EditableFieldType for EditableFieldSubdivisionCode {
 
 impl From<String> for EditableField<EditableFieldSubdivisionCode> {
     fn from(s: String) -> Self {
-        EditableField {
-            id: None,
-            value: EditableFieldSubdivisionCode(s),
-            label: None,
-            extensions: None,
-        }
+        EditableFieldSubdivisionCode(s).into()
     }
 }
 
@@ -330,12 +325,7 @@ impl EditableFieldType for EditableFieldCountryCode {
 
 impl From<String> for EditableField<EditableFieldCountryCode> {
     fn from(s: String) -> Self {
-        EditableField {
-            id: None,
-            value: EditableFieldCountryCode(s),
-            label: None,
-            extensions: None,
-        }
+        EditableFieldCountryCode(s).into()
     }
 }
 
