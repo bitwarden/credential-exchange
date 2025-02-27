@@ -1,4 +1,11 @@
-use serde::{de::DeserializeOwned, ser::SerializeStruct, Deserialize, Serialize};
+use std::{borrow::Cow, fmt, str};
+
+use chrono::{Month, NaiveDate};
+use serde::{
+    de::{DeserializeOwned, Visitor},
+    ser::SerializeStruct,
+    Deserialize, Serialize,
+};
 
 use crate::{format::Extension, B64Url};
 
@@ -151,19 +158,89 @@ impl EditableFieldType for EditableFieldBoolean {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
-pub struct EditableFieldDate(pub String);
+pub struct EditableFieldDate(pub NaiveDate);
 impl EditableFieldType for EditableFieldDate {
     fn field_type(&self) -> FieldType {
         FieldType::Date
     }
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldYearMonth(pub String);
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EditableFieldYearMonth {
+    /// The year in the format `YYYY`
+    pub year: u16,
+    /// The month in the format `MM`
+    pub month: Month,
+}
 impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
         FieldType::YearMonth
+    }
+}
+
+impl Serialize for EditableFieldYearMonth {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&format!(
+            "{:04}-{:02}",
+            self.year,
+            self.month.number_from_month()
+        ))
+    }
+}
+
+impl<'de> Deserialize<'de> for EditableFieldYearMonth {
+    fn deserialize<D>(deserializer: D) -> Result<EditableFieldYearMonth, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = deserializer.deserialize_str(CowVisitor)?;
+        let (year_str, month_str) = s
+            .split_once('-')
+            .ok_or_else(|| serde::de::Error::custom("Invalid format"))?;
+
+        Ok(EditableFieldYearMonth {
+            year: year_str
+                .parse::<u16>()
+                .map_err(|_| serde::de::Error::custom("Invalid year"))?,
+            month: month_str
+                .parse::<u8>()
+                .map_err(|_| serde::de::Error::custom("Invalid month"))?
+                .try_into()
+                .map_err(|_| serde::de::Error::custom("Invalid month"))?,
+        })
+    }
+}
+
+/// Deserialize strings into `Cow` to avoid unnecessary allocations
+struct CowVisitor;
+impl<'de> Visitor<'de> for CowVisitor {
+    type Value = Cow<'de, str>;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string")
+    }
+
+    fn visit_borrowed_str<E>(self, value: &'de str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Borrowed(value))
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Owned(value.to_owned()))
+    }
+
+    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Cow::Owned(value))
     }
 }
 
@@ -369,5 +446,70 @@ mod tests {
             "label": "label",
         });
         assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_field_date() {
+        let field: EditableField<EditableFieldDate> = EditableField {
+            id: None,
+            value: EditableFieldDate(NaiveDate::from_ymd_opt(2025, 2, 24).unwrap()),
+            label: None,
+            extensions: None,
+        };
+        let json = json!({
+            "fieldType": "date",
+            "value": "2025-02-24",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_serialize_editable_field_year_month() {
+        let field: EditableField<EditableFieldYearMonth> = EditableField {
+            id: None,
+            value: EditableFieldYearMonth {
+                year: 2025,
+                month: Month::February,
+            },
+            label: None,
+            extensions: None,
+        };
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025-02",
+        });
+        assert_eq!(serde_json::to_value(&field).unwrap(), json);
+    }
+
+    #[test]
+    fn test_deserialize_editable_field_year_month() {
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025-02",
+        });
+        let field: EditableField<EditableFieldYearMonth> = serde_json::from_value(json).unwrap();
+
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldYearMonth {
+                    year: 2025,
+                    month: Month::February,
+                },
+                label: None,
+                extensions: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_deserialize_editable_field_year_month_invalid_format() {
+        let json = json!({
+            "fieldType": "year-month",
+            "value": "2025/02",
+        });
+        let field: Result<EditableField<EditableFieldYearMonth>, _> = serde_json::from_value(json);
+        assert!(field.is_err());
     }
 }
