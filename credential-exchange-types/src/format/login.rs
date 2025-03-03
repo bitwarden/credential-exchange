@@ -44,8 +44,6 @@ pub struct ApiKeyCredential<E = ()> {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct BasicAuthCredential<E = ()> {
-    /// The URLs that this credential is associated with.
-    pub urls: Vec<Uri>,
     /// The username associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub username: Option<EditableField<EditableFieldString, E>>,
