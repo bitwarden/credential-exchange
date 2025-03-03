@@ -75,23 +75,23 @@ pub struct SshKeyCredential<E = ()> {
     /// The type of SSH key algorithm used. Common values include "ssh-rsa", "ssh-ed25519", or
     /// "ecdsa-sha2-nistp256". This MUST be a string value representing a valid SSH public key
     /// algorithm as defined in IANA SSH Protocol Parameters.
-    key_type: String,
+    pub key_type: String,
     /// The private part of the SSH key pair. This MUST be a PKCS#8 ASN.1 DER formatted byte string
     /// which is then Base64url encoded.
-    private_key: B64Url,
+    pub private_key: B64Url,
     /// This member contains a user-defined string to identify or describe the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_comment: Option<String>,
+    pub key_comment: Option<String>,
     /// This member indicates when the key was created.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    creation_date: Option<EditableField<EditableFieldDate, E>>,
+    pub creation_date: Option<EditableField<EditableFieldDate, E>>,
     /// This member indicates when the key will expire, if applicable.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiration_date: Option<EditableField<EditableFieldDate, E>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate, E>>,
     /// This member indicates where the key was originally generated. E.g.,
     /// `https://github.com/settings/ssh/new` for GitHub.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    key_generation_source: Option<EditableField<EditableFieldString, E>>,
+    pub key_generation_source: Option<EditableField<EditableFieldString, E>>,
 }
 
 /// Note: Enrollment in TOTP credentials historically has been quite non-standardized but typically
