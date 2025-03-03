@@ -158,41 +158,41 @@ pub struct IdentityDocumentCredential<E = ()> {
 pub struct PassportCredential<E = ()> {
     /// The passport’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    issuing_country: Option<EditableField<EditableFieldCountryCode, E>>,
+    pub issuing_country: Option<EditableField<EditableFieldCountryCode, E>>,
     /// The passport’s document type. This MUST be a valid document code as defined in ICAO Doc
     /// 9303 Part 4.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    passport_type: Option<EditableField<EditableFieldString, E>>,
+    pub passport_type: Option<EditableField<EditableFieldString, E>>,
     /// The passport’s identifying number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    passport_number: Option<EditableField<EditableFieldString, E>>,
+    pub passport_number: Option<EditableField<EditableFieldString, E>>,
     /// The person’s national identification number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    national_identification_number: Option<EditableField<EditableFieldString, E>>,
+    pub national_identification_number: Option<EditableField<EditableFieldString, E>>,
     /// The person’s nationality.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    nationality: Option<EditableField<EditableFieldString, E>>,
+    pub nationality: Option<EditableField<EditableFieldString, E>>,
     /// The person’s full name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    full_name: Option<EditableField<EditableFieldString, E>>,
+    pub full_name: Option<EditableField<EditableFieldString, E>>,
     /// The person’s date of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    birth_date: Option<EditableField<EditableFieldDate, E>>,
+    pub birth_date: Option<EditableField<EditableFieldDate, E>>,
     /// The person’s place of birth.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    birth_place: Option<EditableField<EditableFieldString, E>>,
+    pub birth_place: Option<EditableField<EditableFieldString, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The person’s sex or gender.
-    sex: Option<EditableField<EditableFieldString, E>>,
+    pub sex: Option<EditableField<EditableFieldString, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The date on which the passport was issued.
-    issue_date: Option<EditableField<EditableFieldDate, E>>,
+    pub issue_date: Option<EditableField<EditableFieldDate, E>>,
     /// The date on which the passport expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    expiry_date: Option<EditableField<EditableFieldDate, E>>,
+    pub expiry_date: Option<EditableField<EditableFieldDate, E>>,
     /// The official body or government agency responsible for issuing the passport.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    issuing_authority: Option<EditableField<EditableFieldString, E>>,
+    pub issuing_authority: Option<EditableField<EditableFieldString, E>>,
 }
 
 /// A [PersonNameCredential] represents a person’s name as fields derived from Unicode Locale Data
@@ -206,30 +206,30 @@ pub struct PassportCredential<E = ()> {
 pub struct PersonNameCredential<E = ()> {
     /// This field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or "Dr".
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    title: Option<EditableField<EditableFieldString, E>>,
+    pub title: Option<EditableField<EditableFieldString, E>>,
     /// This field the person’s given name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    given: Option<EditableField<EditableFieldString, E>>,
+    pub given: Option<EditableField<EditableFieldString, E>>,
     /// This field contains a nickname or preferred name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    given_informal: Option<EditableField<EditableFieldString, E>>,
+    pub given_informal: Option<EditableField<EditableFieldString, E>>,
     /// This field contains additional names or middle names.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    given2: Option<EditableField<EditableFieldString, E>>,
+    pub given2: Option<EditableField<EditableFieldString, E>>,
     /// This field contains the prefix of the surname. For example, "van der" in "van der Poel" or
     /// "bint" in "bint Fadi".
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    surname_prefix: Option<EditableField<EditableFieldString, E>>,
+    pub surname_prefix: Option<EditableField<EditableFieldString, E>>,
     /// This field contains the person’s family name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    surname: Option<EditableField<EditableFieldString, E>>,
+    pub surname: Option<EditableField<EditableFieldString, E>>,
     /// This field contains the person’s secondary surname, which is used in some cultures.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    surname2: Option<EditableField<EditableFieldString, E>>,
+    pub surname2: Option<EditableField<EditableFieldString, E>>,
     /// This field contains a credential or accreditation qualifier. For example, "PhD" or "MBA".
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    credentials: Option<EditableField<EditableFieldString, E>>,
+    pub credentials: Option<EditableField<EditableFieldString, E>>,
     /// This field contains a generation qualifier. For example, "Jr." or "III".
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    generation: Option<EditableField<EditableFieldString, E>>,
+    pub generation: Option<EditableField<EditableFieldString, E>>,
 }
