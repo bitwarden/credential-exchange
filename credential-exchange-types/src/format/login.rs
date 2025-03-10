@@ -15,6 +15,7 @@ use crate::{
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the key to communicate with the API.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key: Option<EditableField<EditableFieldConcealedString, E>>,
     /// This member denotes the username associated with the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
