@@ -1,6 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["credential-exchange-types"]
+members = [
+    "credential-exchange-format",
+    "credential-exchange-protocol",
+    "credential-exchange",
+]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,4 +15,4 @@ rust-version = "1.75"
 homepage = "https://bitwarden.com"
 repository = "https://github.com/bitwarden/credential-exchange"
 license-file = "LICENSE"
-keywords = []
+keywords = ["credential-exchange", "encoding"]

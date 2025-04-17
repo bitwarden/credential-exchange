@@ -1,6 +1,7 @@
 use data_encoding::{Specification, BASE32_NOPAD, BASE64URL, BASE64URL_NOPAD};
 use serde::{Deserialize, Serialize};
 
+/// Base64URL encoded data
 #[derive(Debug, Serialize, Deserialize, Clone, Hash, PartialEq, Eq)]
 #[serde(try_from = "&str", into = "String")]
 pub struct B64Url(Vec<u8>);

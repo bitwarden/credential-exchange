@@ -2,10 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    format::{EditableField, EditableFieldString, Extension},
-    B64Url,
-};
+use crate::{B64Url, EditableField, EditableFieldString, Extension};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]

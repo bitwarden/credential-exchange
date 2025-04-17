@@ -25,7 +25,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "credential-exchange-types"
+name = "credential-exchange"
+version = "0.1.0"
+
+[[package]]
+name = "credential-exchange-format"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -33,6 +37,15 @@ dependencies = [
  "jose-jwk",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "credential-exchange-protocol"
+version = "0.1.0"
+dependencies = [
+ "credential-exchange-format",
+ "jose-jwk",
+ "serde",
 ]
 
 [[package]]

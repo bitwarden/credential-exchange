@@ -1,5 +1,5 @@
 [package]
-name = "credential-exchange-types"
+name = "credential-exchange-format"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

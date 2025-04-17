@@ -1,0 +1,15 @@
+[package]
+name = "credential-exchange-protocol"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license-file.workspace = true
+keywords.workspace = true
+
+[dependencies]
+credential-exchange-format = { path = "../credential-exchange-format" }
+jose-jwk = { version = "0.1", default-features = false }
+serde = { version = "1", features = ["derive"] }

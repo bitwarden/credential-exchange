@@ -1,1 +1,0 @@
-# Credential Exchange Types
