@@ -6,7 +6,7 @@ use super::{EditableFieldBoolean, EditableFieldWifiNetworkSecurityType};
 use crate::{
     b64url::B32,
     format::{EditableField, EditableFieldConcealedString, EditableFieldDate, EditableFieldString},
-    B64Url, Uri,
+    B64Url,
 };
 
 /// A [ApiKeyCredential] contains information to interact with an Application's Programming
@@ -15,7 +15,8 @@ use crate::{
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the key to communicate with the API.
-    pub key: EditableField<EditableFieldConcealedString, E>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub key: Option<EditableField<EditableFieldConcealedString, E>>,
     /// This member denotes the username associated with the key.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub username: Option<EditableField<EditableFieldString, E>>,
