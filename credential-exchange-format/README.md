@@ -16,15 +16,11 @@ or the
 
 ## Disclaimer
 
-<!-- prettier-ignore -->
-> [!CAUTION]
 > This library does not automatically clear sensitive values from memory. It is heavily encouraged
 > to use it alongside a zeroizing global allocator like
 > [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). We may be open to pull requests
 > that adds native `zeroize` support depending on the developer ergonomics.
 
-<!-- prettier-ignore -->
-> [!NOTE]
 > This library is still in early development and as the specification evolves so will this library.
 
 ## Usage

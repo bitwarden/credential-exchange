@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{B64Url, Uri};
 
-/// This is an object that describes an appropriate context in which the [Item]'s
-/// [Item::credentials] can to be used.
+/// This is an object that describes an appropriate context in which the [Item][crate::Item]'s
+/// [crate::Item::credentials] can to be used.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CredentialScope {
@@ -17,7 +17,7 @@ pub struct CredentialScope {
 
 /// An [AndroidAppIdCredential] contains the information required to verify and identify an
 /// [Android](https://www.android.com/) application for automatically filling other credentials
-/// associated to the same [Item] as this one.
+/// associated to the same [Item][crate::Item] as this one.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AndroidAppIdCredential {
