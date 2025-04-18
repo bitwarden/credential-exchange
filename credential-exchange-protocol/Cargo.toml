@@ -1,5 +1,7 @@
 [package]
 name = "credential-exchange-protocol"
+description = "Credential Exchange Protocol (CXP) rust types"
+
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

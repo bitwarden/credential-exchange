@@ -1,5 +1,7 @@
 [package]
 name = "credential-exchange"
+description = "Placeholder for high level credential exchange functionality"
+
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
