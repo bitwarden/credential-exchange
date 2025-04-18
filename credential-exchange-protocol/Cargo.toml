@@ -1,6 +1,6 @@
 [package]
 name = "credential-exchange-protocol"
-version = "0.1.0"
+version.workspace = true
 authors.workspace = true
 edition.workspace = true
 rust-version.workspace = true
