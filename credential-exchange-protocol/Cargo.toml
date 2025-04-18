@@ -10,6 +10,6 @@ license-file.workspace = true
 keywords.workspace = true
 
 [dependencies]
-credential-exchange-format = { path = "../credential-exchange-format" }
+credential-exchange-format = { path = "../credential-exchange-format", version = "0.1" }
 jose-jwk = { version = "0.1", default-features = false }
 serde = { version = "1", features = ["derive"] }
