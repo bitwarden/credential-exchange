@@ -1,13 +1,21 @@
+#![doc = include_str!("../README.md")]
+
 use serde::{Deserialize, Serialize};
 
-pub use self::{document::*, editable_field::*, identity::*, login::*, passkey::*};
-use crate::{b64url::B64Url, Uri};
-
+mod b64url;
+mod credential_scope;
 mod document;
 mod editable_field;
 mod identity;
 mod login;
 mod passkey;
+
+pub use self::{
+    b64url::*, credential_scope::*, document::*, editable_field::*, identity::*, login::*,
+    passkey::*,
+};
+
+type Uri = String;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
@@ -96,6 +104,17 @@ pub struct Collection<E = ()> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LinkedItem {
+    /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
+    /// be sent as part of the current exchange.
+    pub item: B64Url,
+    /// This member indicates the [Account’s id][Account::id] the referenced [Item] belongs to. If
+    /// not present, the [Item] belongs to the current [Account] being exchanged.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub account: Option<B64Url>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
@@ -139,22 +158,15 @@ pub struct Item<E = ()> {
     pub extensions: Option<Vec<Extension<E>>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LinkedItem {
-    /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
-    /// be sent as part of the current exchange.
-    pub item: B64Url,
-    /// This member indicates the [Account’s id][Account::id] the referenced [Item] belongs to. If
-    /// not present, the [Item] belongs to the current [Account] being exchanged.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub account: Option<B64Url>,
-}
-
+/// An [Extension] is a generic object that can be used to extend the [Item] or [Account] with
+/// additional information.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "name", rename_all = "kebab-case")]
 pub enum Extension<E = ()> {
     #[serde(untagged)]
+    /// External extensions defined by the implementor of this crate.
     External(E),
+    /// Unknown extension
     #[serde(untagged)]
     Unknown(serde_json::Value),
 }
@@ -202,59 +214,4 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
-}
-
-/// This is an object that describes an appropriate context in which the [Item]'s
-/// [Item::credentials] can to be used.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CredentialScope {
-    /// This member holds strings which SHOULD follow the Uniform Resource Identifier (URI) syntax
-    /// as defined in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
-    pub urls: Vec<Uri>,
-    /// This member defines the android apps that have been validated to be appropriate for the
-    /// credentials to be used.
-    pub android_apps: Vec<AndroidAppIdCredential>,
-}
-
-/// An [AndroidAppIdCredential] contains the information required to verify and identify an
-/// [Android](https://www.android.com/) application for automatically filling other credentials
-/// associated to the same [Item] as this one.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AndroidAppIdCredential {
-    /// The application identifier. A non-normative example of an application identifier is
-    /// `"com.example.myapp"`.
-    pub bundle_id: String,
-    /// The fingerprint of the public certificate used to sign the android application. This member
-    /// is OPTIONAL but is highly recommended to be stored for validation during an autofill
-    /// operation.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub certificate: Option<AndroidAppCertificateFingerprint>,
-    /// The [human-palatable](https://www.w3.org/TR/webauthn-3/#human-palatability) name for the
-    /// application, this can be fetched from the android system when associating the app to an
-    /// item. It is highly recommended for providers to store this name.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AndroidAppCertificateFingerprint {
-    /// This is the hash of the application's public certificate using the hashing algorithm
-    /// defined in [AndroidAppCertificateFingerprint::hash_algorithm]. The bytes of the hash are
-    /// then encoded into base64url directly.
-    pub fingerprint: B64Url,
-    /// The algorithm used to hash the [AndroidAppCertificateFingerprint::fingerprint]. This SHOULD
-    /// be of value [AndroidAppHashAlgorithm].
-    pub hash_algorithm: AndroidAppHashAlgorithm,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum AndroidAppHashAlgorithm {
-    Sha256,
-    Sha1,
-    #[serde(untagged)]
-    Other(String),
 }

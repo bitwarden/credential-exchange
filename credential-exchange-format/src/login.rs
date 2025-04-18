@@ -4,9 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use super::{EditableFieldBoolean, EditableFieldWifiNetworkSecurityType};
 use crate::{
-    b64url::B32,
-    format::{EditableField, EditableFieldConcealedString, EditableFieldDate, EditableFieldString},
-    B64Url,
+    b64url::B32, B64Url, EditableField, EditableFieldConcealedString, EditableFieldDate,
+    EditableFieldString,
 };
 
 /// A [ApiKeyCredential] contains information to interact with an Application's Programming

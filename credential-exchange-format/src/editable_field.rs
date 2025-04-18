@@ -7,7 +7,7 @@ use serde::{
     Deserialize, Serialize,
 };
 
-use crate::{format::Extension, B64Url};
+use crate::{B64Url, Extension};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableField<T, E = ()> {

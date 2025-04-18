@@ -1,8 +1,7 @@
-//! Provides models and functions to perform exports.
+#![doc = include_str!("../README.md")]
 
+use credential_exchange_format::B64Url;
 use serde::{Deserialize, Serialize};
-
-use crate::b64url::B64Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{
+use crate::{
     EditableField, EditableFieldConcealedString, EditableFieldCountryCode, EditableFieldDate,
     EditableFieldString, EditableFieldSubdivisionCode, EditableFieldYearMonth,
 };
