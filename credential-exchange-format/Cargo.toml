@@ -1,5 +1,7 @@
 [package]
 name = "credential-exchange-format"
+description = "Credential Exchange Format (CXF) rust types"
+
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
