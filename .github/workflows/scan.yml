@@ -8,7 +8,9 @@ on:
       - "rc"
       - "hotfix-rc"
   pull_request_target:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
+    branches:
+      - "main"
 
 # TODO: see https://bitwarden.atlassian.net/l/cp/SLtTZJ90 for configuration tips
 jobs:
