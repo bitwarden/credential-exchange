@@ -131,6 +131,7 @@ pub struct TotpCredential {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+#[non_exhaustive]
 pub enum OTPHashAlgorithm {
     /// This algorithm denotes that [SHA1](https://www.rfc-editor.org/rfc/rfc3174) MUST be used to
     /// generate the OTP hash.

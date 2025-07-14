@@ -165,6 +165,7 @@ pub struct Item<E = ()> {
     rename_all = "kebab-case",
     bound(deserialize = "E: Deserialize<'de>")
 )]
+#[non_exhaustive]
 pub enum Credential<E = ()> {
     Address(Box<AddressCredential<E>>),
     ApiKey(Box<ApiKeyCredential<E>>),

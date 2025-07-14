@@ -50,6 +50,7 @@ pub struct AndroidAppCertificateFingerprint {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[non_exhaustive]
 pub enum AndroidAppHashAlgorithm {
     Sha256,
     Sha1,

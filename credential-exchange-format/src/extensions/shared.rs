@@ -49,6 +49,7 @@ pub struct SharingAccessor {
 /// access permissions to the respective entity.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+#[non_exhaustive]
 pub enum SharingAccessorType {
     /// Indicates the respective [`SharingAccessor`] is describing a specific user’s [`Account`]'s
     /// permissions on the shared entity.
@@ -65,6 +66,7 @@ pub enum SharingAccessorType {
 /// the respective entity.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+#[non_exhaustive]
 pub enum SharingAccessorPermission {
     /// Indicates that the respective [`SharingAccessor`] has read permissions on the associated
     /// entity, excluding its secrets. This generally means that the client prevents the user

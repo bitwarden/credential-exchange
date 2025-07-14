@@ -11,6 +11,7 @@ pub use self::shared::*;
 /// additional information.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "name", rename_all = "kebab-case")]
+#[non_exhaustive]
 pub enum Extension<E = ()> {
     /// Defines a sharing relationship of [`Collection`] or [`Item`] between different user
     /// accounts or groups.
