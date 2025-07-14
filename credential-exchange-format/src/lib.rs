@@ -6,13 +6,14 @@ mod b64url;
 mod credential_scope;
 mod document;
 mod editable_field;
+mod extensions;
 mod identity;
 mod login;
 mod passkey;
 
 pub use self::{
-    b64url::*, credential_scope::*, document::*, editable_field::*, identity::*, login::*,
-    passkey::*,
+    b64url::*, credential_scope::*, document::*, editable_field::*, extensions::*, identity::*,
+    login::*, passkey::*,
 };
 
 type Uri = String;
@@ -156,19 +157,6 @@ pub struct Item<E = ()> {
     /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>,
-}
-
-/// An [Extension] is a generic object that can be used to extend the [Item] or [Account] with
-/// additional information.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "name", rename_all = "kebab-case")]
-pub enum Extension<E = ()> {
-    #[serde(untagged)]
-    /// External extensions defined by the implementor of this crate.
-    External(E),
-    /// Unknown extension
-    #[serde(untagged)]
-    Unknown(serde_json::Value),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
