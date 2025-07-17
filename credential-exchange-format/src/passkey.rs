@@ -96,11 +96,11 @@ pub struct Fido2Extensions {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2HmacCredentials {
-    algorithm: Fido2HmacCredentialAlgorithm,
+    pub algorithm: Fido2HmacCredentialAlgorithm,
     #[serde(rename = "credWithUV")]
-    cred_with_uv: B64Url,
+    pub cred_with_uv: B64Url,
     #[serde(rename = "credWithoutUV")]
-    cred_without_uv: B64Url,
+    pub cred_without_uv: B64Url,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

@@ -63,7 +63,7 @@ pub struct BasicAuthCredential<E = ()> {
 #[serde(rename_all = "camelCase")]
 pub struct GeneratedPasswordCredential {
     /// The machine-generated password.
-    password: String,
+    pub password: String,
 }
 
 /// An [SshKeyCredential] represents an SSH (Secure Shell) key pair.
