@@ -6,16 +6,16 @@ use crate::{Account, Collection, Item};
 
 /// Defines entity sharing between user accounts
 ///
-/// Entities are shared by applying the [`Shared`] extension to them.
-/// This extensions MUST only be applied to [`Collections`] and [`Items`].
+/// Entities are shared by applying the [`SharedExtension`] extension to them.
+/// This extensions MUST only be applied to [`Collection`] and [`Item`].
 ///
 /// Entities that are shared MUST only be included in the exports for accounts that are credential
 /// owners or admins of the entity.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct SharedExtension {
     /// A list of [`SharingAccessor`] objects that represents users or groups
-    /// and their permissions with respect to access on the entity to which the [`Shared`]
-    /// extension is applied.
+    /// and their permissions with respect to access on the entity to which the [`SharedExtension`]
+    /// is applied.
     pub accessors: Vec<SharingAccessor>,
 }
 

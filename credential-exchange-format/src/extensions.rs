@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[cfg(doc)]
-use crate::{Account, Collection};
+use crate::{Account, Collection, Item};
 
 mod shared;
 
