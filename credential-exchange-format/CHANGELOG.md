@@ -9,9 +9,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Support for `SharedExtension` (#80)
+- **BREAKING**: Added `SharedExtension` enum variant to `Extension`. (#80)
 
 ### Changed
 
-- _BREAKING_: Changed all enums to be `#[non_exhaustive]` which allows additive changes to be
+- **BREAKING**: Changed all enums to be `#[non_exhaustive]` which allows additive changes to be
   non-breaking in the future. (#80)
