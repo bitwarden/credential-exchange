@@ -26,11 +26,11 @@ dependencies = [
 
 [[package]]
 name = "credential-exchange"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "credential-exchange-format"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "data-encoding",
@@ -40,7 +40,7 @@ dependencies = [
 
 [[package]]
 name = "credential-exchange-protocol"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "credential-exchange-format",
  "jose-jwk",

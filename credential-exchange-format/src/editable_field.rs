@@ -27,6 +27,7 @@ pub struct EditableField<T, E = ()> {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
+#[non_exhaustive]
 pub enum FieldType {
     /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
     String,
@@ -337,6 +338,7 @@ impl From<EditableField<EditableFieldCountryCode>> for String {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
+#[non_exhaustive]
 pub enum EditableFieldWifiNetworkSecurityType {
     Unsecured,
     WpaPersonal,
