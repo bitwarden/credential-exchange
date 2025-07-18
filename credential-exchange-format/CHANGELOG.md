@@ -17,3 +17,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   non-breaking in the future. (#80)
 - **BREAKING**: Changed fields in `Fido2HmacCredentials` and `GeneratedPasswordCredential` to be
   public. (#82)
+- **BREAKING**: Allow `From` impls for any extension E. (#83)
