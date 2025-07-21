@@ -132,7 +132,7 @@ where
 }
 
 // Helper for converting inner types into EditableField
-impl<T> From<T> for EditableField<T> {
+impl<T, E> From<T> for EditableField<T, E> {
     fn from(s: T) -> Self {
         EditableField {
             id: None,
@@ -152,14 +152,14 @@ impl EditableFieldType for EditableFieldString {
     }
 }
 
-impl From<String> for EditableField<EditableFieldString> {
+impl<E> From<String> for EditableField<EditableFieldString, E> {
     fn from(s: String) -> Self {
         EditableFieldString(s).into()
     }
 }
 
-impl From<EditableField<EditableFieldString>> for String {
-    fn from(s: EditableField<EditableFieldString>) -> Self {
+impl<E> From<EditableField<EditableFieldString, E>> for String {
+    fn from(s: EditableField<EditableFieldString, E>) -> Self {
         s.value.0
     }
 }
@@ -173,14 +173,14 @@ impl EditableFieldType for EditableFieldConcealedString {
     }
 }
 
-impl From<String> for EditableField<EditableFieldConcealedString> {
+impl<E> From<String> for EditableField<EditableFieldConcealedString, E> {
     fn from(s: String) -> Self {
         EditableFieldConcealedString(s).into()
     }
 }
 
-impl From<EditableField<EditableFieldConcealedString>> for String {
-    fn from(s: EditableField<EditableFieldConcealedString>) -> Self {
+impl<E> From<EditableField<EditableFieldConcealedString, E>> for String {
+    fn from(s: EditableField<EditableFieldConcealedString, E>) -> Self {
         s.value.0
     }
 }
@@ -193,14 +193,14 @@ impl EditableFieldType for EditableFieldBoolean {
     }
 }
 
-impl From<bool> for EditableField<EditableFieldBoolean> {
+impl<E> From<bool> for EditableField<EditableFieldBoolean, E> {
     fn from(b: bool) -> Self {
         EditableFieldBoolean(b).into()
     }
 }
 
-impl From<EditableField<EditableFieldBoolean>> for bool {
-    fn from(b: EditableField<EditableFieldBoolean>) -> Self {
+impl<E> From<EditableField<EditableFieldBoolean, E>> for bool {
+    fn from(b: EditableField<EditableFieldBoolean, E>) -> Self {
         b.value.0
     }
 }
@@ -303,14 +303,14 @@ impl EditableFieldType for EditableFieldSubdivisionCode {
     }
 }
 
-impl From<String> for EditableField<EditableFieldSubdivisionCode> {
+impl<E> From<String> for EditableField<EditableFieldSubdivisionCode, E> {
     fn from(s: String) -> Self {
         EditableFieldSubdivisionCode(s).into()
     }
 }
 
-impl From<EditableField<EditableFieldSubdivisionCode>> for String {
-    fn from(s: EditableField<EditableFieldSubdivisionCode>) -> Self {
+impl<E> From<EditableField<EditableFieldSubdivisionCode, E>> for String {
+    fn from(s: EditableField<EditableFieldSubdivisionCode, E>) -> Self {
         s.value.0
     }
 }
@@ -324,14 +324,14 @@ impl EditableFieldType for EditableFieldCountryCode {
     }
 }
 
-impl From<String> for EditableField<EditableFieldCountryCode> {
+impl<E> From<String> for EditableField<EditableFieldCountryCode, E> {
     fn from(s: String) -> Self {
         EditableFieldCountryCode(s).into()
     }
 }
 
-impl From<EditableField<EditableFieldCountryCode>> for String {
-    fn from(s: EditableField<EditableFieldCountryCode>) -> Self {
+impl<E> From<EditableField<EditableFieldCountryCode, E>> for String {
+    fn from(s: EditableField<EditableFieldCountryCode, E>) -> Self {
         s.value.0
     }
 }
