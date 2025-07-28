@@ -39,7 +39,7 @@ pub struct FileCredential {
     pub decrypted_size: u64,
     /// The SHA256 hash of the decrypted file. This hash MUST be used by the importing provider
     /// when the file is decrypted to ensure that it has not been corrupted.
-    pub integration_hash: B64Url,
+    pub integrity_hash: B64Url,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
