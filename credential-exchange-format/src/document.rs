@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{B64Url, EditableField, EditableFieldString, Extension};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct CustomFieldsCredential<E = ()> {
     /// A unique identifier for the CustomFields. It MUST be a machine-generated opaque byte
