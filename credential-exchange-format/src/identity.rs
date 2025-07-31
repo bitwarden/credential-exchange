@@ -8,7 +8,7 @@ use crate::{
 };
 
 /// An [AddressCredential] provides information for autofilling address forms.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct AddressCredential<E = ()> {
     /// The address line for the address. This is intentionally flexible to accommodate different
@@ -34,7 +34,7 @@ pub struct AddressCredential<E = ()> {
     pub tel: Option<EditableField<EditableFieldString, E>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct CreditCardCredential<E = ()> {
     /// The credit card number.
@@ -63,7 +63,7 @@ pub struct CreditCardCredential<E = ()> {
 /// A [DriversLicenseCredential] contains information about a person’s driver’s license. The fields
 /// reflect the relevant set of mandatory data fields defined by
 /// [ISO 18013-1](https://www.iso.org/standard/63798.html).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct DriversLicenseCredential<E = ()> {
     /// The full name of the license holder.
@@ -108,7 +108,7 @@ pub struct DriversLicenseCredential<E = ()> {
 /// Note: Driver’s licenses and passports may be accepted as identity verification in some
 /// countries, but they are specified separately in the [DriversLicenseCredential] and
 /// [PassportCredential] types, respectively.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct IdentityDocumentCredential<E = ()> {
     /// The document’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
@@ -153,7 +153,7 @@ pub struct IdentityDocumentCredential<E = ()> {
 
 /// A [PassportCredential] contains the details of a person’s passport. The fields reflect the
 /// relevant set of data elements defined by ICAO Doc 9303 Part 4.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct PassportCredential<E = ()> {
     /// The passport’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
@@ -201,7 +201,7 @@ pub struct PassportCredential<E = ()> {
 /// All fields are marked as optional because an exporting provider SHOULD refrain from making
 /// decisions about splitting up a name into any parts that were not explicitly provided as such,
 /// since that often introduces errors.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct PersonNameCredential<E = ()> {
     /// This field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or "Dr".
