@@ -10,7 +10,7 @@ use crate::{
 
 /// A [ApiKeyCredential] contains information to interact with an Application's Programming
 /// Interface (API).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the key to communicate with the API.
@@ -41,7 +41,7 @@ pub struct ApiKeyCredential<E = ()> {
 ///
 /// A [BasicAuthCredential] SHOULD have an accompanying [super::CredentialScope] in the credentials
 /// array. This indicates in which websites or applications these fields SHOULD be presented.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct BasicAuthCredential<E = ()> {
     /// The username associated with the credential.
@@ -147,7 +147,7 @@ pub enum OTPHashAlgorithm {
 }
 
 /// Wi-Fi Passphrase
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
 pub struct WifiCredential<E = ()> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
