@@ -74,7 +74,10 @@ where
     where
         S: serde::Serializer,
     {
-        let len = 2 + self.id.is_some() as usize + self.label.is_some() as usize;
+        let len = 2
+            + self.id.is_some() as usize
+            + self.label.is_some() as usize
+            + self.extensions.is_some() as usize;
         let mut state = serializer.serialize_struct("editable_field", len)?;
 
         if let Some(ref id) = self.id {
@@ -92,6 +95,16 @@ where
             state.skip_field("label")?;
         }
 
+        if let Some(ref ext) = self.extensions {
+            if ext.is_empty() {
+                state.skip_field("extensions")?;
+            } else {
+                state.serialize_field("extensions", ext)?;
+            }
+        } else {
+            state.skip_field("extensions")?;
+        }
+
         state.end()
     }
 }
@@ -107,14 +120,23 @@ where
     {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
-        struct EditableFieldHelper<T> {
+        struct EditableFieldHelper<T, E> {
+            #[serde(default)]
             id: Option<B64Url>,
             value: T,
             field_type: FieldType,
+            #[serde(default)]
             label: Option<String>,
+            #[serde(default = "none::<E>")]
+            extensions: Option<Vec<Extension<E>>>,
+        }
+        // Need to use this instead of the normal default,
+        // otherwise the derive creates a `E: Default` constraint.
+        fn none<E>() -> Option<Vec<Extension<E>>> {
+            None
         }
 
-        let helper: EditableFieldHelper<T> = EditableFieldHelper::deserialize(deserializer)?;
+        let helper: EditableFieldHelper<T, E> = EditableFieldHelper::deserialize(deserializer)?;
 
         if helper.field_type != helper.value.field_type() {
             return Err(serde::de::Error::custom(
@@ -126,7 +148,7 @@ where
             id: helper.id,
             value: helper.value,
             label: helper.label,
-            extensions: None,
+            extensions: helper.extensions,
         })
     }
 }
@@ -586,5 +608,43 @@ mod tests {
         });
         let field: Result<EditableField<EditableFieldYearMonth>, _> = serde_json::from_value(json);
         assert!(field.is_err());
+    }
+
+    #[test]
+    fn test_extension_round_trip() {
+        let json = json!({
+            "fieldType": "string",
+            "value": "hello",
+            "extensions": [
+                {
+                    "name": "test",
+                    "contents": "world"
+                }
+            ]
+        });
+        #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+        #[serde(tag = "name", rename_all = "camelCase")]
+        enum CustomExtension {
+            Test { contents: String },
+        }
+
+        let field: EditableField<EditableFieldString, CustomExtension> =
+            serde_json::from_value(json.clone()).expect("Could not deserialize custom extensions");
+
+        assert_eq!(
+            field,
+            EditableField {
+                id: None,
+                value: EditableFieldString("hello".to_string()),
+                label: None,
+                extensions: Some(vec![Extension::External(CustomExtension::Test {
+                    contents: "world".into()
+                })])
+            }
+        );
+
+        let returned = serde_json::to_value(field).expect("Could not serialize custom extensions");
+
+        assert_eq!(returned, json);
     }
 }
