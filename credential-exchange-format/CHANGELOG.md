@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Implement `Default` on all types where either all fields are optional or vectors that can be empty. (#90)
+
 ### Changed
 
 - **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
