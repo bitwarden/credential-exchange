@@ -70,7 +70,7 @@ pub struct PasskeyCredential {
     pub fido2_extensions: Option<Fido2Extensions>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fido2Extensions {
     /// This member holds the information necessary for either the
