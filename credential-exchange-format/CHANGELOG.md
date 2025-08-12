@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
+
 ### Fixed
 
 - Include `EditableField.extensions` in serialization and deserialization. (#91)
