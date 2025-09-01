@@ -19,7 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Include `EditableField.extensions` in serialization and deserialization. (#91)
-- **BREAKING**: Change `CustomFieldsCredential` to use `EditableField` and not
+- **BREAKING**: Change `CustomFieldsCredential` to support any `EditableField` and not only
   `EditableFieldString`. (#97)
 
 ## [0.2.0] - 2025-07-21
