@@ -60,7 +60,7 @@ pub enum FieldType {
 }
 
 /// A trait to associate the field structs with their `field_type` tag.
-trait EditableFieldType {
+pub trait EditableFieldType {
     /// The `field_type` value associated with the type
     fn field_type(&self) -> FieldType;
 }
@@ -124,6 +124,7 @@ where
             #[serde(default)]
             id: Option<B64Url>,
             value: T,
+            #[serde(rename = "fieldType")]
             field_type: FieldType,
             #[serde(default)]
             label: Option<String>,
@@ -374,6 +375,40 @@ pub enum EditableFieldWifiNetworkSecurityType {
 impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
     fn field_type(&self) -> FieldType {
         FieldType::WifiNetworkSecurityType
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged, bound(deserialize = "E: Deserialize<'de>"))]
+#[non_exhaustive]
+pub enum EditableFieldValue<E = ()> {
+    String(EditableField<EditableFieldString, E>),
+    #[serde(rename = "concealed-string")]
+    ConcealedString(EditableField<EditableFieldConcealedString, E>),
+    Boolean(EditableField<EditableFieldBoolean, E>),
+    Date(EditableField<EditableFieldDate, E>),
+    #[serde(rename = "year-month")]
+    YearMonth(EditableField<EditableFieldYearMonth, E>),
+    #[serde(rename = "subdivision-code")]
+    SubdivisionCode(EditableField<EditableFieldSubdivisionCode, E>),
+    #[serde(rename = "country-code")]
+    CountryCode(EditableField<EditableFieldCountryCode, E>),
+    #[serde(rename = "wifi-network-security-type")]
+    WifiNetworkSecurityType(EditableField<EditableFieldWifiNetworkSecurityType, E>),
+}
+
+impl<E> EditableFieldType for EditableFieldValue<E> {
+    fn field_type(&self) -> FieldType {
+        match self {
+            EditableFieldValue::String(field) => field.value.field_type(),
+            EditableFieldValue::ConcealedString(field) => field.value.field_type(),
+            EditableFieldValue::Boolean(field) => field.value.field_type(),
+            EditableFieldValue::Date(field) => field.value.field_type(),
+            EditableFieldValue::YearMonth(field) => field.value.field_type(),
+            EditableFieldValue::SubdivisionCode(field) => field.value.field_type(),
+            EditableFieldValue::CountryCode(field) => field.value.field_type(),
+            EditableFieldValue::WifiNetworkSecurityType(field) => field.value.field_type(),
+        }
     }
 }
 

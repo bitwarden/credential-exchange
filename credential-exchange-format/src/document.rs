@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{B64Url, EditableField, EditableFieldString, Extension};
+use crate::{B64Url, EditableField, EditableFieldString, EditableFieldValue, Extension};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
@@ -16,7 +16,7 @@ pub struct CustomFieldsCredential<E = ()> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// The collection of miscellaneous fields under this section.
-    pub fields: Vec<EditableField<EditableFieldString, E>>,
+    pub fields: Vec<EditableFieldValue<E>>,
     /// This member permits the exporting provider to add additional information associated to this
     /// CustomFields. This MAY be used to provide an exchange where a minimal amount of information
     /// is lost.
@@ -47,4 +47,89 @@ pub struct FileCredential {
 pub struct NoteCredential<E = ()> {
     /// This member is a user-defined value encoded as a UTF-8 string.
     pub content: EditableField<EditableFieldString, E>,
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::*;
+    use crate::{EditableFieldBoolean, EditableFieldString};
+
+    #[test]
+    fn test_serialize_custom_fields() {
+        let credential = CustomFieldsCredential {
+            id: None,
+            label: None,
+            fields: vec![
+                EditableFieldValue::<()>::String(EditableField {
+                    id: Some(B64Url::from(b"field1".as_slice())),
+                    value: EditableFieldString("hello".into()),
+                    label: None,
+                    extensions: None,
+                }),
+                EditableFieldValue::<()>::Boolean(EditableField {
+                    id: None,
+                    value: EditableFieldBoolean(false),
+                    label: None,
+                    extensions: None,
+                }),
+            ],
+            extensions: vec![],
+        };
+
+        let json = json!({
+            "fields": [
+                {
+                    "id": "ZmllbGQx",
+                    "fieldType": "string",
+                    "value": "hello"
+                },
+                {
+                    "fieldType": "boolean",
+                    "value": "false"
+                }
+            ]
+        });
+
+        assert_eq!(serde_json::to_value(&credential).unwrap(), json);
+    }
+
+    #[test]
+    fn test_deserialize_custom_fields() {
+        let json = json!({
+            "fields": [
+                {
+                    "fieldType": "string",
+                    "value": "hello"
+                },
+                {
+                    "fieldType": "boolean",
+                    "value": "false"
+                }
+            ]
+        });
+
+        let json = serde_json::to_string(&json).unwrap();
+        let credential: CustomFieldsCredential = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(credential.id, None);
+        assert_eq!(credential.label, None);
+        assert_eq!(credential.extensions.len(), 0);
+        assert_eq!(credential.fields.len(), 2);
+
+        match &credential.fields[0] {
+            EditableFieldValue::String(field) => {
+                assert_eq!(field.value.0, "hello");
+            }
+            _ => panic!("Expected string field"),
+        }
+
+        match &credential.fields[1] {
+            EditableFieldValue::Boolean(field) => {
+                assert!(!field.value.0);
+            }
+            _ => panic!("Expected boolean field"),
+        }
+    }
 }
