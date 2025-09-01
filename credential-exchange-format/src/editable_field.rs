@@ -124,7 +124,6 @@ where
             #[serde(default)]
             id: Option<B64Url>,
             value: T,
-            #[serde(rename = "fieldType")]
             field_type: FieldType,
             #[serde(default)]
             label: Option<String>,
