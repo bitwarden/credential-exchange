@@ -378,6 +378,7 @@ impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
     }
 }
 
+/// Helper wrapper for `CustomFieldsCredential`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged, bound(deserialize = "E: Deserialize<'de>"))]
 #[non_exhaustive]
@@ -395,21 +396,6 @@ pub enum EditableFieldValue<E = ()> {
     CountryCode(EditableField<EditableFieldCountryCode, E>),
     #[serde(rename = "wifi-network-security-type")]
     WifiNetworkSecurityType(EditableField<EditableFieldWifiNetworkSecurityType, E>),
-}
-
-impl<E> EditableFieldType for EditableFieldValue<E> {
-    fn field_type(&self) -> FieldType {
-        match self {
-            EditableFieldValue::String(field) => field.value.field_type(),
-            EditableFieldValue::ConcealedString(field) => field.value.field_type(),
-            EditableFieldValue::Boolean(field) => field.value.field_type(),
-            EditableFieldValue::Date(field) => field.value.field_type(),
-            EditableFieldValue::YearMonth(field) => field.value.field_type(),
-            EditableFieldValue::SubdivisionCode(field) => field.value.field_type(),
-            EditableFieldValue::CountryCode(field) => field.value.field_type(),
-            EditableFieldValue::WifiNetworkSecurityType(field) => field.value.field_type(),
-        }
-    }
 }
 
 mod serde_bool {
