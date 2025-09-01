@@ -383,17 +383,12 @@ impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
 #[non_exhaustive]
 pub enum EditableFieldValue<E = ()> {
     String(EditableField<EditableFieldString, E>),
-    #[serde(rename = "concealed-string")]
     ConcealedString(EditableField<EditableFieldConcealedString, E>),
     Boolean(EditableField<EditableFieldBoolean, E>),
     Date(EditableField<EditableFieldDate, E>),
-    #[serde(rename = "year-month")]
     YearMonth(EditableField<EditableFieldYearMonth, E>),
-    #[serde(rename = "subdivision-code")]
     SubdivisionCode(EditableField<EditableFieldSubdivisionCode, E>),
-    #[serde(rename = "country-code")]
     CountryCode(EditableField<EditableFieldCountryCode, E>),
-    #[serde(rename = "wifi-network-security-type")]
     WifiNetworkSecurityType(EditableField<EditableFieldWifiNetworkSecurityType, E>),
 }
 

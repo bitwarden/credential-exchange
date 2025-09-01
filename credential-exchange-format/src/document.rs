@@ -51,10 +51,11 @@ pub struct NoteCredential<E = ()> {
 
 #[cfg(test)]
 mod tests {
+    use chrono::Month;
     use serde_json::json;
 
     use super::*;
-    use crate::{EditableFieldBoolean, EditableFieldString};
+    use crate::{EditableFieldBoolean, EditableFieldString, EditableFieldYearMonth};
 
     #[test]
     fn test_serialize_custom_fields() {
@@ -106,6 +107,10 @@ mod tests {
                 {
                     "fieldType": "boolean",
                     "value": "false"
+                },
+                {
+                    "fieldType": "year-month",
+                    "value": "2025-02"
                 }
             ]
         });
@@ -116,7 +121,7 @@ mod tests {
         assert_eq!(credential.id, None);
         assert_eq!(credential.label, None);
         assert_eq!(credential.extensions.len(), 0);
-        assert_eq!(credential.fields.len(), 2);
+        assert_eq!(credential.fields.len(), 3);
 
         match &credential.fields[0] {
             EditableFieldValue::String(field) => {
@@ -128,6 +133,19 @@ mod tests {
         match &credential.fields[1] {
             EditableFieldValue::Boolean(field) => {
                 assert!(!field.value.0);
+            }
+            _ => panic!("Expected boolean field"),
+        }
+
+        match &credential.fields[2] {
+            EditableFieldValue::YearMonth(field) => {
+                assert_eq!(
+                    field.value,
+                    EditableFieldYearMonth {
+                        year: 2025,
+                        month: Month::February,
+                    }
+                );
             }
             _ => panic!("Expected boolean field"),
         }
