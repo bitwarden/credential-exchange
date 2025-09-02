@@ -105,6 +105,10 @@ mod tests {
                     "value": "hello"
                 },
                 {
+                    "fieldType": "concealed-string",
+                    "value": "world"
+                },
+                {
                     "fieldType": "boolean",
                     "value": "false"
                 },
@@ -121,7 +125,7 @@ mod tests {
         assert_eq!(credential.id, None);
         assert_eq!(credential.label, None);
         assert_eq!(credential.extensions.len(), 0);
-        assert_eq!(credential.fields.len(), 3);
+        assert_eq!(credential.fields.len(), 4);
 
         match &credential.fields[0] {
             EditableFieldValue::String(field) => {
@@ -131,13 +135,20 @@ mod tests {
         }
 
         match &credential.fields[1] {
+            EditableFieldValue::ConcealedString(field) => {
+                assert_eq!(field.value.0, "world");
+            }
+            _ => panic!("Expected concealed string field"),
+        }
+
+        match &credential.fields[2] {
             EditableFieldValue::Boolean(field) => {
                 assert!(!field.value.0);
             }
             _ => panic!("Expected boolean field"),
         }
 
-        match &credential.fields[2] {
+        match &credential.fields[3] {
             EditableFieldValue::YearMonth(field) => {
                 assert_eq!(
                     field.value,
