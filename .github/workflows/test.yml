@@ -14,15 +14,6 @@ permissions:
   contents: read
 
 jobs:
-  ci-pass:
-    name: Check if tests passed
-    runs-on: ubuntu-24.04
-    needs:
-      - test
-    steps:
-      - name: Check if tests passed
-        run: exit 0
-
   test:
     name: ${{ matrix.os }} / default
     runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
@@ -73,3 +64,12 @@ jobs:
 
       - name: Upload to codecov.io
         uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # v5.3.1
+
+  ci-pass:
+    name: Check if tests passed
+    runs-on: ubuntu-24.04
+    needs:
+      - test
+    steps:
+      - name: Check if tests passed
+        run: exit 0
