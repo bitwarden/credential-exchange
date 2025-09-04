@@ -45,7 +45,7 @@ pub struct AndroidAppCertificateFingerprint {
     pub fingerprint: B64Url,
     /// The algorithm used to hash the [AndroidAppCertificateFingerprint::fingerprint]. This SHOULD
     /// be of value [AndroidAppHashAlgorithm].
-    pub hash_algorithm: AndroidAppHashAlgorithm,
+    pub hash_alg: AndroidAppHashAlgorithm,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
