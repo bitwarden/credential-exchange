@@ -60,7 +60,7 @@ pub enum FieldType {
 }
 
 /// A trait to associate the field structs with their `field_type` tag.
-trait EditableFieldType {
+pub trait EditableFieldType {
     /// The `field_type` value associated with the type
     fn field_type(&self) -> FieldType;
 }
@@ -375,6 +375,21 @@ impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
     fn field_type(&self) -> FieldType {
         FieldType::WifiNetworkSecurityType
     }
+}
+
+/// Helper wrapper for `CustomFieldsCredential`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged, bound(deserialize = "E: Deserialize<'de>"))]
+#[non_exhaustive]
+pub enum EditableFieldValue<E = ()> {
+    String(EditableField<EditableFieldString, E>),
+    ConcealedString(EditableField<EditableFieldConcealedString, E>),
+    Boolean(EditableField<EditableFieldBoolean, E>),
+    Date(EditableField<EditableFieldDate, E>),
+    YearMonth(EditableField<EditableFieldYearMonth, E>),
+    SubdivisionCode(EditableField<EditableFieldSubdivisionCode, E>),
+    CountryCode(EditableField<EditableFieldCountryCode, E>),
+    WifiNetworkSecurityType(EditableField<EditableFieldWifiNetworkSecurityType, E>),
 }
 
 mod serde_bool {
