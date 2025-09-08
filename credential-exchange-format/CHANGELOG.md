@@ -23,6 +23,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Included `EditableField.extensions` in serialization and deserialization. (#91)
 - **BREAKING**: Changed `CustomFieldsCredential` to support any `EditableField` and not only
   `EditableFieldString`. (#97)
+- **BREAKING**: Renamed `AndroidAppCertificateFingerprint::hash_algorithm` to `hash_alg` to match
+  the spec. (#99)
 
 ## [0.2.0] - 2025-07-21
 
