@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-09-08
+
 ### Added
 
 - Implement `Default` on all types where either all fields are optional or vectors that can be
@@ -18,8 +20,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Include `EditableField.extensions` in serialization and deserialization. (#91)
-- **BREAKING**: Change `CustomFieldsCredential` to support any `EditableField` and not only
+- Included `EditableField.extensions` in serialization and deserialization. (#91)
+- **BREAKING**: Changed `CustomFieldsCredential` to support any `EditableField` and not only
   `EditableFieldString`. (#97)
 
 ## [0.2.0] - 2025-07-21
