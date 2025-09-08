@@ -7,7 +7,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Bitwarden Inc"]
 edition = "2021"
 # Note: Changing rust-version should be considered a breaking change
