@@ -40,12 +40,12 @@ pub struct AndroidAppIdCredential {
 #[serde(rename_all = "camelCase")]
 pub struct AndroidAppCertificateFingerprint {
     /// This is the hash of the application's public certificate using the hashing algorithm
-    /// defined in [AndroidAppCertificateFingerprint::hash_algorithm]. The bytes of the hash are
+    /// defined in [AndroidAppCertificateFingerprint::hash_alg]. The bytes of the hash are
     /// then encoded into base64url directly.
     pub fingerprint: B64Url,
     /// The algorithm used to hash the [AndroidAppCertificateFingerprint::fingerprint]. This SHOULD
     /// be of value [AndroidAppHashAlgorithm].
-    pub hash_algorithm: AndroidAppHashAlgorithm,
+    pub hash_alg: AndroidAppHashAlgorithm,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
