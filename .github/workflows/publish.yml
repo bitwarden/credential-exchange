@@ -30,7 +30,7 @@ jobs:
       release-tag: ${{ steps.version-output.outputs.tag_name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Branch check
         if: ${{ inputs.release_type != 'Dry Run' }}
@@ -68,7 +68,7 @@ jobs:
       deployments: write
     steps:
       - name: Checkout
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ needs.setup.outputs.release-tag }}
 
