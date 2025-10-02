@@ -65,6 +65,7 @@ jobs:
         with:
           ref: main
           repository: bitwarden/sdk
+          persist-credentials: true
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
@@ -79,21 +80,28 @@ jobs:
         env:
           VERSION: ${{ inputs.version_number }}
           PROJECT: ${{ inputs.project }}
-        run: git switch -c sdk-${PROJECT}_version_bump_${VERSION}
+        run: git switch -c "sdk-${PROJECT}_version_bump_${VERSION}"
 
       - name: Create Version Branch
         id: create-branch
+        env:
+          _REF_NAME: ${{ github.ref_name }}
+          _VERSION: ${{ inputs.version_number }}
+          _PROJECT: ${{ inputs.project }}
         run: |
-          NAME=version_bump_${{ github.ref_name }}_${{ inputs.project }}_${{ inputs.version_number }}
-          git switch -c $NAME
-          echo "name=$NAME" >> $GITHUB_OUTPUT
+          NAME="version_bump_${_REF_NAME}_${_PROJECT}_${_VERSION}"
+          git switch -c "$NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       ########################
       # VERSION BUMP SECTION #
       ########################
 
       - name: Bump ${{ inputs.project }} crate Version
-        run: cargo set-version -p ${{ inputs.project }} ${{ inputs.version_number }}
+        env:
+          _VERSION: ${{ inputs.version_number }}
+          _PROJECT: ${{ inputs.project }}
+        run: cargo set-version -p "${_PROJECT}" "${_VERSION}"
 
       ############################
       # VERSION BUMP SECTION END #
@@ -108,9 +116,9 @@ jobs:
         id: version-changed
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "changes_to_commit=TRUE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=TRUE" >> "$GITHUB_OUTPUT"
           else
-            echo "changes_to_commit=FALSE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=FALSE" >> "$GITHUB_OUTPUT"
             echo "No changes to commit!";
           fi
 
@@ -122,13 +130,16 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped sdk-${{ inputs.project }} version to ${{ inputs.version_number }}" -a
+        env:
+          VERSION: ${{ inputs.version_number }}
+          PROJECT: ${{ inputs.project }}
+        run: git commit -m "Bumped sdk-${PROJECT} version to ${VERSION}" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
-        run: git push -u origin $PR_BRANCH
+        run: git push -u origin "$PR_BRANCH"
 
       - name: Create Version PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
@@ -137,6 +148,8 @@ jobs:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
           TITLE: "Bump ${{ inputs.project }} version to ${{ inputs.version_number }}"
+          _PROJECT: ${{ inputs.project }}
+          _VERSION: ${{ inputs.version_number }}
         run: |
           PR_URL=$(gh pr create --title "$TITLE" \
             --base "main" \
@@ -152,20 +165,20 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated ${{ inputs.project }} version bump to ${{ inputs.version_number }}")
-          echo "pr_number=${PR_URL##*/}" >> $GITHUB_OUTPUT
+              Automated ${_PROJECT} version bump to ${_VERSION}")
+          echo "pr_number=${PR_URL##*/}" >> "$GITHUB_OUTPUT"
 
       - name: Approve PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr review $PR_NUMBER --approve
+        run: gh pr review "$PR_NUMBER" --approve
 
       - name: Merge PR
         env:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr merge $PR_NUMBER --squash --auto --delete-branch
+        run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
 
   cut_rc:
     name: Cut RC branch
@@ -179,6 +192,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: main
+          persist-credentials: true
 
       - name: Check if RC branch exists
         run: |
