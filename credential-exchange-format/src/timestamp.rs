@@ -13,34 +13,6 @@
 //!
 //! All timestamps are serialized as UNIX timestamps (i64) for consistency and compatibility
 //! with the CXF standard.
-//!
-//! ## Usage
-//!
-//! Use the `#[serde(with = "timestamp")]` attribute for required timestamp fields:
-//!
-//! ```rust
-//! use chrono::{DateTime, Utc};
-//! use serde::{Deserialize, Serialize};
-//!
-//! #[derive(Serialize, Deserialize)]
-//! struct Event {
-//!     #[serde(with = "credential_exchange_format::timestamp")]
-//!     timestamp: DateTime<Utc>,
-//! }
-//! ```
-//!
-//! For optional timestamp fields, use `#[serde(with = "timestamp::option")]`:
-//!
-//! ```rust
-//! use chrono::{DateTime, Utc};
-//! use serde::{Deserialize, Serialize};
-//!
-//! #[derive(Serialize, Deserialize)]
-//! struct Event {
-//!     #[serde(with = "credential_exchange_format::timestamp::option")]
-//!     created_at: Option<DateTime<Utc>>,
-//! }
-//! ```
 
 use chrono::{DateTime, TimeZone, Utc};
 use serde::{Deserialize, Deserializer, Serializer};
@@ -52,19 +24,6 @@ use serde::{Deserialize, Deserializer, Serializer};
 /// # Errors
 ///
 /// Returns an error if the serializer fails to serialize the timestamp value.
-///
-/// # Examples
-///
-/// ```rust
-/// use chrono::{DateTime, Utc};
-/// use serde::Serialize;
-///
-/// #[derive(Serialize)]
-/// struct Event {
-///     #[serde(with = "credential_exchange_format::timestamp")]
-///     timestamp: DateTime<Utc>,
-/// }
-/// ```
 pub fn serialize<S>(date: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -87,19 +46,6 @@ where
 /// - The timestamp value is invalid or out of range
 /// - The ISO8601 string cannot be parsed
 /// - The input is neither a number nor a string
-///
-/// # Examples
-///
-/// ```rust
-/// use chrono::{DateTime, Utc};
-/// use serde::Deserialize;
-///
-/// #[derive(Deserialize)]
-/// struct Event {
-///     #[serde(with = "credential_exchange_format::timestamp")]
-///     timestamp: DateTime<Utc>,
-/// }
-/// ```
 pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
 where
     D: Deserializer<'de>,
@@ -143,24 +89,12 @@ where
     deserializer.deserialize_any(TimestampVisitor)
 }
 
-/// Serialization and deserialization functions for `Option<DateTime<Utc>>`.
-///
-/// This module provides the same flexible deserialization as the parent module,
-/// but for optional timestamp fields.
-///
-/// # Usage
-///
-/// ```rust
-/// use chrono::{DateTime, Utc};
-/// use serde::{Deserialize, Serialize};
-///
-/// #[derive(Serialize, Deserialize)]
-/// struct Event {
-///     #[serde(with = "credential_exchange_format::timestamp::option")]
-///     created_at: Option<DateTime<Utc>>,
-/// }
-/// ```
 pub mod option {
+    //! Serialization and deserialization functions for `Option<DateTime<Utc>>`.
+    //!
+    //! This module provides the same flexible deserialization as the parent module,
+    //! but for optional timestamp fields.
+
     use super::{DateTime, Deserialize, Deserializer, Serializer, TimeZone, Utc};
 
     /// Serializes an `Option<DateTime<Utc>>` as either a UNIX timestamp (i64) or null.
