@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 mod b64url;
@@ -10,6 +11,7 @@ mod extensions;
 mod identity;
 mod login;
 mod passkey;
+mod timestamp;
 
 pub use self::{
     b64url::*, credential_scope::*, document::*, editable_field::*, extensions::*, identity::*,
@@ -29,7 +31,8 @@ pub struct Header<E = ()> {
     /// The display name of the exporting app to be presented to the user.
     pub exporter_display_name: String,
     /// The UNIX timestamp during at which the export document was completed.
-    pub timestamp: u64,
+    #[serde(with = "timestamp")]
+    pub timestamp: DateTime<Utc>,
     /// The list of [Account]s being exported.
     pub accounts: Vec<Account<E>>,
 }
@@ -80,14 +83,22 @@ pub struct Collection<E = ()> {
     /// originally created. If this member is not set, but the importing provider requires this
     /// member in their proprietary data model, the importer SHOULD use the current timestamp at
     /// the time the provider encounters this 8Collection].
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub creation_at: Option<u64>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "timestamp::option"
+    )]
+    pub creation_at: Option<DateTime<Utc>>,
     /// This member contains the UNIX timestamp in seconds of the last modification brought to this
     /// [Collection]. If this member is not set, but the importing provider requires this member in
     /// their proprietary data model, the importer SHOULD use the current timestamp at the time the
     /// provider encounters this [Collection].
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub modified_at: Option<u64>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "timestamp::option"
+    )]
+    pub modified_at: Option<DateTime<Utc>>,
     /// The display name of the [Collection].
     pub title: String,
     /// This field is a subtitle or a description of the [Collection].
@@ -125,14 +136,18 @@ pub struct Item<E = ()> {
     /// created. If this member is not set, but the importing provider requires this
     /// member in their proprietary data model, the importer SHOULD use the current timestamp
     /// at the time the provider encounters this [Item].
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub creation_at: Option<u64>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "timestamp::option"
+    )]
+    pub creation_at: Option<DateTime<Utc>>,
     /// This member contains the UNIX timestamp in seconds of the last modification brought to this
     /// [Item]. If this member is not set, but the importing provider requires this member in
     /// their proprietary data model, the importer SHOULD use the current timestamp at the time
     /// the provider encounters this [Item].
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub modified_at: Option<u64>,
+    pub modified_at: Option<DateTime<Utc>>,
     /// This member’s value is the user-defined name or title of the item.
     pub title: String,
     /// This member is a subtitle or description for the [Item].
