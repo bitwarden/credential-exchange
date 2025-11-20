@@ -46,3 +46,28 @@ fn export() -> Result<String, serde_json::Error> {
     serde_json::to_string(&account)
 }
 ```
+
+### Compatibility with Apple's Credential migration
+
+The JSON representation of
+[`ASImportableAccount`](https://developer.apple.com/documentation/authenticationservices/asimportableaccount)
+maps directly to this crate's `Account` struct.
+
+Note that Foundation
+[`JSONEncoder`](https://developer.apple.com/documentation/foundation/jsonencoder) and
+[`JSONDecoder`](https://developer.apple.com/documentation/foundation/jsondecoder) do use the
+`secondsSince1970` date format by default, and you will need to set that explicitly:
+
+```swift
+static let cxfEncoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .secondsSince1970
+    return encoder
+}()
+
+static let cxfDecoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .secondsSince1970
+    return decoder
+}()
+```
