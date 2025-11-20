@@ -55,7 +55,7 @@ maps directly to this crate's `Account` struct.
 
 Note that Foundation
 [`JSONEncoder`](https://developer.apple.com/documentation/foundation/jsonencoder) and
-[`JSONDecoder`](https://developer.apple.com/documentation/foundation/jsondecoder) do use the
+[`JSONDecoder`](https://developer.apple.com/documentation/foundation/jsondecoder) do **not** use the
 `secondsSince1970` date format by default, and you will need to set that explicitly:
 
 ```swift
