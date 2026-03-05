@@ -39,7 +39,7 @@ pub struct SharingAccessor {
     pub name: String,
     /// The list of permissions that [`Account`] defined by [`Self::account_id`] has with respect
     /// to access on the shared entity. Importers MUST ignore entries with value of
-    /// [`SharingAccessorPermission::Unknown`]. Importers MUST ignore any [`SharingAccessors=]
+    /// [`SharingAccessorPermission::Unknown`]. Importers MUST ignore any [`SharingAccessor`]s
     /// that have an empty permissions list, whether it’s been exported as empty or when it’s
     /// empty as a result of ignoring all unknown entries.
     pub permissions: Vec<SharingAccessorPermission>,
