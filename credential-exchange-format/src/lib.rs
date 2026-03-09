@@ -186,6 +186,7 @@ pub enum Credential<E = ()> {
     Wifi(Box<WifiCredential<E>>),
     #[serde(untagged)]
     Unknown {
+        #[serde(rename = "type")]
         ty: String,
         #[serde(flatten)]
         content: serde_json::Map<String, serde_json::Value>,
@@ -203,4 +204,20 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserializes_unknown_credential() {
+        let cred = r#"{ "type": "future-credential" }"#;
+        let res = serde_json::from_str::<Credential>(&cred);
+        assert!(matches!(res, Ok(Credential::Unknown { .. })));
+
+        let empty = r#"{ }"#;
+        let res = serde_json::from_str::<Credential>(&empty);
+        assert!(res.is_err());
+    }
 }
