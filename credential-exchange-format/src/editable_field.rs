@@ -269,6 +269,13 @@ impl EditableFieldType for EditableFieldYearMonth {
     fn field_type(&self) -> FieldType {
         FieldType::YearMonth
     }
+
+    fn can_mix_with(&self, other: &FieldType) -> bool {
+        matches!(
+            other,
+            FieldType::String | FieldType::ConcealedString | FieldType::Date
+        ) || &self.field_type() == other
+    }
 }
 
 impl Serialize for EditableFieldYearMonth {
@@ -697,5 +704,19 @@ mod tests {
 
             assert_eq!(field.value.0, "hello");
         }
+    }
+
+    #[test]
+    fn can_parse_date_as_year_month() {
+        let json = json!({
+            "fieldType": "date",
+            "value": "2022-12",
+        });
+
+        let field: EditableField<EditableFieldYearMonth> =
+            serde_json::from_value(json.clone()).expect("Could not deserialize field");
+
+        assert_eq!(field.value.year, 2022);
+        assert_eq!(field.value.month, Month::December);
     }
 }
