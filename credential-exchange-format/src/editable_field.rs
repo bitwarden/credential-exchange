@@ -63,6 +63,18 @@ pub enum FieldType {
 pub trait EditableFieldType {
     /// The `field_type` value associated with the type
     fn field_type(&self) -> FieldType;
+
+    /// Whether we can mix our field type with another.
+    ///
+    /// For example if we process an EditableConcealedString, but we are expecting an
+    /// EditableString we should be able to assign the former to the latter without
+    /// losing any information.
+    fn can_mix_with(&self, other: &FieldType) -> bool {
+        // if we are deserializing from a string/concealed-string then we
+        // can most likely convert to any field type
+        matches!(other, FieldType::String | FieldType::ConcealedString)
+            || &self.field_type() == other
+    }
 }
 
 impl<T, E> Serialize for EditableField<T, E>
@@ -138,7 +150,7 @@ where
 
         let helper: EditableFieldHelper<T, E> = EditableFieldHelper::deserialize(deserializer)?;
 
-        if helper.field_type != helper.value.field_type() {
+        if !helper.value.can_mix_with(&helper.field_type) {
             return Err(serde::de::Error::custom(
                 "field_type does not match value type",
             ));
@@ -172,6 +184,11 @@ impl EditableFieldType for EditableFieldString {
     fn field_type(&self) -> FieldType {
         FieldType::String
     }
+
+    fn can_mix_with(&self, _: &FieldType) -> bool {
+        // all types are compatible with the String type
+        true
+    }
 }
 
 impl<E> From<String> for EditableField<EditableFieldString, E> {
@@ -192,6 +209,11 @@ pub struct EditableFieldConcealedString(pub String);
 impl EditableFieldType for EditableFieldConcealedString {
     fn field_type(&self) -> FieldType {
         FieldType::ConcealedString
+    }
+
+    fn can_mix_with(&self, _: &FieldType) -> bool {
+        // all types are compatible with the ConcealedString type
+        true
     }
 }
 
@@ -478,11 +500,10 @@ mod tests {
     fn test_deserialize_field_wrong_type() {
         let json = json!({
             "value": "value",
-            "fieldType": "string",
+            "fieldType": "date",
             "label": "label",
         });
-        let field: Result<EditableField<EditableFieldConcealedString>, _> =
-            serde_json::from_value(json);
+        let field: Result<EditableField<EditableFieldBoolean>, _> = serde_json::from_value(json);
 
         assert!(field.is_err());
     }
@@ -661,5 +682,20 @@ mod tests {
         let returned = serde_json::to_value(field).expect("Could not serialize custom extensions");
 
         assert_eq!(returned, json);
+    }
+
+    #[test]
+    fn editable_string_deserialized_from_others() {
+        for field_type in ["string", "concealed-string", "unknown", "date", "email"] {
+            let json = json!({
+                "fieldType": field_type,
+                "value": "hello",
+            });
+
+            let field: EditableField<EditableFieldString> =
+                serde_json::from_value(json.clone()).expect("Could not deserialize field");
+
+            assert_eq!(field.value.0, "hello");
+        }
     }
 }
