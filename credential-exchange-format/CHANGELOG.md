@@ -18,6 +18,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
 - **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`. (#125)
+- **MINOR**: Changed parsing behavior of EditableField types to allow for more inputs to be recognized. (#126)
 
 ### Fixed
 
