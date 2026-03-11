@@ -65,13 +65,13 @@ mod tests {
             fields: vec![
                 EditableFieldValue::<()>::String(EditableField {
                     id: Some(B64Url::from(b"field1".as_slice())),
-                    value: EditableFieldString("hello".into()),
+                    value: EditableFieldString("hello".into()).into(),
                     label: None,
                     extensions: None,
                 }),
                 EditableFieldValue::<()>::Boolean(EditableField {
                     id: None,
-                    value: EditableFieldBoolean(false),
+                    value: EditableFieldBoolean(false).into(),
                     label: None,
                     extensions: None,
                 }),
@@ -129,21 +129,21 @@ mod tests {
 
         match &credential.fields[0] {
             EditableFieldValue::String(field) => {
-                assert_eq!(field.value.0, "hello");
+                assert_eq!(field.value.as_expected().map(|v| v.0.as_str()), Ok("hello"));
             }
             _ => panic!("Expected string field"),
         }
 
         match &credential.fields[1] {
             EditableFieldValue::ConcealedString(field) => {
-                assert_eq!(field.value.0, "world");
+                assert_eq!(field.value.as_expected().map(|v| v.0.as_str()), Ok("world"));
             }
             _ => panic!("Expected concealed string field"),
         }
 
         match &credential.fields[2] {
             EditableFieldValue::Boolean(field) => {
-                assert!(!field.value.0);
+                assert_eq!(field.value.as_expected().map(|e| e.0), Ok(false));
             }
             _ => panic!("Expected boolean field"),
         }
@@ -151,11 +151,11 @@ mod tests {
         match &credential.fields[3] {
             EditableFieldValue::YearMonth(field) => {
                 assert_eq!(
-                    field.value,
-                    EditableFieldYearMonth {
+                    field.value.as_expected(),
+                    Ok(&EditableFieldYearMonth {
                         year: 2025,
                         month: Month::February,
-                    }
+                    })
                 );
             }
             _ => panic!("Expected boolean field"),
