@@ -207,6 +207,48 @@ impl<E> From<EditableField<EditableFieldConcealedString, E>> for String {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
+pub struct EditableFieldEmail(pub String);
+impl EditableFieldType for EditableFieldEmail {
+    fn field_type(&self) -> FieldType {
+        FieldType::Email
+    }
+}
+
+impl<E> From<String> for EditableField<EditableFieldEmail, E> {
+    fn from(s: String) -> Self {
+        EditableFieldEmail(s).into()
+    }
+}
+
+impl<E> From<EditableField<EditableFieldEmail, E>> for String {
+    fn from(s: EditableField<EditableFieldEmail, E>) -> Self {
+        s.value.0
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(transparent)]
+pub struct EditableFieldNumber(pub String);
+impl EditableFieldType for EditableFieldNumber {
+    fn field_type(&self) -> FieldType {
+        FieldType::Number
+    }
+}
+
+impl<E> From<String> for EditableField<EditableFieldNumber, E> {
+    fn from(s: String) -> Self {
+        EditableFieldNumber(s).into()
+    }
+}
+
+impl<E> From<EditableField<EditableFieldNumber, E>> for String {
+    fn from(s: EditableField<EditableFieldNumber, E>) -> Self {
+        s.value.0
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
 impl EditableFieldType for EditableFieldBoolean {
@@ -384,6 +426,8 @@ impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
 pub enum EditableFieldValue<E = ()> {
     String(EditableField<EditableFieldString, E>),
     ConcealedString(EditableField<EditableFieldConcealedString, E>),
+    Email(EditableField<EditableFieldEmail, E>),
+    Number(EditableField<EditableFieldNumber, E>),
     Boolean(EditableField<EditableFieldBoolean, E>),
     Date(EditableField<EditableFieldDate, E>),
     YearMonth(EditableField<EditableFieldYearMonth, E>),
