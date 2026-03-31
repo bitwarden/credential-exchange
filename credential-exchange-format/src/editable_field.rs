@@ -165,89 +165,38 @@ impl<T, E> From<T> for EditableField<T, E> {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldString(pub String);
-impl EditableFieldType for EditableFieldString {
-    fn field_type(&self) -> FieldType {
-        FieldType::String
-    }
+/// Macro to define a string-backed `EditableField` type with its `EditableFieldType` impl
+/// and `From` conversions for `String`.
+macro_rules! editable_field_string_type {
+    ($name:ident, $variant:ident) => {
+        #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+        #[serde(transparent)]
+        pub struct $name(pub String);
+
+        impl EditableFieldType for $name {
+            fn field_type(&self) -> FieldType {
+                FieldType::$variant
+            }
+        }
+
+        impl<E> From<String> for EditableField<$name, E> {
+            fn from(s: String) -> Self {
+                $name(s).into()
+            }
+        }
+
+        impl<E> From<EditableField<$name, E>> for String {
+            fn from(s: EditableField<$name, E>) -> Self {
+                s.value.0
+            }
+        }
+    };
 }
 
-impl<E> From<String> for EditableField<EditableFieldString, E> {
-    fn from(s: String) -> Self {
-        EditableFieldString(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldString, E>> for String {
-    fn from(s: EditableField<EditableFieldString, E>) -> Self {
-        s.value.0
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldConcealedString(pub String);
-impl EditableFieldType for EditableFieldConcealedString {
-    fn field_type(&self) -> FieldType {
-        FieldType::ConcealedString
-    }
-}
-
-impl<E> From<String> for EditableField<EditableFieldConcealedString, E> {
-    fn from(s: String) -> Self {
-        EditableFieldConcealedString(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldConcealedString, E>> for String {
-    fn from(s: EditableField<EditableFieldConcealedString, E>) -> Self {
-        s.value.0
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldEmail(pub String);
-impl EditableFieldType for EditableFieldEmail {
-    fn field_type(&self) -> FieldType {
-        FieldType::Email
-    }
-}
-
-impl<E> From<String> for EditableField<EditableFieldEmail, E> {
-    fn from(s: String) -> Self {
-        EditableFieldEmail(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldEmail, E>> for String {
-    fn from(s: EditableField<EditableFieldEmail, E>) -> Self {
-        s.value.0
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldNumber(pub String);
-impl EditableFieldType for EditableFieldNumber {
-    fn field_type(&self) -> FieldType {
-        FieldType::Number
-    }
-}
-
-impl<E> From<String> for EditableField<EditableFieldNumber, E> {
-    fn from(s: String) -> Self {
-        EditableFieldNumber(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldNumber, E>> for String {
-    fn from(s: EditableField<EditableFieldNumber, E>) -> Self {
-        s.value.0
-    }
-}
+editable_field_string_type!(EditableFieldString, String);
+editable_field_string_type!(EditableFieldConcealedString, ConcealedString);
+editable_field_string_type!(EditableFieldEmail, Email);
+editable_field_string_type!(EditableFieldNumber, Number);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
@@ -358,47 +307,8 @@ impl<'de> Visitor<'de> for CowVisitor {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldSubdivisionCode(pub String);
-impl EditableFieldType for EditableFieldSubdivisionCode {
-    fn field_type(&self) -> FieldType {
-        FieldType::SubdivisionCode
-    }
-}
-
-impl<E> From<String> for EditableField<EditableFieldSubdivisionCode, E> {
-    fn from(s: String) -> Self {
-        EditableFieldSubdivisionCode(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldSubdivisionCode, E>> for String {
-    fn from(s: EditableField<EditableFieldSubdivisionCode, E>) -> Self {
-        s.value.0
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct EditableFieldCountryCode(pub String);
-impl EditableFieldType for EditableFieldCountryCode {
-    fn field_type(&self) -> FieldType {
-        FieldType::CountryCode
-    }
-}
-
-impl<E> From<String> for EditableField<EditableFieldCountryCode, E> {
-    fn from(s: String) -> Self {
-        EditableFieldCountryCode(s).into()
-    }
-}
-
-impl<E> From<EditableField<EditableFieldCountryCode, E>> for String {
-    fn from(s: EditableField<EditableFieldCountryCode, E>) -> Self {
-        s.value.0
-    }
-}
+editable_field_string_type!(EditableFieldSubdivisionCode, SubdivisionCode);
+editable_field_string_type!(EditableFieldCountryCode, CountryCode);
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
