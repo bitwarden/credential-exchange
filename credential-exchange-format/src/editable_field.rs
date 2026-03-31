@@ -197,6 +197,8 @@ editable_field_string_type!(EditableFieldString, String);
 editable_field_string_type!(EditableFieldConcealedString, ConcealedString);
 editable_field_string_type!(EditableFieldEmail, Email);
 editable_field_string_type!(EditableFieldNumber, Number);
+editable_field_string_type!(EditableFieldSubdivisionCode, SubdivisionCode);
+editable_field_string_type!(EditableFieldCountryCode, CountryCode);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
@@ -306,9 +308,6 @@ impl<'de> Visitor<'de> for CowVisitor {
         Ok(Cow::Owned(value))
     }
 }
-
-editable_field_string_type!(EditableFieldSubdivisionCode, SubdivisionCode);
-editable_field_string_type!(EditableFieldCountryCode, CountryCode);
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
