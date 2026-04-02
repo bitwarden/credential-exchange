@@ -13,11 +13,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Implement `Default` on all types where either all fields are optional or vectors that can be
   empty. (#90)
+- Add `EditableFieldEmail` and `EditableFieldNumber` variants to `EditableFieldValue`. (#132)
 
 ### Changed
 
 - **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
-- **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`. (#125)
+- **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`.
+  (#125)
 
 ### Fixed
 
