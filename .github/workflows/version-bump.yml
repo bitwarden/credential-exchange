@@ -75,13 +75,6 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Create Version Branch
-        id: branch
-        env:
-          VERSION: ${{ inputs.version_number }}
-          PROJECT: ${{ inputs.project }}
-        run: git switch -c "sdk-${PROJECT}_version_bump_${VERSION}"
-
-      - name: Create Version Branch
         id: create-branch
         env:
           _REF_NAME: ${{ github.ref_name }}
