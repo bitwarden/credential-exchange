@@ -75,13 +75,6 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Create Version Branch
-        id: branch
-        env:
-          VERSION: ${{ inputs.version_number }}
-          PROJECT: ${{ inputs.project }}
-        run: git switch -c "sdk-${PROJECT}_version_bump_${VERSION}"
-
-      - name: Create Version Branch
         id: create-branch
         env:
           _REF_NAME: ${{ github.ref_name }}
@@ -100,8 +93,6 @@ jobs:
         env:
           _VERSION: ${{ inputs.version_number }}
           _PROJECT: ${{ inputs.project }}
-          _BOT_NAME: "bw-ghapp[bot]"
-          _BOT_EMAIL: "178206702+bw-ghapp[bot]@users.noreply.github.com"
         run: cargo set-version -p "${_PROJECT}" "${_VERSION}"
 
       ############################
@@ -109,6 +100,9 @@ jobs:
       ############################
 
       - name: Setup git
+        env:
+          _BOT_EMAIL: "github-actions[bot]@users.noreply.github.com"
+          _BOT_NAME: "github-actions[bot]"
         run: |
           git config --local user.email "${_BOT_EMAIL}"
           git config --local user.name "${_BOT_NAME}"
