@@ -87,7 +87,7 @@ impl From<UnexpectedField> for String {
             UnexpectedField::Unknown { value: v, .. } => v,
             UnexpectedField::Email(v) => v.0,
             UnexpectedField::Number(v) => v.0,
-            UnexpectedField::Boolean(b) => if b.0 { "true" } else { "false" }.into(),
+            UnexpectedField::Boolean(v) => v.into(),
             UnexpectedField::Date(date) => date.0.format("%Y-%m-%d").to_string(),
             UnexpectedField::YearMonth(v) => v.into(),
         }
@@ -438,6 +438,13 @@ impl EditableFieldType for EditableFieldBoolean {
 impl<E> From<bool> for EditableField<EditableFieldBoolean, E> {
     fn from(b: bool) -> Self {
         EditableFieldBoolean(b).into()
+    }
+}
+
+impl From<EditableFieldBoolean> for String {
+    #[inline]
+    fn from(value: EditableFieldBoolean) -> Self {
+        if value.0 { "true" } else { "false" }.into()
     }
 }
 
