@@ -410,6 +410,13 @@ macro_rules! editable_field_string_type {
             }
         }
 
+        impl From<$name> for String {
+            #[inline]
+            fn from(v: $name) -> Self {
+                v.0
+            }
+        }
+
         impl AsRef<str> for $name {
             #[inline]
             fn as_ref(&self) -> &str {
