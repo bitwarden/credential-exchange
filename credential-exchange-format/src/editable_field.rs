@@ -81,14 +81,7 @@ impl From<UnexpectedField> for String {
         match value {
             UnexpectedField::String(v) => v.0,
             UnexpectedField::ConcealedString(v) => v.0,
-            UnexpectedField::WifiNetworkSecurityType(v) => match v {
-                EditableFieldWifiNetworkSecurityType::Unsecured => "unsecured".into(),
-                EditableFieldWifiNetworkSecurityType::WpaPersonal => "wpa-personal".into(),
-                EditableFieldWifiNetworkSecurityType::Wpa2Personal => "wpa2-personal".into(),
-                EditableFieldWifiNetworkSecurityType::Wpa3Personal => "wpa3-personal".into(),
-                EditableFieldWifiNetworkSecurityType::Wep => "wep".into(),
-                EditableFieldWifiNetworkSecurityType::Other(o) => o,
-            },
+            UnexpectedField::WifiNetworkSecurityType(v) => v.into(),
             UnexpectedField::SubdivisionCode(v) => v.0,
             UnexpectedField::CountryCode(v) => v.0,
             UnexpectedField::Unknown { value: v, .. } => v,
@@ -549,6 +542,20 @@ pub enum EditableFieldWifiNetworkSecurityType {
 impl EditableFieldType for EditableFieldWifiNetworkSecurityType {
     fn field_type() -> FieldType {
         FieldType::WifiNetworkSecurityType
+    }
+}
+
+impl From<EditableFieldWifiNetworkSecurityType> for String {
+    #[inline]
+    fn from(value: EditableFieldWifiNetworkSecurityType) -> Self {
+        match value {
+            EditableFieldWifiNetworkSecurityType::Unsecured => "unsecured".into(),
+            EditableFieldWifiNetworkSecurityType::WpaPersonal => "wpa-personal".into(),
+            EditableFieldWifiNetworkSecurityType::Wpa2Personal => "wpa2-personal".into(),
+            EditableFieldWifiNetworkSecurityType::Wpa3Personal => "wpa3-personal".into(),
+            EditableFieldWifiNetworkSecurityType::Wep => "wep".into(),
+            EditableFieldWifiNetworkSecurityType::Other(o) => o,
+        }
     }
 }
 
