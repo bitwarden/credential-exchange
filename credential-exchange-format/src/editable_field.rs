@@ -88,7 +88,7 @@ impl From<UnexpectedField> for String {
             UnexpectedField::Email(v) => v.0,
             UnexpectedField::Number(v) => v.0,
             UnexpectedField::Boolean(v) => v.into(),
-            UnexpectedField::Date(date) => date.0.format("%Y-%m-%d").to_string(),
+            UnexpectedField::Date(v) => v.into(),
             UnexpectedField::YearMonth(v) => v.into(),
         }
     }
@@ -454,6 +454,13 @@ pub struct EditableFieldDate(pub NaiveDate);
 impl EditableFieldType for EditableFieldDate {
     fn field_type() -> FieldType {
         FieldType::Date
+    }
+}
+
+impl From<EditableFieldDate> for String {
+    #[inline]
+    fn from(value: EditableFieldDate) -> Self {
+        value.0.format("%Y-%m-%d").to_string()
     }
 }
 
