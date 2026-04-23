@@ -43,6 +43,8 @@ pub enum UnexpectedField {
     SubdivisionCode(EditableFieldSubdivisionCode),
     CountryCode(EditableFieldCountryCode),
     WifiNetworkSecurityType(EditableFieldWifiNetworkSecurityType),
+    Email(EditableFieldEmail),
+    Number(EditableFieldNumber),
     Unknown {
         /// The unexpected field type.
         field_type: FieldType,
@@ -66,6 +68,8 @@ impl UnexpectedField {
             Self::SubdivisionCode(_) => EditableFieldSubdivisionCode::field_type(),
             Self::CountryCode(_) => EditableFieldCountryCode::field_type(),
             Self::WifiNetworkSecurityType(_) => EditableFieldWifiNetworkSecurityType::field_type(),
+            Self::Email(_) => EditableFieldEmail::field_type(),
+            Self::Number(_) => EditableFieldNumber::field_type(),
             Self::Unknown { field_type, .. } => field_type.clone(),
         }
     }
@@ -88,6 +92,8 @@ impl From<UnexpectedField> for String {
             UnexpectedField::SubdivisionCode(v) => v.0,
             UnexpectedField::CountryCode(v) => v.0,
             UnexpectedField::Unknown { value: v, .. } => v,
+            UnexpectedField::Email(v) => v.0,
+            UnexpectedField::Number(v) => v.0,
             UnexpectedField::Boolean(b) => if b.0 { "true" } else { "false" }.into(),
             UnexpectedField::Date(date) => date.0.format("%Y-%m-%d").to_string(),
             UnexpectedField::YearMonth(v) => v.into(),
@@ -247,6 +253,8 @@ where
                 }
                 UnexpectedField::Date(date) => state.serialize_field("value", &date)?,
                 UnexpectedField::YearMonth(v) => state.serialize_field("value", &v)?,
+                UnexpectedField::Email(v) => state.serialize_field("value", &v)?,
+                UnexpectedField::Number(v) => state.serialize_field("value", &v)?,
             },
         }
 
@@ -340,12 +348,12 @@ where
                 FieldType::CountryCode => {
                     UnexpectedField::CountryCode(EditableFieldCountryCode(helper.value))
                 }
-                FieldType::Email | FieldType::Number | FieldType::Unknown(_) => {
-                    UnexpectedField::Unknown {
-                        field_type: helper.field_type,
-                        value: helper.value,
-                    }
-                }
+                FieldType::Email => UnexpectedField::Email(EditableFieldEmail(helper.value)),
+                FieldType::Number => UnexpectedField::Number(EditableFieldNumber(helper.value)),
+                FieldType::Unknown(_) => UnexpectedField::Unknown {
+                    field_type: helper.field_type,
+                    value: helper.value,
+                },
             };
 
             ExpectedInner::Unexpected(value)
@@ -601,7 +609,9 @@ where
             FieldType::CountryCode => {
                 Self::CountryCode(deserialize_field!(EditableFieldCountryCode))
             }
-            FieldType::Email | FieldType::Number | FieldType::Unknown(_) => {
+            FieldType::Email => Self::Email(deserialize_field!(EditableFieldEmail)),
+            FieldType::Number => Self::Number(deserialize_field!(EditableFieldNumber)),
+            FieldType::Unknown(_) => {
                 return Err(serde::de::Error::custom("Unknown custom field type"))
             }
         };
