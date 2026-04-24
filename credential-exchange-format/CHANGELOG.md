@@ -20,6 +20,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
 - **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`.
   (#125)
+- **BREAKING**: Field values are now using a new type to encode whether the field was parsed as the
+  expected field type, or whether the field was of the wrong type. (#127)
 
 ### Fixed
 

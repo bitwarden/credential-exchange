@@ -213,11 +213,11 @@ mod tests {
     #[test]
     fn deserializes_unknown_credential() {
         let cred = r#"{ "type": "future-credential" }"#;
-        let res = serde_json::from_str::<Credential>(&cred);
+        let res = serde_json::from_str::<Credential>(cred);
         assert!(matches!(res, Ok(Credential::Unknown { .. })));
 
         let empty = r#"{ }"#;
-        let res = serde_json::from_str::<Credential>(&empty);
+        let res = serde_json::from_str::<Credential>(empty);
         assert!(res.is_err());
     }
 }
