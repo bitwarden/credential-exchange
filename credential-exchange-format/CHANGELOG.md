@@ -7,21 +7,29 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-08
+
+### Added
+
+- Add `EditableFieldEmail` and `EditableFieldNumber` variants to `EditableFieldValue`. (#132)
+
+### Changed
+
+- **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`.
+  (#125)
+- **BREAKING**: Field values are now using a new type to encode whether the field was parsed as the
+  expected field type, or whether the field was of the wrong type. (#127)
+
 ## [0.3.0] - 2025-09-08
 
 ### Added
 
 - Implement `Default` on all types where either all fields are optional or vectors that can be
   empty. (#90)
-- Add `EditableFieldEmail` and `EditableFieldNumber` variants to `EditableFieldValue`. (#132)
 
 ### Changed
 
 - **BREAKING**: Changed `integration_hash` to `integrity_hash` in `FileCredential`. (#87)
-- **BREAKING**: Renamed `ty` to `type` in serialized representations of `Credential::Unknown`.
-  (#125)
-- **BREAKING**: Field values are now using a new type to encode whether the field was parsed as the
-  expected field type, or whether the field was of the wrong type. (#127)
 
 ### Fixed
 
