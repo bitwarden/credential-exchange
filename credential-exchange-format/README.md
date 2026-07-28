@@ -3,7 +3,7 @@
 This crate contains type definitions for the
 [FIDO Alliance’s credential exchange](https://fidoalliance.org/specifications-credential-exchange-specifications/)
 format specification. It's targeting the
-[Review Draft, March 13, 2025](https://fidoalliance.org/specs/cx/cxf-v1.0-rd-20250313.html)
+[Proposed Standard, March 09, 2026](https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html)
 revision.
 
 The Credential Exchange Format defines standardized data structures and format of credentials that
