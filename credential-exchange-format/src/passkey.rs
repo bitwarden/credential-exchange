@@ -69,6 +69,10 @@ pub struct PasskeyCredential {
     /// instance.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fido2_extensions: Option<Fido2Extensions>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -93,6 +97,10 @@ pub struct Fido2Extensions {
     /// [secure-payment-confirmation](https://www.w3.org/TR/secure-payment-confirmation/).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub payments: Option<bool>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -104,6 +112,10 @@ pub struct Fido2HmacCredentials {
     pub cred_with_uv: B64Url,
     #[serde(rename = "credWithoutUV")]
     pub cred_without_uv: B64Url,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -121,4 +133,8 @@ pub enum Fido2HmacCredentialAlgorithm {
 pub struct Fido2LargeBlob {
     pub uncompressed_size: u64,
     pub data: B64Url,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }

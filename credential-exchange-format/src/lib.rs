@@ -2,6 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "preserve-unknown")]
+mod additional_fields;
+#[cfg(feature = "preserve-unknown")]
+pub use additional_fields::AdditionalFields;
+
 mod b64url;
 mod credential_scope;
 mod document;
@@ -36,6 +41,10 @@ pub struct Header<E = ()> {
     pub timestamp: u64,
     /// The list of [Account]s being exported.
     pub accounts: Vec<Account<E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -48,6 +57,10 @@ pub struct Version {
     /// functionality which is purely additive and that is compatible with previous versions under
     /// the same [Version::major].
     pub minor: u8,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -75,6 +88,10 @@ pub struct Account<E = ()> {
     /// This field contains all the extensions to the [Account]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -111,6 +128,10 @@ pub struct Collection<E = ()> {
     /// This enumeration contains all the extensions to the [Collection]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -123,6 +144,10 @@ pub struct LinkedItem {
     /// not present, the [Item] belongs to the current [Account] being exchanged.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account: Option<B64Url>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -169,6 +194,10 @@ pub struct Item<E = ()> {
     /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -217,6 +246,10 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[cfg(test)]

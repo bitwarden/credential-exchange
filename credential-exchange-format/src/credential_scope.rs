@@ -14,6 +14,10 @@ pub struct CredentialScope {
     /// This member defines the android apps that have been validated to be appropriate for the
     /// credentials to be used.
     pub android_apps: Vec<AndroidAppIdCredential>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// An [AndroidAppIdCredential] contains the information required to verify and identify an
@@ -36,6 +40,10 @@ pub struct AndroidAppIdCredential {
     /// item. It is highly recommended for providers to store this name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -49,6 +57,10 @@ pub struct AndroidAppCertificateFingerprint {
     /// The algorithm used to hash the [AndroidAppCertificateFingerprint::fingerprint]. This SHOULD
     /// be of value [AndroidAppHashAlgorithm].
     pub hash_alg: AndroidAppHashAlgorithm,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

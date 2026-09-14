@@ -12,6 +12,7 @@ license.workspace = true
 keywords.workspace = true
 
 [features]
+preserve-unknown = []
 zeroize = ["dep:zeroize", "dep:zeroize_derive"]
 
 [dependencies]

@@ -9,6 +9,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Experimental `preserve-unknown` feature retaining unknown members on known CXF objects,
+  including nested editable fields and extensions. Enabling it adds public struct fields.
+
 - Optional `zeroize` feature for explicit model cleanup and use with `Zeroizing<T>`, including
   unknown credential and extension strings. Default behavior and field-move APIs are unchanged.
 

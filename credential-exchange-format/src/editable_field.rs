@@ -1,12 +1,15 @@
 use std::{borrow::Cow, fmt, str};
 
 use chrono::{Month, NaiveDate};
+#[cfg(feature = "preserve-unknown")]
+use serde::ser::SerializeMap;
+#[cfg(not(feature = "preserve-unknown"))]
+use serde::ser::SerializeStruct;
 use serde::{
     de::{
         value::{StrDeserializer, StringDeserializer},
         DeserializeOwned, Visitor,
     },
-    ser::SerializeStruct,
     Deserialize, Serialize,
 };
 #[cfg(feature = "zeroize")]
@@ -33,6 +36,9 @@ pub struct EditableField<T, E = ()> {
     /// [EditableField]. This MAY be used to provide an exchange where a minimal amount of
     /// information is lost.
     pub extensions: Option<Vec<Extension<E>>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A field of the incorrect type that was passed instead of an expected field type.
@@ -229,56 +235,78 @@ where
         let len = 2
             + self.id.is_some() as usize
             + self.label.is_some() as usize
-            + self.extensions.is_some() as usize;
+            + self.extensions.as_ref().is_some_and(|e| !e.is_empty()) as usize;
+        #[cfg(not(feature = "preserve-unknown"))]
         let mut state = serializer.serialize_struct("editable_field", len)?;
+        #[cfg(feature = "preserve-unknown")]
+        let mut state = serializer.serialize_map(Some(len + self.additional_fields.0.len()))?;
 
-        if let Some(ref id) = self.id {
-            state.serialize_field("id", id)?;
-        } else {
-            state.skip_field("id")?;
+        macro_rules! member {
+            ($key:expr, $value:expr) => {{
+                #[cfg(feature = "preserve-unknown")]
+                state.serialize_entry($key, $value)?;
+                #[cfg(not(feature = "preserve-unknown"))]
+                state.serialize_field($key, $value)?;
+            }};
+        }
+        macro_rules! skip {
+            ($key:expr) => {
+                #[cfg(not(feature = "preserve-unknown"))]
+                state.skip_field($key)?;
+            };
         }
 
-        state.serialize_field("fieldType", &self.value.field_type())?;
+        if let Some(ref id) = self.id {
+            member!("id", id);
+        } else {
+            skip!("id");
+        }
+
+        member!("fieldType", &self.value.field_type());
         match &self.value.0 {
             ExpectedInner::Expected(t) => {
-                state.serialize_field("value", &t)?;
+                member!("value", &t);
             }
             ExpectedInner::Unexpected(t) => match t {
-                UnexpectedField::String(v) => state.serialize_field("value", &v)?,
-                UnexpectedField::ConcealedString(v) => state.serialize_field("value", &v)?,
+                UnexpectedField::String(v) => member!("value", &v),
+                UnexpectedField::ConcealedString(v) => member!("value", &v),
                 UnexpectedField::WifiNetworkSecurityType(v) => {
-                    state.serialize_field("value", &v)?
+                    member!("value", &v)
                 }
-                UnexpectedField::SubdivisionCode(v) => state.serialize_field("value", &v)?,
-                UnexpectedField::CountryCode(v) => state.serialize_field("value", &v)?,
-                UnexpectedField::Unknown { value: v, .. } => state.serialize_field("value", &v)?,
+                UnexpectedField::SubdivisionCode(v) => member!("value", &v),
+                UnexpectedField::CountryCode(v) => member!("value", &v),
+                UnexpectedField::Unknown { value: v, .. } => member!("value", &v),
                 UnexpectedField::Boolean(b) => {
                     let v = if b.0 { "true" } else { "false" };
-                    state.serialize_field("value", v)?
+                    member!("value", v)
                 }
-                UnexpectedField::Date(date) => state.serialize_field("value", &date)?,
-                UnexpectedField::YearMonth(v) => state.serialize_field("value", &v)?,
-                UnexpectedField::Email(v) => state.serialize_field("value", &v)?,
-                UnexpectedField::Number(v) => state.serialize_field("value", &v)?,
+                UnexpectedField::Date(date) => member!("value", &date),
+                UnexpectedField::YearMonth(v) => member!("value", &v),
+                UnexpectedField::Email(v) => member!("value", &v),
+                UnexpectedField::Number(v) => member!("value", &v),
             },
         }
 
         if let Some(ref label) = self.label {
-            state.serialize_field("label", label)?;
+            member!("label", label);
         } else {
-            state.skip_field("label")?;
+            skip!("label");
         }
 
         if let Some(ref ext) = self.extensions {
             if ext.is_empty() {
-                state.skip_field("extensions")?;
+                skip!("extensions");
             } else {
-                state.serialize_field("extensions", ext)?;
+                member!("extensions", ext);
             }
         } else {
-            state.skip_field("extensions")?;
+            skip!("extensions");
         }
 
+        #[cfg(feature = "preserve-unknown")]
+        for (key, value) in &self.additional_fields.0 {
+            state.serialize_entry(key, value)?;
+        }
         state.end()
     }
 }
@@ -294,6 +322,9 @@ struct EditableFieldHelper<E> {
     label: Option<String>,
     #[serde(default = "none::<E>")]
     extensions: Option<Vec<Extension<E>>>,
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    additional_fields: crate::AdditionalFields,
 }
 
 // Need to use this instead of the normal default,
@@ -369,6 +400,8 @@ where
             value: Expected(value),
             label: helper.label,
             extensions: helper.extensions,
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: helper.additional_fields,
         })
     }
 }
@@ -377,6 +410,8 @@ where
 impl<T, E> From<T> for EditableField<T, E> {
     fn from(s: T) -> Self {
         EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: s.into(),
             label: None,
@@ -629,6 +664,8 @@ where
                 let v = $t::deserialize(StringDeserializer::new(helper.value))?;
 
                 EditableField {
+                    #[cfg(feature = "preserve-unknown")]
+                    additional_fields: helper.additional_fields,
                     id: helper.id,
                     value: Expected(ExpectedInner::Expected(v)),
                     label: helper.label,
@@ -695,6 +732,8 @@ mod tests {
     #[test]
     fn test_serialize_editable_field_string() {
         let field: EditableField<EditableFieldString> = EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: EditableFieldString("value".to_string()).into(),
             label: Some("label".to_string()),
@@ -720,6 +759,8 @@ mod tests {
         assert_eq!(
             field,
             EditableField {
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
                 id: None,
                 value: EditableFieldString("value".to_string()).into(),
                 label: Some("label".to_string()),
@@ -731,6 +772,8 @@ mod tests {
     #[test]
     fn test_serialize_field_concealed_string() {
         let field: EditableField<EditableFieldConcealedString> = EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: EditableFieldConcealedString("value".to_string()).into(),
             label: Some("label".to_string()),
@@ -806,6 +849,8 @@ mod tests {
         assert_eq!(
             field,
             EditableField {
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
                 id: None,
                 value: EditableFieldConcealedString("value".to_string()).into(),
                 label: Some("label".to_string()),
@@ -817,6 +862,8 @@ mod tests {
     #[test]
     fn test_serialize_field_boolean() {
         let field: EditableField<EditableFieldBoolean> = EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: EditableFieldBoolean(true).into(),
             label: Some("label".to_string()),
@@ -833,6 +880,8 @@ mod tests {
     #[test]
     fn test_serialize_field_date() {
         let field: EditableField<EditableFieldDate> = EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: EditableFieldDate(NaiveDate::from_ymd_opt(2025, 2, 24).unwrap()).into(),
             label: None,
@@ -848,6 +897,8 @@ mod tests {
     #[test]
     fn test_serialize_editable_field_year_month() {
         let field: EditableField<EditableFieldYearMonth> = EditableField {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             value: EditableFieldYearMonth {
                 year: 2025,
@@ -875,6 +926,8 @@ mod tests {
         assert_eq!(
             field,
             EditableField {
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
                 id: None,
                 value: EditableFieldYearMonth {
                     year: 2025,
@@ -927,6 +980,8 @@ mod tests {
         assert_eq!(
             field,
             EditableField {
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
                 id: None,
                 value: EditableFieldString("hello".to_string()).into(),
                 label: None,

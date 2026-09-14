@@ -18,6 +18,10 @@ pub struct SharedExtension {
     /// and their permissions with respect to access on the entity to which the [`SharedExtension`]
     /// is applied.
     pub accessors: Vec<SharingAccessor>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A SharingAccessor represents a user or group and their access permissions with respect to an
@@ -45,6 +49,10 @@ pub struct SharingAccessor {
     /// that have an empty permissions list, whether it’s been exported as empty or when it’s
     /// empty as a result of ignoring all unknown entries.
     pub permissions: Vec<SharingAccessorPermission>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A SharingAccessorType indicates the type of accessor for which a [`SharingAccessor`] defines

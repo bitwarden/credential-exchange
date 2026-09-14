@@ -34,6 +34,10 @@ pub struct AddressCredential<E = ()> {
     /// The phone number associated with the address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tel: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -62,6 +66,10 @@ pub struct CreditCardCredential<E = ()> {
     /// The date from which the card is valid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub valid_from: Option<EditableField<EditableFieldYearMonth, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [DriversLicenseCredential] contains information about a person’s driver’s license. The fields
@@ -101,6 +109,10 @@ pub struct DriversLicenseCredential<E = ()> {
     ///  The vehicle types the license holder is authorized to operate.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub license_class: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// An [IdentityDocumentCredential] is for any document, card, or number identifying a person or
@@ -157,6 +169,10 @@ pub struct IdentityDocumentCredential<E = ()> {
     /// The official body or government agency responsible for issuing the document.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [PassportCredential] contains the details of a person’s passport. The fields reflect the
@@ -203,6 +219,10 @@ pub struct PassportCredential<E = ()> {
     /// The official body or government agency responsible for issuing the passport.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [PersonNameCredential] represents a person’s name as fields derived from Unicode Locale Data
@@ -244,4 +264,8 @@ pub struct PersonNameCredential<E = ()> {
     /// This field contains a generation qualifier. For example, "Jr." or "III".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub generation: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }

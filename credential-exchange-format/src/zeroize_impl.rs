@@ -43,7 +43,7 @@ impl<E: Zeroize> Zeroize for Extension<E> {
     }
 }
 
-fn zeroize_object(object: &mut serde_json::Map<String, Value>) {
+pub(crate) fn zeroize_object(object: &mut serde_json::Map<String, Value>) {
     for (mut key, mut value) in std::mem::take(object) {
         key.zeroize();
         zeroize_json(&mut value);
@@ -183,11 +183,20 @@ mod tests {
         }
         let cleared = Rc::new(Cell::new(false));
         let header = Zeroizing::new(Header {
-            version: Version { major: 1, minor: 0 },
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
+            version: Version {
+                major: 1,
+                minor: 0,
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
+            },
             exporter_rp_id: "example.com".into(),
             exporter_display_name: "Example".into(),
             timestamp: 0,
             accounts: vec![Account {
+                #[cfg(feature = "preserve-unknown")]
+                additional_fields: Default::default(),
                 id: vec![1].into(),
                 username: "alice".into(),
                 email: "alice@example.com".into(),
@@ -207,6 +216,8 @@ mod tests {
     #[test]
     fn enabling_zeroize_does_not_prevent_moving_fields() {
         let credential = GeneratedPasswordCredential {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             password: "synthetic secret".into(),
         };
         let mut password = credential.password;

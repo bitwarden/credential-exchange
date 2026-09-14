@@ -35,6 +35,10 @@ pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the date on which the API key expires.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub expiry_date: Option<EditableField<EditableFieldDate, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [BasicAuthCredential] contains a username/password login credential.
@@ -54,6 +58,10 @@ pub struct BasicAuthCredential<E = ()> {
     /// The password associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<EditableField<EditableFieldConcealedString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [GeneratedPasswordCredential] type represents a credential consisting of a machine-generated
@@ -69,6 +77,10 @@ pub struct BasicAuthCredential<E = ()> {
 pub struct GeneratedPasswordCredential {
     /// The machine-generated password.
     pub password: String,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// An [SshKeyCredential] represents an SSH (Secure Shell) key pair.
@@ -97,6 +109,10 @@ pub struct SshKeyCredential<E = ()> {
     /// `https://github.com/settings/ssh/new` for GitHub.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key_generation_source: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// Note: Enrollment in TOTP credentials historically has been quite non-standardized but typically
@@ -135,6 +151,10 @@ pub struct TotpCredential {
     /// available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuer: Option<String>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -169,4 +189,8 @@ pub struct WifiCredential<E = ()> {
     pub passphrase: Option<EditableField<EditableFieldConcealedString, E>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<EditableField<EditableFieldBoolean, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }

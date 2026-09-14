@@ -42,6 +42,8 @@ jobs:
         run: |
           cargo test --workspace --all-features
           cargo test -p credential-exchange-format --no-default-features
+          cargo test -p credential-exchange-format --no-default-features --features preserve-unknown
+          cargo test -p credential-exchange-format --no-default-features --features zeroize
 
       - name: Install cargo-llvm-cov
         if: ${{ matrix.os=='ubuntu-24.04' }}

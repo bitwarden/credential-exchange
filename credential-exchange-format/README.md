@@ -56,6 +56,8 @@ fn import(data: &str) {
 
 fn export() -> Result<String, serde_json::Error> {
     let account: Account = Account {
+        #[cfg(feature = "preserve-unknown")]
+        additional_fields: Default::default(),
         id: vec![1,2,3,4].as_slice().into(),
         username: "".to_owned(),
         email: "".to_owned(),
@@ -68,6 +70,25 @@ fn export() -> Result<String, serde_json::Error> {
     serde_json::to_string(&account)
 }
 ```
+
+### Preserving unknown members
+
+The optional `preserve-unknown` feature retains unrecognized JSON members in
+`additional_fields: AdditionalFields` on known objects, including nested credentials,
+editable fields, scopes, and sharing/passkey extensions. Serialization writes these members
+back alongside the typed fields. Only unknown members are stored: changing or removing a
+typed password does not revive its original value, and unknown members follow their objects
+when a collection is reordered. This preserves JSON values, not whitespace, key ordering,
+duplicate keys, or original spellings of normalized standard values.
+
+`AdditionalFields` also supports cleanup when `zeroize` is enabled. Caller-defined extension
+types are responsible for preserving their own unknown members.
+
+Enabling this feature adds public struct fields, so struct literals must initialize
+`additional_fields` (typically with `Default::default()`). Cargo unifies dependency features;
+another dependency enabling this feature can therefore require changes to your literals too.
+This API requires release/compatibility review before stabilization. Do not insert a standard
+field name into `additional_fields`, as it would produce duplicate members on serialization.
 
 ### Compatibility with Apple's Credential migration
 
