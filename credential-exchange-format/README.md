@@ -34,6 +34,10 @@ does not add `Drop` implementations to the models, so moving fields out of them 
 Custom extension types must also implement `Zeroize` to zeroize a containing model.
 Unknown credential and extension JSON strings, including object keys, are cleared recursively.
 Inline dates are overwritten with valid sentinel values; enum discriminants remain valid.
+With this feature enabled, date wrappers implement `Copy`, `Default`, and
+`zeroize::DefaultIsZeroes`: their defaults are the minimum representable date and
+year zero / January, respectively. The library performs the overwrite through
+zeroize's safe API; no local unsafe code is needed.
 This is not a guarantee of erasing every representation of a secret: clones, parser error
 paths, intermediate serialization buffers, and JSON numeric representations are outside this
 cleanup. A zeroizing allocator remains useful for those allocations.

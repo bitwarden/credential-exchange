@@ -1,5 +1,7 @@
 //! Implementations for types containing third-party values that cannot derive Zeroize.
 
+#![forbid(unsafe_code)]
+
 use serde_json::Value;
 use zeroize::Zeroize;
 
@@ -67,23 +69,25 @@ fn zeroize_json(value: &mut Value) {
     *value = Value::Null;
 }
 
-impl Zeroize for EditableFieldDate {
-    fn zeroize(&mut self) {
-        // SAFETY: self.0 is a live, aligned NaiveDate and MIN is a valid replacement.
-        // A volatile write prevents the overwrite of this inline value being elided.
-        unsafe { std::ptr::write_volatile(&mut self.0, chrono::NaiveDate::MIN) };
-        std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
+impl Default for EditableFieldDate {
+    fn default() -> Self {
+        Self(chrono::NaiveDate::MIN)
     }
 }
 
-impl Zeroize for EditableFieldYearMonth {
-    fn zeroize(&mut self) {
-        self.year.zeroize();
-        // SAFETY: self.month is a live, aligned Month and January is a valid replacement.
-        unsafe { std::ptr::write_volatile(&mut self.month, chrono::Month::January) };
-        std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
+impl Default for EditableFieldYearMonth {
+    fn default() -> Self {
+        Self {
+            year: 0,
+            month: chrono::Month::January,
+        }
     }
 }
+
+// These are valid sentinel values, not all-zero byte representations of chrono
+// types. DefaultIsZeroes delegates the overwrite and fence to zeroize's safe API.
+impl zeroize::DefaultIsZeroes for EditableFieldDate {}
+impl zeroize::DefaultIsZeroes for EditableFieldYearMonth {}
 
 #[cfg(test)]
 mod tests {
@@ -237,5 +241,22 @@ mod tests {
         month.zeroize();
         assert_eq!(month.year, 0);
         assert_eq!(month.month, chrono::Month::January);
+    }
+
+    #[test]
+    fn clears_date_slices_to_valid_defaults() {
+        let mut dates =
+            [EditableFieldDate(chrono::NaiveDate::from_ymd_opt(2000, 12, 31).unwrap()); 2];
+        dates.as_mut_slice().zeroize();
+        assert!(dates.iter().all(|date| date.0 == chrono::NaiveDate::MIN));
+
+        let mut months = [EditableFieldYearMonth {
+            year: 2000,
+            month: chrono::Month::December,
+        }; 2];
+        months.as_mut_slice().zeroize();
+        assert!(months
+            .iter()
+            .all(|month| month.year == 0 && month.month == chrono::Month::January));
     }
 }
