@@ -10,6 +10,8 @@ use crate::{
 /// An [AddressCredential] provides information for autofilling address forms.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct AddressCredential<E = ()> {
     /// The address line for the address. This is intentionally flexible to accommodate different
     /// address formats. Implementers MUST support multi-line addresses for this field, where each
@@ -36,6 +38,8 @@ pub struct AddressCredential<E = ()> {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct CreditCardCredential<E = ()> {
     /// The credit card number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -65,6 +69,8 @@ pub struct CreditCardCredential<E = ()> {
 /// [ISO 18013-1](https://www.iso.org/standard/63798.html).
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct DriversLicenseCredential<E = ()> {
     /// The full name of the license holder.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -110,6 +116,8 @@ pub struct DriversLicenseCredential<E = ()> {
 /// [PassportCredential] types, respectively.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct IdentityDocumentCredential<E = ()> {
     /// The document’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -155,6 +163,8 @@ pub struct IdentityDocumentCredential<E = ()> {
 /// relevant set of data elements defined by ICAO Doc 9303 Part 4.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct PassportCredential<E = ()> {
     /// The passport’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -203,6 +213,8 @@ pub struct PassportCredential<E = ()> {
 /// since that often introduces errors.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct PersonNameCredential<E = ()> {
     /// This field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or "Dr".
     #[serde(default, skip_serializing_if = "Option::is_none")]

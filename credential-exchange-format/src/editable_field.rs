@@ -9,10 +9,17 @@ use serde::{
     ser::SerializeStruct,
     Deserialize, Serialize,
 };
+#[cfg(feature = "zeroize")]
+use zeroize::Zeroize;
 
 use crate::{B64Url, Extension};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(
+    feature = "zeroize",
+    zeroize(bound = "T: zeroize::Zeroize, E: zeroize::Zeroize")
+)]
 pub struct EditableField<T, E = ()> {
     /// A unique identifier for the [EditableField] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -34,6 +41,7 @@ pub struct EditableField<T, E = ()> {
 /// `concealed-string` instead.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum UnexpectedField {
     String(EditableFieldString),
     ConcealedString(EditableFieldConcealedString),
@@ -96,6 +104,7 @@ impl From<UnexpectedField> for String {
 
 /// Holds onto an editable field, and records whether it was an expected or unexpected field.
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 enum ExpectedInner<T> {
     /// The field we found had the same field type we expected.
     Expected(T),
@@ -111,6 +120,8 @@ enum ExpectedInner<T> {
 /// This can only be instantiated via the exposed `From` implementation so that newly
 /// constructed credentials remain spec-compliant with regards to their fields.
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "T: zeroize::Zeroize"))]
 pub struct Expected<T>(ExpectedInner<T>);
 
 impl<T> Expected<T>
@@ -168,6 +179,7 @@ where
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum FieldType {
     /// A UTF-8 encoded string value which is unconcealed and does not have a specified format.
     String,
@@ -379,6 +391,7 @@ macro_rules! editable_field_string_type {
     ($name:ident, $variant:ident) => {
         #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
         #[serde(transparent)]
+        #[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
         pub struct $name(pub String);
 
         impl EditableFieldType for $name {
@@ -435,6 +448,7 @@ editable_field_string_type!(EditableFieldCountryCode, CountryCode);
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct EditableFieldBoolean(#[serde(with = "serde_bool")] pub bool);
 impl EditableFieldType for EditableFieldBoolean {
     fn field_type() -> FieldType {
@@ -550,6 +564,7 @@ impl<'de> Visitor<'de> for CowVisitor {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum EditableFieldWifiNetworkSecurityType {
     Unsecured,
     WpaPersonal,
@@ -584,6 +599,8 @@ impl From<EditableFieldWifiNetworkSecurityType> for String {
 #[derive(Clone, Debug, Serialize)]
 #[serde(untagged, bound(deserialize = "E: Deserialize<'de>"))]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub enum EditableFieldValue<E = ()> {
     String(EditableField<EditableFieldString, E>),
     ConcealedString(EditableField<EditableFieldConcealedString, E>),
