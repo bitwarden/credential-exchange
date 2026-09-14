@@ -12,6 +12,8 @@ use crate::{
 /// Interface (API).
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct ApiKeyCredential<E = ()> {
     /// This member denotes the key to communicate with the API.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -43,6 +45,8 @@ pub struct ApiKeyCredential<E = ()> {
 /// array. This indicates in which websites or applications these fields SHOULD be presented.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct BasicAuthCredential<E = ()> {
     /// The username associated with the credential.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -61,6 +65,7 @@ pub struct BasicAuthCredential<E = ()> {
 /// deemed appropriate for the use of this feature.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct GeneratedPasswordCredential {
     /// The machine-generated password.
     pub password: String,
@@ -69,6 +74,8 @@ pub struct GeneratedPasswordCredential {
 /// An [SshKeyCredential] represents an SSH (Secure Shell) key pair.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct SshKeyCredential<E = ()> {
     /// The type of SSH key algorithm used. Common values include "ssh-rsa", "ssh-ed25519", or
     /// "ecdsa-sha2-nistp256". This MUST be a string value representing a valid SSH public key
@@ -98,6 +105,7 @@ pub struct SshKeyCredential<E = ()> {
 /// This specification was designed with that in mind.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct TotpCredential {
     /// The [shared secret](https://www.rfc-editor.org/rfc/rfc4226#section-5) used to generate the
     /// OTPs. This MUST be a [Base32 string](https://www.rfc-editor.org/rfc/rfc4648#section-6)
@@ -132,6 +140,7 @@ pub struct TotpCredential {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum OTPHashAlgorithm {
     /// This algorithm denotes that [SHA1](https://www.rfc-editor.org/rfc/rfc3174) MUST be used to
     /// generate the OTP hash.
@@ -149,6 +158,8 @@ pub enum OTPHashAlgorithm {
 /// Wi-Fi Passphrase
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct WifiCredential<E = ()> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ssid: Option<EditableField<EditableFieldString, E>>,

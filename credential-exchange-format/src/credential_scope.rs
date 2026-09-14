@@ -6,6 +6,7 @@ use crate::{B64Url, Uri};
 /// [crate::Item::credentials] can to be used.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct CredentialScope {
     /// This member holds strings which SHOULD follow the Uniform Resource Identifier (URI) syntax
     /// as defined in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
@@ -20,6 +21,7 @@ pub struct CredentialScope {
 /// associated to the same [Item][crate::Item] as this one.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct AndroidAppIdCredential {
     /// The application identifier. A non-normative example of an application identifier is
     /// `"com.example.myapp"`.
@@ -38,6 +40,7 @@ pub struct AndroidAppIdCredential {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct AndroidAppCertificateFingerprint {
     /// This is the hash of the application's public certificate using the hashing algorithm
     /// defined in [AndroidAppCertificateFingerprint::hash_alg]. The bytes of the hash are
@@ -51,6 +54,7 @@ pub struct AndroidAppCertificateFingerprint {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum AndroidAppHashAlgorithm {
     Sha256,
     Sha1,
