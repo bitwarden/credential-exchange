@@ -10,6 +10,8 @@ use crate::{
 /// An [AddressCredential] provides information for autofilling address forms.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct AddressCredential<E = ()> {
     /// The address line for the address. This is intentionally flexible to accommodate different
     /// address formats. Implementers MUST support multi-line addresses for this field, where each
@@ -32,10 +34,16 @@ pub struct AddressCredential<E = ()> {
     /// The phone number associated with the address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tel: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct CreditCardCredential<E = ()> {
     /// The credit card number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -58,6 +66,10 @@ pub struct CreditCardCredential<E = ()> {
     /// The date from which the card is valid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub valid_from: Option<EditableField<EditableFieldYearMonth, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [DriversLicenseCredential] contains information about a person’s driver’s license. The fields
@@ -65,6 +77,8 @@ pub struct CreditCardCredential<E = ()> {
 /// [ISO 18013-1](https://www.iso.org/standard/63798.html).
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct DriversLicenseCredential<E = ()> {
     /// The full name of the license holder.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -95,6 +109,10 @@ pub struct DriversLicenseCredential<E = ()> {
     ///  The vehicle types the license holder is authorized to operate.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub license_class: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// An [IdentityDocumentCredential] is for any document, card, or number identifying a person or
@@ -110,6 +128,8 @@ pub struct DriversLicenseCredential<E = ()> {
 /// [PassportCredential] types, respectively.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct IdentityDocumentCredential<E = ()> {
     /// The document’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -149,12 +169,18 @@ pub struct IdentityDocumentCredential<E = ()> {
     /// The official body or government agency responsible for issuing the document.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [PassportCredential] contains the details of a person’s passport. The fields reflect the
 /// relevant set of data elements defined by ICAO Doc 9303 Part 4.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct PassportCredential<E = ()> {
     /// The passport’s issuing country. This MUST conform to the ISO 3166-1 alpha-2 format.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -193,6 +219,10 @@ pub struct PassportCredential<E = ()> {
     /// The official body or government agency responsible for issuing the passport.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub issuing_authority: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [PersonNameCredential] represents a person’s name as fields derived from Unicode Locale Data
@@ -203,6 +233,8 @@ pub struct PassportCredential<E = ()> {
 /// since that often introduces errors.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct PersonNameCredential<E = ()> {
     /// This field contains a title or honorific qualifier. For example, "Ms.", "Mr.", or "Dr".
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -232,4 +264,8 @@ pub struct PersonNameCredential<E = ()> {
     /// This field contains a generation qualifier. For example, "Jr." or "III".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub generation: Option<EditableField<EditableFieldString, E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }

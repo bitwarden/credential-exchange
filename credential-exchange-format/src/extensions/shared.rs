@@ -12,17 +12,23 @@ use crate::{Account, Collection, Item};
 /// Entities that are shared MUST only be included in the exports for accounts that are credential
 /// owners or admins of the entity.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct SharedExtension {
     /// A list of [`SharingAccessor`] objects that represents users or groups
     /// and their permissions with respect to access on the entity to which the [`SharedExtension`]
     /// is applied.
     pub accessors: Vec<SharingAccessor>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A SharingAccessor represents a user or group and their access permissions with respect to an
 /// entity.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct SharingAccessor {
     /// Indicates the type of accessor for which permissions are defined.
     /// Importers must ignore any SharingAccessor entries when this value is
@@ -43,6 +49,10 @@ pub struct SharingAccessor {
     /// that have an empty permissions list, whether it’s been exported as empty or when it’s
     /// empty as a result of ignoring all unknown entries.
     pub permissions: Vec<SharingAccessorPermission>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A SharingAccessorType indicates the type of accessor for which a [`SharingAccessor`] defines
@@ -50,6 +60,7 @@ pub struct SharingAccessor {
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum SharingAccessorType {
     /// Indicates the respective [`SharingAccessor`] is describing a specific user’s [`Account`]'s
     /// permissions on the shared entity.
@@ -67,6 +78,7 @@ pub enum SharingAccessorType {
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[non_exhaustive]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum SharingAccessorPermission {
     /// Indicates that the respective [`SharingAccessor`] has read permissions on the associated
     /// entity, excluding its secrets. This generally means that the client prevents the user

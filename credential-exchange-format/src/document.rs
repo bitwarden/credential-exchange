@@ -6,6 +6,8 @@ use crate::{B64Url, EditableField, EditableFieldString, EditableFieldValue, Exte
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct CustomFieldsCredential<E = ()> {
     /// A unique identifier for the CustomFields. It MUST be a machine-generated opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -22,6 +24,10 @@ pub struct CustomFieldsCredential<E = ()> {
     /// is lost.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extensions: Vec<Extension<E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 /// A [FileCredential] acts as a placeholder to an arbitrary binary file holding its associated
@@ -30,6 +36,7 @@ pub struct CustomFieldsCredential<E = ()> {
 /// then the associated encrypted file MUST be stored in the documents folder of the zip archive.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct FileCredential {
     /// The file’s identifier, used as the file name in the zip archive.
     pub id: B64Url,
@@ -40,13 +47,23 @@ pub struct FileCredential {
     /// The SHA256 hash of the decrypted file. This hash MUST be used by the importing provider
     /// when the file is decrypted to ensure that it has not been corrupted.
     pub integrity_hash: B64Url,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct NoteCredential<E = ()> {
     /// This member is a user-defined value encoded as a UTF-8 string.
     pub content: EditableField<EditableFieldString, E>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[cfg(test)]
@@ -60,16 +77,22 @@ mod tests {
     #[test]
     fn test_serialize_custom_fields() {
         let credential = CustomFieldsCredential {
+            #[cfg(feature = "preserve-unknown")]
+            additional_fields: Default::default(),
             id: None,
             label: None,
             fields: vec![
                 EditableFieldValue::<()>::String(EditableField {
+                    #[cfg(feature = "preserve-unknown")]
+                    additional_fields: Default::default(),
                     id: Some(B64Url::from(b"field1".as_slice())),
                     value: EditableFieldString("hello".into()).into(),
                     label: None,
                     extensions: None,
                 }),
                 EditableFieldValue::<()>::Boolean(EditableField {
+                    #[cfg(feature = "preserve-unknown")]
+                    additional_fields: Default::default(),
                     id: None,
                     value: EditableFieldBoolean(false).into(),
                     label: None,

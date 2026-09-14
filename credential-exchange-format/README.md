@@ -18,12 +18,38 @@ or the
 
 > This library does not automatically clear sensitive values from memory. It is heavily encouraged
 > to use it alongside a zeroizing global allocator like
-> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). We may be open to pull requests
-> that adds native `zeroize` support depending on the developer ergonomics.
+> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). The optional `zeroize` feature
+> provides explicit cleanup of owned model values; it does not clear temporary allocations
+> inside parsers and serializers or caller-owned input and output buffers.
 
 > This library is still in early development and as the specification evolves so will this library.
 
 ## Usage
+
+### Optional zeroization
+
+Enable the `zeroize` feature to implement `zeroize::Zeroize` for format types. Call
+`zeroize()` explicitly, or use `zeroize::Zeroizing<T>` to clear a model on drop. The feature
+does not add `Drop` implementations to the models, so moving fields out of them still works.
+Custom extension types must also implement `Zeroize` to zeroize a containing model.
+Unknown credential and extension JSON strings, including object keys, are cleared recursively.
+Inline dates are overwritten with valid sentinel values; enum discriminants remain valid.
+With this feature enabled, date wrappers implement `Copy`, `Default`, and
+`zeroize::DefaultIsZeroes`: their defaults are the minimum representable date and
+year zero / January, respectively. The library performs the overwrite through
+zeroize's safe API; no local unsafe code is needed.
+This is not a guarantee of erasing every representation of a secret: clones, parser error
+paths, intermediate serialization buffers, and JSON numeric representations are outside this
+cleanup. A zeroizing allocator remains useful for those allocations.
+
+```rust
+#[cfg(feature = "zeroize")]
+fn import(data: &str) -> Result<zeroize::Zeroizing<credential_exchange_format::Header>, serde_json::Error> {
+    serde_json::from_str(data).map(zeroize::Zeroizing::new)
+}
+```
+
+### Basic usage
 
 ```rust
 use credential_exchange_format::Account;
@@ -34,6 +60,8 @@ fn import(data: &str) {
 
 fn export() -> Result<String, serde_json::Error> {
     let account: Account = Account {
+        #[cfg(feature = "preserve-unknown")]
+        additional_fields: Default::default(),
         id: vec![1,2,3,4].as_slice().into(),
         username: "".to_owned(),
         email: "".to_owned(),
@@ -46,6 +74,25 @@ fn export() -> Result<String, serde_json::Error> {
     serde_json::to_string(&account)
 }
 ```
+
+### Preserving unknown members
+
+The optional `preserve-unknown` feature retains unrecognized JSON members in
+`additional_fields: AdditionalFields` on known objects, including nested credentials,
+editable fields, scopes, and sharing/passkey extensions. Serialization writes these members
+back alongside the typed fields. Only unknown members are stored: changing or removing a
+typed password does not revive its original value, and unknown members follow their objects
+when a collection is reordered. This preserves JSON values, not whitespace, key ordering,
+duplicate keys, or original spellings of normalized standard values.
+
+`AdditionalFields` also supports cleanup when `zeroize` is enabled. Caller-defined extension
+types are responsible for preserving their own unknown members.
+
+Enabling this feature adds public struct fields, so struct literals must initialize
+`additional_fields` (typically with `Default::default()`). Cargo unifies dependency features;
+another dependency enabling this feature can therefore require changes to your literals too.
+This API requires release/compatibility review before stabilization. Do not insert a standard
+field name into `additional_fields`, as it would produce duplicate members on serialization.
 
 ### Compatibility with Apple's Credential migration
 
