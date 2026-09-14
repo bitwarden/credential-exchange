@@ -471,6 +471,7 @@ impl From<EditableFieldBoolean> for String {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
+#[cfg_attr(feature = "zeroize", derive(Copy))]
 pub struct EditableFieldDate(pub NaiveDate);
 impl EditableFieldType for EditableFieldDate {
     fn field_type() -> FieldType {
@@ -487,6 +488,7 @@ impl From<EditableFieldDate> for String {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(into = "String")]
+#[cfg_attr(feature = "zeroize", derive(Copy))]
 pub struct EditableFieldYearMonth {
     /// The year in the format `YYYY`
     pub year: u16,
