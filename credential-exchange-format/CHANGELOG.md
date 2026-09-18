@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `jiff` feature to back the calendar date types with `jiff` instead of `chrono`. `chrono` remains
+  the default; use `default-features = false` together with `features = ["jiff"]` to drop the
+  `chrono` dependency. `Month` and `NaiveDate` are still exported from this crate in both
+  configurations.
+
+
 ## [0.4.0] - 2026-06-11
 
 ### Added
