@@ -1,6 +1,5 @@
 use std::{borrow::Cow, fmt, str};
 
-use chrono::{Month, NaiveDate};
 use serde::{
     de::{
         value::{StrDeserializer, StringDeserializer},
@@ -10,7 +9,10 @@ use serde::{
     Deserialize, Serialize,
 };
 
-use crate::{B64Url, Extension};
+use crate::{
+    time::{date_from_str, date_to_string, month_number},
+    B64Url, Extension, Month, NaiveDate,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableField<T, E = ()> {
@@ -455,8 +457,7 @@ impl From<EditableFieldBoolean> for String {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(transparent)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EditableFieldDate(pub NaiveDate);
 impl EditableFieldType for EditableFieldDate {
     fn field_type() -> FieldType {
@@ -464,10 +465,29 @@ impl EditableFieldType for EditableFieldDate {
     }
 }
 
+impl Serialize for EditableFieldDate {
+    #[inline]
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&date_to_string(&self.0))
+    }
+}
+
+impl<'de> Deserialize<'de> for EditableFieldDate {
+    fn deserialize<D>(deserializer: D) -> Result<EditableFieldDate, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = deserializer.deserialize_str(CowVisitor)?;
+        date_from_str(&s)
+            .map(EditableFieldDate)
+            .map_err(|_| serde::de::Error::custom("Invalid date, expected yyyy-mm-dd"))
+    }
+}
+
 impl From<EditableFieldDate> for String {
     #[inline]
     fn from(value: EditableFieldDate) -> Self {
-        value.0.format("%Y-%m-%d").to_string()
+        date_to_string(&value.0)
     }
 }
 
@@ -483,7 +503,7 @@ pub struct EditableFieldYearMonth {
 impl From<EditableFieldYearMonth> for String {
     #[inline]
     fn from(value: EditableFieldYearMonth) -> String {
-        format!("{:04}-{:02}", value.year, value.month.number_from_month())
+        format!("{:04}-{:02}", value.year, month_number(value.month))
     }
 }
 
@@ -674,6 +694,7 @@ mod tests {
     use serde_json::json;
 
     use super::*;
+    use crate::time::date_from_ymd;
 
     #[test]
     fn test_serialize_editable_field_string() {
@@ -817,7 +838,7 @@ mod tests {
     fn test_serialize_field_date() {
         let field: EditableField<EditableFieldDate> = EditableField {
             id: None,
-            value: EditableFieldDate(NaiveDate::from_ymd_opt(2025, 2, 24).unwrap()).into(),
+            value: EditableFieldDate(date_from_ymd(2025, 2, 24).unwrap()).into(),
             label: None,
             extensions: None,
         };

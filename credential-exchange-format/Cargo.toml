@@ -11,11 +11,20 @@ repository.workspace = true
 license.workspace = true
 keywords.workspace = true
 
+[features]
+default = ["chrono"]
+chrono = ["dep:chrono"]
+jiff = ["dep:jiff"]
+
 [dependencies]
 chrono = { version = "0.4", features = [
     "serde",
     "std",
-], default-features = false }
+], default-features = false, optional = true }
+jiff = { version = "0.2", default-features = false, features = [
+    "std",
+    "alloc",
+], optional = true }
 data-encoding = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
