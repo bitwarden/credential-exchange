@@ -74,31 +74,32 @@ mod jiff_impl {
 
     /// A month of the year.
     ///
-    /// `jiff` stores months as `i8`s, so this enum mirrors the shape of `chrono::Month` to keep
-    /// this crate's public API identical regardless of which backend is selected.
+    /// `jiff` stores months as `i8`s, so this enum mirrors `chrono::Month`, including its
+    /// 0-based discriminants, to keep this crate's public API identical regardless of which
+    /// backend is selected. Use [`Month::number_from_month`] for the 1-based month number.
     #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
     #[repr(u8)]
     #[non_exhaustive]
     pub enum Month {
-        January = 1,
-        February = 2,
-        March = 3,
-        April = 4,
-        May = 5,
-        June = 6,
-        July = 7,
-        August = 8,
-        September = 9,
-        October = 10,
-        November = 11,
-        December = 12,
+        January = 0,
+        February = 1,
+        March = 2,
+        April = 3,
+        May = 4,
+        June = 5,
+        July = 6,
+        August = 7,
+        September = 8,
+        October = 9,
+        November = 10,
+        December = 11,
     }
 
     impl Month {
         /// Returns the month number in the range `1..=12`.
         #[inline]
         pub const fn number_from_month(self) -> u8 {
-            self as u8
+            self as u8 + 1
         }
     }
 
@@ -138,19 +139,19 @@ mod jiff_impl {
         type Error = InvalidMonth;
 
         fn try_from(value: u8) -> Result<Month, Self::Error> {
-            match value {
-                1 => Ok(Month::January),
-                2 => Ok(Month::February),
-                3 => Ok(Month::March),
-                4 => Ok(Month::April),
-                5 => Ok(Month::May),
-                6 => Ok(Month::June),
-                7 => Ok(Month::July),
-                8 => Ok(Month::August),
-                9 => Ok(Month::September),
-                10 => Ok(Month::October),
-                11 => Ok(Month::November),
-                12 => Ok(Month::December),
+            match value.checked_sub(1) {
+                Some(0) => Ok(Month::January),
+                Some(1) => Ok(Month::February),
+                Some(2) => Ok(Month::March),
+                Some(3) => Ok(Month::April),
+                Some(4) => Ok(Month::May),
+                Some(5) => Ok(Month::June),
+                Some(6) => Ok(Month::July),
+                Some(7) => Ok(Month::August),
+                Some(8) => Ok(Month::September),
+                Some(9) => Ok(Month::October),
+                Some(10) => Ok(Month::November),
+                Some(11) => Ok(Month::December),
                 _ => Err(InvalidMonth(())),
             }
         }
@@ -176,7 +177,41 @@ mod jiff_impl {
     impl From<Month> for i8 {
         #[inline]
         fn from(month: Month) -> i8 {
-            month as i8
+            month.number_from_month() as i8
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn date_round_trip() {
+        let date = date_from_ymd(2025, 2, 24).unwrap();
+        assert_eq!(date_to_string(&date), "2025-02-24");
+        assert_eq!(date_from_str("2025-02-24").unwrap(), date);
+    }
+
+    #[test]
+    fn date_from_str_rejects_invalid() {
+        assert!(date_from_str("2025/02/24").is_err());
+        assert!(date_from_str("2025-02").is_err());
+        assert!(date_from_str("not a date").is_err());
+    }
+
+    #[test]
+    fn month_numbers() {
+        assert_eq!(month_number(Month::January), 1);
+        assert_eq!(month_number(Month::February), 2);
+        assert_eq!(month_number(Month::December), 12);
+    }
+
+    #[test]
+    fn month_try_from_u8() {
+        assert_eq!(Month::try_from(1u8), Ok(Month::January));
+        assert_eq!(Month::try_from(12u8), Ok(Month::December));
+        assert!(Month::try_from(0u8).is_err());
+        assert!(Month::try_from(13u8).is_err());
     }
 }
