@@ -13,45 +13,22 @@ on:
           - Release
           - Dry Run
 
+permissions:
+  contents: read
+
 jobs:
-  setup:
-    name: Setup
+  trigger-release:
+    name: Trigger Release
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
-    outputs:
-      release-version: ${{ steps.version.outputs.version }}
+      contents: read
+      deployments: write
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Trigger release via bitwarden/deploy
+        uses: bitwarden/gh-actions/trigger-actions@main
         with:
-          persist-credentials: false
-
-      - name: Branch check
-        if: ${{ inputs.release_type != 'Dry Run' }}
-        run: |
-          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
-            echo "==================================="
-            echo "[!] Can only release from the 'main' branch"
-            echo "==================================="
-            exit 1
-          fi
-
-      - name: Get version
-        id: version
-        run: |
-          VERSION=$(grep -o '^version = ".*"' Cargo.toml | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Create release
-        if: ${{ inputs.release_type != 'Dry Run' }}
-        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
-        env:
-          PKG_VERSION: ${{ steps.version.outputs.version }}
-        with:
-          commit: ${{ github.sha }}
-          tag: v${{ env.PKG_VERSION }}
-          name: v${{ env.PKG_VERSION }}
-          body: "<insert release notes here>"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: true
+          task: release-credential-exchange
+          data: |
+            {
+              "release_type": "${{ inputs.release_type }}"
+            }
