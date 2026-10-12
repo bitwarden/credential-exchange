@@ -14,6 +14,27 @@ For more information about the credential exchange protocol, please read the
 or the
 [Fido Alliance announcement](https://fidoalliance.org/fido-alliance-publishes-new-specifications-to-promote-user-choice-and-enhanced-ux-for-passkeys/).
 
+### Calendar date types (`chrono` / `jiff`)
+
+The `date` and `year-month` editable field types are backed by a calendar library chosen with
+cargo features. By default that library is `chrono`, and `Month` / `NaiveDate` are re-exports of
+`chrono::Month` / `chrono::NaiveDate`.
+
+To depend on [`jiff`](https://crates.io/crates/jiff) instead, disable default features and enable
+the `jiff` feature:
+
+```toml
+credential-exchange-format = { version = "0.4", default-features = false, features = ["jiff"] }
+```
+
+With that configuration `NaiveDate` is an alias for `jiff::civil::Date`, and `Month` is a local
+enum mirroring `chrono::Month` (jiff stores months as integers). The public names stay the same in
+both configurations, so code that constructs `EditableFieldYearMonth { year, month }` or
+`EditableFieldDate(...)` compiles against either backend.
+
+Exactly one of the two features must be enabled; enabling neither fails at compile time, and if
+both are enabled `chrono` wins.
+
 ## Disclaimer
 
 > This library does not automatically clear sensitive values from memory. It is heavily encouraged

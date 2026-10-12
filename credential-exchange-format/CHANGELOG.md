@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Add opt-in support for `jiff` as an alternative to `chrono`. Enable with
+  `default-features = false, features = ["jiff"]` to drop the `chrono` dependency.
+  `Month` and `NaiveDate` are exported from this crate in both configurations. (#155)
+
 ## [0.4.0] - 2026-06-11
 
 ### Added

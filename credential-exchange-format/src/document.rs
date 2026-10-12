@@ -51,11 +51,10 @@ pub struct NoteCredential<E = ()> {
 
 #[cfg(test)]
 mod tests {
-    use chrono::Month;
     use serde_json::json;
 
     use super::*;
-    use crate::{EditableFieldBoolean, EditableFieldString, EditableFieldYearMonth};
+    use crate::{EditableFieldBoolean, EditableFieldString, EditableFieldYearMonth, Month};
 
     #[test]
     fn test_serialize_custom_fields() {
