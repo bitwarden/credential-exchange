@@ -14,8 +14,8 @@ or the
 > [!CAUTION]
 > This library does not automatically clear sensitive values from memory. It is heavily encouraged
 > to use it alongside a zeroizing global allocator like
-> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). We may be open to pull requests
-> that adds native `zeroize` support depending on the developer ergonomics.
+> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). The format crate provides optional explicit cleanup through
+> its `zeroize` feature; parser and serializer temporaries still need separate protection.
 
 <!-- prettier-ignore -->
 > [!NOTE]

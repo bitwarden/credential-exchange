@@ -18,12 +18,38 @@ or the
 
 > This library does not automatically clear sensitive values from memory. It is heavily encouraged
 > to use it alongside a zeroizing global allocator like
-> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). We may be open to pull requests
-> that adds native `zeroize` support depending on the developer ergonomics.
+> [`zeroizing-alloc`](https://crates.io/crates/zeroizing-alloc). The optional `zeroize` feature
+> provides explicit cleanup of owned model values; it does not clear temporary allocations
+> inside parsers and serializers or caller-owned input and output buffers.
 
 > This library is still in early development and as the specification evolves so will this library.
 
 ## Usage
+
+### Optional zeroization
+
+Enable the `zeroize` feature to implement `zeroize::Zeroize` for format types. Call
+`zeroize()` explicitly, or use `zeroize::Zeroizing<T>` to clear a model on drop. The feature
+does not add `Drop` implementations to the models, so moving fields out of them still works.
+Custom extension types must also implement `Zeroize` to zeroize a containing model.
+Unknown credential and extension JSON strings, including object keys, are cleared recursively.
+Inline dates are overwritten with valid sentinel values; enum discriminants remain valid.
+With this feature enabled, date wrappers implement `Copy`, `Default`, and
+`zeroize::DefaultIsZeroes`: their defaults are the minimum representable date and
+year zero / January, respectively. The library performs the overwrite through
+zeroize's safe API; no local unsafe code is needed.
+This is not a guarantee of erasing every representation of a secret: clones, parser error
+paths, intermediate serialization buffers, and JSON numeric representations are outside this
+cleanup. A zeroizing allocator remains useful for those allocations.
+
+```rust
+#[cfg(feature = "zeroize")]
+fn import(data: &str) -> Result<zeroize::Zeroizing<credential_exchange_format::Header>, serde_json::Error> {
+    serde_json::from_str(data).map(zeroize::Zeroizing::new)
+}
+```
+
+### Basic usage
 
 ```rust
 use credential_exchange_format::Account;
