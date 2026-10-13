@@ -2,6 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "preserve-unknown")]
+mod additional_fields;
+#[cfg(feature = "preserve-unknown")]
+pub use additional_fields::AdditionalFields;
+
 mod b64url;
 mod credential_scope;
 mod document;
@@ -10,6 +15,8 @@ mod extensions;
 mod identity;
 mod login;
 mod passkey;
+#[cfg(feature = "zeroize")]
+mod zeroize_impl;
 
 pub use self::{
     b64url::*, credential_scope::*, document::*, editable_field::*, extensions::*, identity::*,
@@ -20,6 +27,8 @@ type Uri = String;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Header<E = ()> {
     /// The version of the format definition contained within this exchange payload. The version
     /// MUST correspond to a published level of the CXF standard.
@@ -32,9 +41,14 @@ pub struct Header<E = ()> {
     pub timestamp: u64,
     /// The list of [Account]s being exported.
     pub accounts: Vec<Account<E>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct Version {
     /// The major version of the payload's format. Changes to this version indicates an
     /// incompatible breaking change with previous versions.
@@ -43,10 +57,16 @@ pub struct Version {
     /// functionality which is purely additive and that is compatible with previous versions under
     /// the same [Version::major].
     pub minor: u8,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Account<E = ()> {
     /// A unique identifier for the [Account] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT to be displayed to the user.
@@ -68,10 +88,16 @@ pub struct Account<E = ()> {
     /// This field contains all the extensions to the [Account]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>, // default []
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Collection<E = ()> {
     /// A unique identifier for the [Collection] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -102,9 +128,14 @@ pub struct Collection<E = ()> {
     /// This enumeration contains all the extensions to the [Collection]’s attributes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct LinkedItem {
     /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
     /// be sent as part of the current exchange.
@@ -113,10 +144,16 @@ pub struct LinkedItem {
     /// not present, the [Item] belongs to the current [Account] being exchanged.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account: Option<B64Url>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
     /// with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -157,6 +194,10 @@ pub struct Item<E = ()> {
     /// that is being exported to be as complete of an export as possible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Vec<Extension<E>>>,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -197,6 +238,7 @@ pub enum Credential<E = ()> {
 /// logically linked together.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct ItemReferenceCredential {
     /// A [LinkedItem] which references another [Item].
     ///
@@ -204,6 +246,10 @@ pub struct ItemReferenceCredential {
     /// [Account]. However, the other item MAY NOT be in the exchange if it is owned by a different
     /// account and shared with the currenly exchanged account.
     pub reference: LinkedItem,
+    /// Unrecognized JSON members retained when `preserve-unknown` is enabled.
+    #[cfg(feature = "preserve-unknown")]
+    #[serde(flatten)]
+    pub additional_fields: crate::AdditionalFields,
 }
 
 #[cfg(test)]
