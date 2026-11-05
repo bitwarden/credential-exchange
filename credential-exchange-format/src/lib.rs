@@ -10,6 +10,8 @@ mod extensions;
 mod identity;
 mod login;
 mod passkey;
+#[cfg(feature = "zeroize")]
+mod zeroize_impl;
 
 pub use self::{
     b64url::*, credential_scope::*, document::*, editable_field::*, extensions::*, identity::*,
@@ -20,6 +22,8 @@ type Uri = String;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Header<E = ()> {
     /// The version of the format definition contained within this exchange payload. The version
     /// MUST correspond to a published level of the CXF standard.
@@ -35,6 +39,7 @@ pub struct Header<E = ()> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct Version {
     /// The major version of the payload's format. Changes to this version indicates an
     /// incompatible breaking change with previous versions.
@@ -47,6 +52,8 @@ pub struct Version {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Account<E = ()> {
     /// A unique identifier for the [Account] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT to be displayed to the user.
@@ -72,6 +79,8 @@ pub struct Account<E = ()> {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Collection<E = ()> {
     /// A unique identifier for the [Collection] which is machine generated and an opaque byte
     /// sequence with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -105,6 +114,7 @@ pub struct Collection<E = ()> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct LinkedItem {
     /// The [Item’s id][Item::id] that this [LinkedItem] refers to. Note that this [Item] might not
     /// be sent as part of the current exchange.
@@ -117,6 +127,8 @@ pub struct LinkedItem {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", bound(deserialize = "E: Deserialize<'de>"))]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
+#[cfg_attr(feature = "zeroize", zeroize(bound = "E: zeroize::Zeroize"))]
 pub struct Item<E = ()> {
     /// A unique identifier for the [Item] which is machine generated and an opaque byte sequence
     /// with a maximum size of 64 bytes. It SHOULD NOT be displayed to the user.
@@ -197,6 +209,7 @@ pub enum Credential<E = ()> {
 /// logically linked together.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct ItemReferenceCredential {
     /// A [LinkedItem] which references another [Item].
     ///

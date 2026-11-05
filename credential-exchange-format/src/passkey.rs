@@ -10,6 +10,7 @@ use crate::b64url::B64Url;
 /// the fact.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct PasskeyCredential {
     /// This member contains a [WebAuthn](https://www.w3.org/TR/webauthn-3)
     /// [Credential ID](https://www.w3.org/TR/webauthn-3/#credential-id) which uniquely identifies
@@ -72,6 +73,7 @@ pub struct PasskeyCredential {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct Fido2Extensions {
     /// This member holds the information necessary for either the
     /// [WebAuthn prf extension](https://www.w3.org/TR/webauthn-3/#prf-extension) or the
@@ -95,6 +97,7 @@ pub struct Fido2Extensions {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct Fido2HmacCredentials {
     pub algorithm: Fido2HmacCredentialAlgorithm,
     #[serde(rename = "credWithUV")]
@@ -105,6 +108,7 @@ pub struct Fido2HmacCredentials {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub enum Fido2HmacCredentialAlgorithm {
     HmacSha256,
     #[serde(untagged)]
@@ -113,6 +117,7 @@ pub enum Fido2HmacCredentialAlgorithm {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct Fido2LargeBlob {
     pub uncompressed_size: u64,
     pub data: B64Url,

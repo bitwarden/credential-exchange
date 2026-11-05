@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Optional `zeroize` feature for explicit model cleanup and use with `Zeroizing<T>`, including
+  unknown credential and extension strings. Default behavior and field-move APIs are unchanged.
+
 ## [0.4.0] - 2026-06-11
 
 ### Added
