@@ -11,7 +11,12 @@ repository.workspace = true
 license.workspace = true
 keywords.workspace = true
 
+[features]
+default = ["chrono"]
+chrono = ["credential-exchange-format/chrono"]
+jiff = ["credential-exchange-format/jiff"]
+
 [dependencies]
-credential-exchange-format = { path = "../credential-exchange-format", version = "0.4 " }
+credential-exchange-format = { path = "../credential-exchange-format", version = "0.4 ", default-features = false }
 jose-jwk = { version = "0.1", default-features = false }
 serde = { version = "1", features = ["derive"] }

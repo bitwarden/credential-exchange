@@ -41,6 +41,9 @@ jobs:
       - name: Test
         run: cargo test --workspace --all-features
 
+      - name: Test with jiff time backend
+        run: cargo test -p credential-exchange-format -p credential-exchange-protocol --no-default-features --features credential-exchange-format/jiff,credential-exchange-protocol/jiff
+
       - name: Install cargo-llvm-cov
         if: ${{ matrix.os=='ubuntu-24.04' }}
         run: cargo install cargo-llvm-cov --version 0.5.38

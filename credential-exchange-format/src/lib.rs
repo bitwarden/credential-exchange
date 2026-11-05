@@ -10,10 +10,18 @@ mod extensions;
 mod identity;
 mod login;
 mod passkey;
+mod time;
 
 pub use self::{
-    b64url::*, credential_scope::*, document::*, editable_field::*, extensions::*, identity::*,
-    login::*, passkey::*,
+    b64url::*,
+    credential_scope::*,
+    document::*,
+    editable_field::*,
+    extensions::*,
+    identity::*,
+    login::*,
+    passkey::*,
+    time::{Month, NaiveDate},
 };
 
 type Uri = String;
