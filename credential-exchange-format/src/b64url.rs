@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// Base64URL encoded data
 #[derive(Debug, Serialize, Deserialize, Clone, Hash, PartialEq, Eq)]
 #[serde(try_from = "&str", into = "String")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct B64Url(Vec<u8>);
 
 impl From<Vec<u8>> for B64Url {
@@ -79,6 +80,7 @@ impl TryFrom<&str> for B64Url {
 /// Newtype to encode and decode a vector of bytes to and from Base32.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(try_from = "&str", into = "String")]
+#[cfg_attr(feature = "zeroize", derive(zeroize_derive::Zeroize))]
 pub struct B32(Vec<u8>);
 
 impl From<Vec<u8>> for B32 {
